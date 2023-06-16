@@ -8,7 +8,8 @@ class VisitRequest(models.Model):
     ic = models.CharField(max_length=20)
     visitTime = models.DateTimeField()
     contactNumber = models.CharField(max_length=20)
-
+    otp = models.CharField(max_length=8)
+    otp_sent = models.IntegerField()
     house = models.ForeignKey(House, on_delete=models.CASCADE)
 
 

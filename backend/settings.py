@@ -86,14 +86,14 @@ AUTH_USER_MODEL = 'api.CustomUser'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    # 'dafault': {
-    #     'ENGINE': 'django.db.backends.mysql',  # 选择数据库类型，如mysql
-    #     'NAME': 'apidb',  # 数据库名字
-    #     'USER': 'root',  # 数据库的登录用户名
-    #     'PASSWORD': 'eeeqxxtg2022',  # 密码
-    #     'HOST': 'localhost',  # 数据库所在主机
-    #     'PORT': '3306',
-    # },
+    'dafault': {
+        'ENGINE': 'django.db.backends.mysql',  # 选择数据库类型，如mysql
+        'NAME': env('DB_NAME'),  # 数据库名字
+        'USER': env('DB_USER'),  # 数据库的登录用户名
+        'PASSWORD': env('DB_PASSWORD'),  # 密码
+        'HOST': env('DB_HOST'),  # 数据库所在主机
+        'PORT': env('DB_PORT'),
+    },
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
