@@ -24,16 +24,17 @@ def add_tenant(request):
         return HttpResponse('Tenant added failed!')
 
 
-def delete_tenant(request, tenant_id):
+def delete_tenant(request):
     # 根据客户id获取客户对象
-    tenant = Tenant.objects.get(id=tenant_id)
+    company = request.GET.get('company')
+    tenant = Tenant.objects.get(company=company)
     tenant.delete()
     return HttpResponse('Tenant deleted successfully!')
 
 
-def update_tenant(request, company):
+def update_tenant(request):
     if request.method == 'POST':
-        # 根据客户id获取客户对象
+        company = request.GET.get('former_company')
         tenant = Tenant.objects.get(company=company)
         # 更新客户信息
         tenant.real_name = request.GET.get('real_name')
@@ -48,6 +49,7 @@ def update_tenant(request, company):
         return HttpResponse('tenant updated successfully!')
 
 
-def view_tenant(company):
+def view_tenant(request):
+    company = request.GET.get('company')
     tenant = Tenant.objects.get(company=company)
     return tenant
