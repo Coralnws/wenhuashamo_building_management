@@ -57,58 +57,62 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('F', 'Female'),
     )
 
-    CATEGORY = (
-        (1, '普通用户'),
-        (2, '学者'),
+    POSITION = (
+        ('1','普通用户'),
+        ('2','维修人员'),
+        ('3','普通管理员'),
+        ('4','超级管理员'),
     )
 
-    QUESTION = (
-        ('1','您最喜欢的颜色？'),
-        ('2','您最讨厌的食物？'),
-        ('3','您最要好的闺蜜/兄弟？'),
-        ('4','您的爱好？'),
-        ('5','您的初恋？'),
+    M_TYPE = (
+        ('0','无'),
+        ('1','水'),
+        ('2','电'),
+        ('3','机械'),
+    )
+
+    M_STATUS = (
+        ('0','无'),
+        ('1','水'),
+        ('2','电'),
+        ('3','机械'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.CharField(max_length=150, unique=True)
-    real_name = models.CharField(max_length=150,blank=True)
-    email = models.EmailField(unique=True)
-    bio = models.TextField(max_length=500, default = "A bio hasn't been added yet.")
-    is_staff = models.BooleanField(default=False)
-    # activated at email validation only, not at registration.
-    is_active = models.BooleanField(default=False)
-    isDeleted = models.BooleanField(default=False)
+    username = models.CharField(max_length=255, unique=True)
+    realname = models.CharField(max_length=255,blank=True)
+    contactNumber = models.CharField(max_length=255,blank=True)
+    position=models.CharField(max_length=1,choices=POSITION,default=POSITION[0][0])
+    email = models.EmailField(blank=True)
+    bio = models.TextField(max_length=500, default = "这个人很懒，这么久都还没填写信息")
     gender = models.CharField(max_length=10, choices=GENDER, default=GENDER[0][0])
+    m_type = models.CharField(max_length=10, choices=M_TYPE, default=M_TYPE[0][0])
+    m_status = models.CharField(max_length=10, choices=M_STATUS, default=M_STATUS[0][0])
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    isDeleted = models.BooleanField(default=False)
     dob = models.DateField(default=datetime.date(2000, 1, 1))
-    wbId = models.CharField(max_length=150,blank=True)
-    vxId = models.CharField(max_length=150,blank=True)
-    qqId = models.CharField(max_length=150,blank=True)
     profile = models.ImageField(upload_to=profile_to, blank=True)
     thumbnail = models.ImageField(upload_to=thumbnail_to, blank=True)
-    
-    position = models.CharField(max_length=150,blank=True)
-    securityQuestion=models.CharField(max_length=1,choices=QUESTION,default='1')
-    securityAnswer=models.CharField(max_length=150,blank=True)
-    identity = models.IntegerField(choices=CATEGORY,default=0)
     createdAt = models.DateTimeField(default=timezone.now)
     updatedAt = models.DateTimeField(default=timezone.now)
-    scholarAuth = models.CharField(max_length=40 ,blank=True,null=True)
-    banComment = models.BooleanField(default=False)
-    banDuration = models.DateTimeField(blank=True,null=True,default=None)
-
+    
     def get_thumbnail_url(self):
         if self.thumbnail and hasattr(self.thumbnail, 'url'):
             return os.path.join(MEDIA_URL, str(self.thumbnail))
         return os.path.join(MEDIA_URL, 'default', 'thumbnail.png')
 
+
+    def get_profile_url(self):
+        if self.profile and hasattr(self.profile, 'url'):
+            return os.path.join(MEDIA_URL, str(self.profile))
+        return os.path.join(MEDIA_URL, 'default', 'profile.png')
+
+
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
-    # USERNAME_FIELD = 'username'
-    # REQUIRED_FIELDS = ['email',]
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email',]
 
     # class Meta:
     #     app_label = 'api'

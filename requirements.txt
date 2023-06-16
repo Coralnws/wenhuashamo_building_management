@@ -1,5 +1,2 @@
 Django==3.2.5
-elasticsearch==7.6.0
-elasticsearch_dsl==7.4.0
 environ==1.0
-jieba==0.42.1
