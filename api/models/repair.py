@@ -11,8 +11,8 @@ class Repair(models.Model):
     house = models.ForeignKey(House, on_delete=models.CASCADE)
     contactName = models.CharField(max_length=50)
     contactNumber = models.CharField(max_length=20)
-    staff = models.ForeignKey(CustomUser, related_name="staff", on_delete=models.CASCADE, null=True, blank=True)
-    manager = models.ForeignKey(CustomUser, related_name="manager",  on_delete=models.CASCADE, null=True, blank=True)
+    staff = models.ForeignKey(CustomUser,  on_delete=models.CASCADE, null=True, blank=True)
+    manager = models.ForeignKey(CustomUser,  on_delete=models.CASCADE, null=True, blank=True)
     repairingTime = models.DateTimeField(null=True, blank=True)
     status_choices = [
         ('Open', 'Open'),
@@ -22,4 +22,4 @@ class Repair(models.Model):
     status = models.CharField(max_length=20, choices=status_choices, default='Open')
     plan = models.TextField(blank=True)
     completeTime = models.DateTimeField(null=True, blank=True)
-    solver = models.ForeignKey(CustomUser, related_name="solver", on_delete=models.CASCADE, null=True, blank=True)
+    solver = models.ForeignKey(CustomUser,  on_delete=models.CASCADE, null=True, blank=True)
