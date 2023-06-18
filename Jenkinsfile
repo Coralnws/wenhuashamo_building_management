@@ -19,25 +19,31 @@ pipeline {
         //     }
         // }
 
-        def excludeStatic = fileExists('static') ? "-x static/*" : ""
-        def excludeMedia = fileExists('media') ? "-x media/*" : ""
-
         stage('Backup Existing Project') {
             steps {
-                // Backup the existing project by zip it to /var/www/backup
-                sh "zip -r /var/www/backup/pms_backend_${BUILD_NUMBER}.zip /var/www/pms_backend $exclude_static $exclude_media"
-                sh "chmod 755 /var/www/backup/pms_backend_${BUILD_NUMBER}.zip"
+                script {
+                    def excludeStatic = fileExists('static') ? "-x static/*" : ""
+                    def excludeMedia = fileExists('media') ? "-x media/*" : ""
+
+                    // Backup the existing project by zipping it to /var/www/backup
+                    sh "zip -r /var/www/backup/pms_backend_${BUILD_NUMBER}.zip /var/www/pms_backend $excludeStatic $excludeMedia"
+                    sh "chmod 755 /var/www/backup/pms_backend_${BUILD_NUMBER}.zip"
+                }
             }
-        }
 
-        stage('Zip and deploy new code') {
+        stage('Zip and Deploy New Code') {
             steps {
-                // Zip the new code from jenkins workspace
-                sh "cd ${WORKSPACE} && zip -r /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip . $exclude_static $exclude_media"
-                sh "chmod 755 /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip"
+                script {
+                    def excludeStatic = fileExists('static') ? "-x static/*" : ""
+                    def excludeMedia = fileExists('media') ? "-x media/*" : ""
 
-                // Unzip those new code
-                sh "unzip -q /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip -d /var/www/pms_backend $exclude_static $exclude_media"
+                    // Zip the new code from Jenkins workspace
+                    sh "cd ${WORKSPACE} && zip -r /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip . $excludeStatic $excludeMedia"
+                    sh "chmod 755 /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip"
+
+                    // Unzip the new code to /var/www/pms_backend
+                    sh "unzip -q /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip -d /var/www/pms_backend $excludeStatic $excludeMedia"
+                }
             }
         }
 
