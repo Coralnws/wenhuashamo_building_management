@@ -35,9 +35,6 @@ pipeline {
         stage('Zip and Deploy New Code') {
             steps {
                 script {
-                    def excludeStatic = fileExists('static') ? "-x static/" : ""
-                    def excludeMedia = fileExists('media') ? "-x media/" : ""
-
                     // Zip the new code from Jenkins workspace
                     sh "cd ${WORKSPACE} && zip -r /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip . $excludeStatic $excludeMedia"
                     sh "chmod 755 /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip"
