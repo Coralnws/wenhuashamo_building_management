@@ -61,4 +61,6 @@ def view_tenant(request):
         company = request.GET.get('company')
         tenant = Tenant.objects.get(company=company)
         res = model_to_dict(tenant)
-        return JsonResponse(res)
+        return UTF8JsonResponse({'errno': 1001, 'msg': '返回员工列表成功', 'data': res})
+    else:
+        return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})

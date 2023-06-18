@@ -1,6 +1,7 @@
 from django.urls import path
 
 from api.views import userManage
+from api.views.houseInspect import house_list_by_floor
 from api.views.messageManage import add_tenant, delete_tenant, update_tenant, view_tenant
 
 urlpatterns = [
@@ -12,5 +13,6 @@ urlpatterns = [
     path('delete_tenant', delete_tenant),
     path('update_tenant', update_tenant),
     path('view_tenant', view_tenant),
+    path('house_inspect', house_list_by_floor),
 
 ]
