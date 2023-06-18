@@ -2,7 +2,6 @@
 FROM python:3.9
 
 # Add these three line to change the source for pip to use in China Mainland
-RUN pip install -U pip
 RUN pip config set global.index.url http://mirrors.aliyun.com/pypi/simple
 RUN pip config set install.trusted-host mirrors.aliyun.com
 
