@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+
         // ++++++++++++++++++++
         //  NOTE: BECAUSE USING PIPELINE WITH SCM AND ALREADY ADDED REPO,
         //  SO NO NEED TO EXPLICITLY PULL CODE FROM GIT AGAIN,
@@ -18,10 +19,13 @@ pipeline {
         //     }
         // }
 
+        def excludeStatic = fileExists('static') ? "-x static/*" : ""
+        def excludeMedia = fileExists('media') ? "-x media/*" : ""
+
         stage('Backup Existing Project') {
             steps {
                 // Backup the existing project by zip it to /var/www/backup
-                sh "zip -r /var/www/backup/pms_backend_${BUILD_NUMBER}.zip /var/www/pms_backend -x 'static/*' 'media/*'"
+                sh "zip -r /var/www/backup/pms_backend_${BUILD_NUMBER}.zip /var/www/pms_backend $exclude_static $exclude_media"
                 sh "chmod 755 /var/www/backup/pms_backend_${BUILD_NUMBER}.zip"
             }
         }
@@ -29,11 +33,11 @@ pipeline {
         stage('Zip and deploy new code') {
             steps {
                 // Zip the new code from jenkins workspace
-                sh "cd ${WORKSPACE} && zip -r /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip . -x 'static/*' 'media/*'"
+                sh "cd ${WORKSPACE} && zip -r /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip . $exclude_static $exclude_media"
                 sh "chmod 755 /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip"
 
                 // Unzip those new code
-                sh "unzip -q /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip -d /var/www/pms_backend -x 'static/*' 'media/*'"
+                sh "unzip -q /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip -d /var/www/pms_backend $exclude_static $exclude_media"
             }
         }
 
