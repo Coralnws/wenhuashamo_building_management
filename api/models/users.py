@@ -89,6 +89,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     isDeleted = models.BooleanField(default=False)
+    is_change_password = models.BooleanField(default=False)
     dob = models.DateField(default=datetime.date(2000, 1, 1))
     profile = models.ImageField(upload_to=profile_to, blank=True)
     thumbnail = models.ImageField(upload_to=thumbnail_to, blank=True)
