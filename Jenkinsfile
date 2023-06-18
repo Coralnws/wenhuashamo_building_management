@@ -36,11 +36,11 @@ pipeline {
             steps {
                 script {
                     // Zip the new code from Jenkins workspace
-                    sh "cd ${WORKSPACE} && zip -r /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip . $excludeStatic $excludeMedia"
+                    sh "cd ${WORKSPACE} && zip -r /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip ."
                     sh "chmod 755 /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip"
 
                     // Unzip the new code to /var/www/pms_backend
-                    sh "unzip -qo /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip -d /var/www/pms_backend $excludeStatic $excludeMedia"
+                    sh "unzip -qo /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip -d /var/www/pms_backend"
                 }
             }
         }
