@@ -31,6 +31,7 @@ urlpatterns = [
     path('payment/updateRecord', paymentManageApi.updateRecord),
     path('payment/updateStatus', paymentManageApi.updatePaymentStatus),
     path('payment/getPayment', paymentManageApi.getPaymentRecord),
+    path('payment/getPaymentDetail', paymentManageApi.getPaymentDetail),
 
     #Tenant Management
     path('tenant/add_tenant',    messageManage.add_tenant),

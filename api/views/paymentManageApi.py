@@ -98,54 +98,60 @@ def updatePaymentStatus(request):
         type = info.get('type') #0-修改租赁费状态 1-修改物业费状态 
         status = info.get('status') #0=未缴费 1=已缴费
         time  = info.get('paymentTime') #修改的时间
+
         rental = RentalInfo.objects.filter(id = rentalInfoId).first()
         
         if type == '1': #修改物业费
             if status and status=='0':
-                rental.unpaid_management = True
+                rental.ispaid_management = False
                 if time:
                     rental.nextManagementFeeDeadline = time
                 else:
-                    date = rental.nextManagementFeeDeadline
-                    date.replace(year = date.year - 1)
-                    rental.nextManagementFeeDeadline = date
-                    #rental.nextManagementFeeDeadline -= datetime.timedelta(days=365)
+                    #date = rental.nextManagementFeeDeadline
+                    rental.nextManagementFeeDeadline -= datetime.timedelta(days=365)
+                    # date.replace(year = date.year - 1)
+                    # print(date)
+                    # rental.nextManagementFeeDeadline = date
+                
                 
             if status and status=='1':
-                rental.unpaid_management = False
+                rental.ispaid_management = True
                 if time:
                     rental.nextManagementFeeDeadline = time
                 else:
-                    date = rental.nextManagementFeeDeadline
-                    date.replace(year = date.year + 1)
-                    rental.nextManagementFeeDeadline = date
+                    rental.nextManagementFeeDeadline += datetime.timedelta(days=365)
+                    # date = rental.nextManagementFeeDeadline
+                    # date.replace(year = date.year + 1)
+                    # rental.nextManagementFeeDeadline = date
         
         if type == '0':
             if status and status=='0':
-                rental.unpaid_rental = True
+                rental.ispaid_rental = False
                 if time:
                     rental.nextRentalDeadline = time
                 else:
-                    date = rental.nextRentalDeadline
-                    date.replace(year = date.year - 1)
-                    rental.nextRentalDeadline = date
+                    rental.nextRentalDeadline -= datetime.timedelta(days=365)
+                    # date = rental.nextRentalDeadline
+                    # date.replace(year = date.year - 1)
+                    # rental.nextRentalDeadline = date
             if status and status=='1':
-                rental.unpaid_rental = False
+                rental.ispaid_rental = True
                 if time:
                     rental.nextRentalDeadline = time
                 else:
-                    date = rental.nextRentalDeadline
-                    date.replace(year = date.year + 1)
-                    rental.nextRentalDeadline = date
+                    rental.nextRentalDeadline += datetime.timedelta(days=365)
+                    # date = rental.nextRentalDeadline
+                    # date.replace(year = date.year + 1)
+                    # rental.nextRentalDeadline = date
         rental.save()
         data = model_to_dict(rental)
         return UTF8JsonResponse({'errno':1001, 'msg': '成功修改缴费信息','data': data})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
 
-'''
+
 @csrf_exempt
-def getPaymentRecord(request):
+def getPaymentDetail(request):
     if request.method == 'GET':
         tenantId = request.GET.get('tenantId','')
         houseId = request.GET.get('houseId','')
@@ -155,57 +161,85 @@ def getPaymentRecord(request):
         tenant = None
         house = None
         PaymentRecord = None
-        rentalInfo = None
+        rental = None
        
         if tenantId:
             tenant = Tenant.objects.filter(id=tenantId).first()
-            PaymentRecord = Payment.objects.filter(tenant=tenant,type=type).order_by('-createdTime')
+            PaymentRecord = Payment.objects.filter(tenant=tenant,type=type).order_by('-paymentTime')
         if houseId:
             house = House.objects.filter(id=houseId).first()
-            PaymentRecord = Payment.objects.filter(house=house,type=type).order_by('-createdTime')
+            PaymentRecord = Payment.objects.filter(house=house,type=type).order_by('-paymentTime')
         if tenantId and houseId:
-            PaymentRecord = Payment.objects.filter(tenant=tenant,house=house,type=type).order_by('-createdTime')
+            PaymentRecord = Payment.objects.filter(tenant=tenant,house=house,type=type).order_by('-paymentTime')
+        
         if rentalId:
-            rental = RentalInfo.objects.filter(id=rentalInfo).first()
-            PaymentRecord = Payment.objects.filter(rentalInfo=rental,type=type).order_by('-createdTime')
+            rental = RentalInfo.objects.filter(id=rentalId).first()
 
-        #这边找到rentalInfo
+            paymentListData=[]
+            #year = rental.startTime.strftime("%Y")
+            year=None
+            startyear = rental.startTime.strftime("%Y")
+            first=1
+        
+            paymentData=[]    
+            index = len(PaymentRecord)
+            for payment in PaymentRecord:
+                if first:
+                    year = payment.paymentTime.strftime("%Y")
+                    first=0
+
+                if payment.paymentTime.strftime("%Y") < year:
+                    paymentListData.append(paymentData) 
+                    paymentData=[]
+                    
+                    if int(payment.paymentTime.strftime("%Y")) != int(year)-1:
+                        while int(payment.paymentTime.strftime("%Y")) != int(year)-1:
+                            paymentListData.append(paymentData) 
+                            paymentData=[]
+                            year = str(int(year)-1)
+                        year = payment.paymentTime.strftime("%Y")   
+                    else:       
+                        year = payment.paymentTime.strftime("%Y")    
+
+                if payment.paymentTime.strftime("%Y") < startyear:
+                    break                  
+
+                data = {}
+                data['year'] = year
+                data['id']=payment.id
+                data['paymentTime']=payment.paymentTime
+                data['amount']=payment.amount
+                print(data)
+                paymentData.append(data) 
+
+                index -= 1
+
+                if index == 0 :
+                    year = payment.paymentTime.strftime("%Y")
+                    paymentListData.append(paymentData) 
+                    paymentData=[]
+
+            return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': paymentListData})
 
         paymentListData=[]
-        year = rentalInfo.startTime.strftime("%Y")
-        print("start at" + year)
-        first = True 
-                                                      
-        for payment in PaymentRecord:
-            paymentData={}
-            if payment.createdTime.strftime("%Y") > year:
-                year = payment.createdTime.strftime("%Y")
-                paymentListData.append(paymentData) 
-                first=True;
-            
-            if first:
-                paymentData['year'] = year
-                first=False;
-            
+                                            
+        for payment in PaymentRecord:            
             data = {}
             data['id']=payment.id
-            data['paymentTime']=payment.createdTime
+            data['paymentTime']=payment.paymentTime
             data['amount']=payment.amount
-            paymentData.append(paymentData) 
-
-        
+            paymentListData.append(data) 
+                
         return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': paymentListData})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
 #.strftime("%Y-%m-%d %H:%M")
-'''
+
 
 @csrf_exempt
 def getPaymentRecord(request):
     if request.method == 'GET':
         tenantId = request.GET.get('tenantId','')
-
-        
         tenant = Tenant.objects.filter(id=tenantId).first()
         PaymentRecord = Payment.objects.filter(tenant=tenant,type=2).order_by('-paymentTime')
     
