@@ -24,7 +24,7 @@ def createRecord(request):
         type = info.get('paymentType')
         date = info.get('paymentTime')
         amount = info.get('amount')
-
+    
         payment = Payment()
 
         if tenantId:
@@ -32,20 +32,21 @@ def createRecord(request):
             payment.tenant = tenant
         if houseId:
             house = House.objects.filter(id=houseId).first()
-            payment.hosue = house
+            payment.house = house
         if rentalInfoId:
             rentalInfo = RentalInfo.objects.filter(id=rentalInfoId).first()
             payment.rentalInfo = rentalInfo
         if type:
             payment.type = type
         if date:
-            payment.date = date
+            payment.createdTime = date
         if amount:
             payment.amount = amount
 
         payment.save()
+        data = model_to_dict(payment)
 
-        return UTF8JsonResponse({'errno':1001, 'msg': '成功添加缴费信息'})
+        return UTF8JsonResponse({'errno':1001, 'msg': '成功添加缴费信息','data':data})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
@@ -142,7 +143,7 @@ def updatePaymentStatus(request):
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
 
-
+'''
 @csrf_exempt
 def getPaymentRecord(request):
     if request.method == 'GET':
@@ -197,4 +198,27 @@ def getPaymentRecord(request):
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
 #.strftime("%Y-%m-%d %H:%M")
+'''
+
+@csrf_exempt
+def getPaymentRecord(request):
+    if request.method == 'GET':
+        tenantId = request.GET.get('tenantId','')
+        tenant = Tenant.objects.filter(id=tenantId).first()
+        PaymentRecord = Payment.objects.filter(tenant=tenant,type=2).order_by('-paymentTime')
+    
+        paymentListData=[]
+
+                                            
+        for payment in PaymentRecord:            
+            data = {}
+            data['id']=payment.id
+            data['paymentTime']=payment.paymentTime
+            data['amount']=payment.amount
+            paymentListData.append(data) 
+
         
+        return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': paymentListData})
+    else:
+        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
+#.strftime("%Y-%m-%d %H:%M")

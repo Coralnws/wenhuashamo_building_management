@@ -19,7 +19,7 @@ urlpatterns = [
 
     #Management Fee
     path('payment/createRecord', paymentManageApi.createRecord),
-    path('payment/deleteRecord', paymentManageApi.deleteRecord),
+    path('payment/delRecord', paymentManageApi.deleteRecord),
     path('payment/updateRecord', paymentManageApi.updateRecord),
     path('payment/updateStatus', paymentManageApi.updatePaymentStatus),
     path('payment/getPayment', paymentManageApi.getPaymentRecord),
