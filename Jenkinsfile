@@ -30,6 +30,7 @@ pipeline {
                     sh "chmod 755 /var/www/backup/pms_backend_${BUILD_NUMBER}.zip"
                 }
             }
+        }
 
         stage('Zip and Deploy New Code') {
             steps {
