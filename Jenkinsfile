@@ -22,8 +22,8 @@ pipeline {
         stage('Backup Existing Project') {
             steps {
                 script {
-                    def excludeStatic = fileExists('static') ? "-x static/*" : ""
-                    def excludeMedia = fileExists('media') ? "-x media/*" : ""
+                    def excludeStatic = fileExists('static') ? "-x static/" : ""
+                    def excludeMedia = fileExists('media') ? "-x media/" : ""
 
                     // Backup the existing project by zipping it to /var/www/backup
                     sh "zip -r /var/www/backup/pms_backend_${BUILD_NUMBER}.zip /var/www/pms_backend $excludeStatic $excludeMedia"
@@ -35,15 +35,15 @@ pipeline {
         stage('Zip and Deploy New Code') {
             steps {
                 script {
-                    def excludeStatic = fileExists('static') ? "-x static/*" : ""
-                    def excludeMedia = fileExists('media') ? "-x media/*" : ""
+                    def excludeStatic = fileExists('static') ? "-x static/" : ""
+                    def excludeMedia = fileExists('media') ? "-x media/" : ""
 
                     // Zip the new code from Jenkins workspace
                     sh "cd ${WORKSPACE} && zip -r /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip . $excludeStatic $excludeMedia"
                     sh "chmod 755 /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip"
 
                     // Unzip the new code to /var/www/pms_backend
-                    sh "unzip -q /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip -d /var/www/pms_backend $excludeStatic $excludeMedia"
+                    sh "unzip -qo /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip -d /var/www/pms_backend $excludeStatic $excludeMedia"
                 }
             }
         }
