@@ -5,6 +5,7 @@ from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 
 from api.models import Tenant
+from api.utils import UTF8JsonResponse
 
 
 def add_tenant(request):
@@ -21,17 +22,19 @@ def add_tenant(request):
         tenant.save()
 
         # 返回成功信息
-        return HttpResponse('Tenant added successfully!')
+        return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant added successfully!'})
     else:
-        return HttpResponse('Tenant added failed!')
+        return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
 
 def delete_tenant(request):
-    # 根据客户id获取客户对象
-    company = request.GET.get('company')
-    tenant = Tenant.objects.get(company=company)
-    tenant.delete()
-    return HttpResponse('Tenant deleted successfully!')
+    if request.method == 'POST':
+        company = request.GET.get('company')
+        tenant = Tenant.objects.get(company=company)
+        tenant.delete()
+        return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant deleted successfully!'})
+    else:
+        return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
 
 def update_tenant(request):
@@ -48,7 +51,9 @@ def update_tenant(request):
         tenant.save()
 
         # 返回成功信息
-        return HttpResponse('tenant updated successfully!')
+        return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant updated successfully!'})
+    else:
+        return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
 
 def view_tenant(request):
