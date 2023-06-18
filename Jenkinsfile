@@ -41,6 +41,14 @@ pipeline {
 
                     // Unzip the new code to /var/www/pms_backend
                     sh "unzip -qo /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip -d /var/www/pms_backend"
+
+                    // remove the code, no need anymore
+                    sh "rm /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip"
+
+                    // give permission to 755
+                    sh "chown -R jenkins:jenkins /var/www/pms_backend"
+                    sh "chmod -R 755 /var/www/pms_backend"
+
                 }
             }
         }
@@ -61,6 +69,7 @@ pipeline {
             }
         }
 
+        // Scanning SonarQube for Code Smell
         stage('SonarQube Analysis') {
             steps {
                 script {
