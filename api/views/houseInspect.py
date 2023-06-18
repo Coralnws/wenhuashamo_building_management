@@ -8,7 +8,7 @@ from api.utils import UTF8JsonResponse
 def house_list_by_floor(request):
     if request.method == 'POST':
         floor = request.GET.get('floor')
-        if floor == 0:
+        if floor == '0':
             houses = House.objects.all()
         else:
             houses = House.objects.all().filter(floor=floor)
