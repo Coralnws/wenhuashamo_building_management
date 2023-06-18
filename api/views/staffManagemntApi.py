@@ -35,11 +35,12 @@ def createStaff(request):
         realname_exist = CustomUser.objects.filter(realname=name).count()
         username_exist = CustomUser.objects.filter(username=name).count()
         username = name
-        if realname_exist == username_exist:
-            username  = username+"_"+str(realname_exist)
-        if username_exist < realname_exist:
-            if username_exist != 0:
+        if realname_exist > 0 or username_exist:
+            if realname_exist == username_exist:
                 username  = username+"_"+str(realname_exist)
+            if username_exist < realname_exist:
+                if username_exist != 0:
+                    username  = username+"_" + str(realname_exist)
         #创建账号
         
         if position == '2':
@@ -95,11 +96,12 @@ def updateStaff(request):
                 realname_exist = CustomUser.objects.filter(realname=name).count()
                 username_exist = CustomUser.objects.filter(username=name).count()
                 username = name
-                if realname_exist == username_exist:
-                    username  = username+"_"+str(realname_exist)
-                if username_exist < realname_exist:
-                    if username_exist != 0:
+                if realname_exist > 0 or username_exist:
+                    if realname_exist == username_exist:
                         username  = username+"_"+str(realname_exist)
+                    if username_exist < realname_exist:
+                        if username_exist != 0:
+                            username  = username+"_"+str(realname_exist)
                 user.username = username
             if contact:
                 user.contactNumber = contact
