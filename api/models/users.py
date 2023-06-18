@@ -84,7 +84,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(blank=True)
     bio = models.TextField(max_length=500, default = "这个人很懒，这么久都还没填写信息")
     gender = models.CharField(max_length=10, choices=GENDER, default=GENDER[0][0])
-    m_type = models.CharField(max_length=10, choices=M_TYPE, default=M_TYPE[0][0])
+    m_type = models.CharField(max_length=10)
     m_status = models.CharField(max_length=10, choices=M_STATUS, default=M_STATUS[0][0])
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
