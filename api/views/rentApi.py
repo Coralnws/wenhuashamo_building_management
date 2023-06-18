@@ -6,23 +6,22 @@ from django.views.decorators.csrf import csrf_exempt
 from ..utils import *
 
 
-
-REQUEST_USER_ID = 'user_ID'
+REQUEST_RENTAL_ID = 'rental_id'
+REQUEST_USER_ID = 'user_id'
 REQUEST_IS_DELETE = 'is_delete'
 REQUEST_COM_NAME = 'com_name'
-REQUEST_LEGAL_PERSON = 'legal_name'
+REQUEST_LEGAL_NAME = 'legal_name'
 REQUEST_USERNAME = 'username'
 REQUEST_PHONE = 'phone'
 REQUEST_RENT_DATA = 'rent_data'
-
-REQUEST_ROOM = 'room'
+REQUEST_ROOM_ID = 'room_id'
 REQUEST_DATE_BEGIN = 'date_begin'
 REQUEST_DATE_END = 'date_end'
 REQUEST_DATE_SIGN = 'date_sign'
 REQUEST_IS_PAID_MANAGEMENT = 'is_paid_management'
 REQUEST_DATE_PAID_MANAGEMENT = 'date_paid_management'
-
-
+REQUEST_IS_PAID_RENTAL = 'is_paid_rental'
+REQUEST_DATE_PAID_RENTAL = 'date_paid_rental'
 
 
 @csrf_exempt
@@ -34,9 +33,9 @@ def rentCreate(request):
     
     user_ID = info.get(REQUEST_USER_ID)
     room_ID = info.get(REQUEST_ROOM)
-    rent_start_time = info.get(REQUEST_DATE_BEGIN)
-    rent_end_time = info.get(REQUEST_DATE_END)
-    signing_time = info.get(REQUEST_DATE_SIGN)
+    date_begin = info.get(REQUEST_DATE_BEGIN)
+    date_end = info.get(REQUEST_DATE_END)
+    date_sign = info.get(REQUEST_DATE_SIGN)
     ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
     date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
@@ -50,11 +49,11 @@ def rentCreate(request):
     rentalInfo = RentalInfo()
     rentalInfo.house = room_exist
     rentalInfo.tenant = tenant_exist
-    rentalInfo.createdTime = signing_time
-    rentalInfo.startTime = rent_start_time
-    rentalInfo.endTime = rent_end_time
-    rentalInfo.lastPay = pay_time
-    rentalInfo.ispaid_rental = if_pay
+    rentalInfo.createdTime = date_sign
+    rentalInfo.startTime = date_begin
+    rentalInfo.endTime = date_end
+    rentalInfo.ispaid_management = ispaid_management
+    rentalInfo.paidManagementDate = date_paid_management
     rentalInfo.save()
 
     return return_response(9999, '租赁信息新建成功', rentalInfo)
@@ -63,9 +62,9 @@ def rentCreate(request):
 '''s
     @param:
     - user_ID:'1', //用户ID
-    - rent_start_time:'', //租赁开始时间
-    - rent_end_time:'', //租赁结束时间
-    - signing_time:'', // 签约时间
+    - date_begin:'', //租赁开始时间
+    - date_end:'', //租赁结束时间
+    - date_sign:'', // 签约时间
     - if_pay:'', //是否缴纳物业费
     - pay_time:'' //物业费缴纳时间
 '''
@@ -74,7 +73,7 @@ def rentDetailRead(request):
     if request.method != GETMETHOD:
         return return_response(100001, '请求格式有误，不是GET')
 
-    rental_ID = request.GET.get('rental_ID', '')
+    rental_ID = request.GET.get(REQUEST_RENTAL_ID, '')
 
     rentalInfo = RentalInfo.objects.filter(id=rental_ID).first()
 
@@ -82,48 +81,69 @@ def rentDetailRead(request):
         return return_response(99999, '租赁信息不存在')
 
     rentalDetailInfo = {}
-    rentalDetailInfo['rental_ID'] = rentalInfo.id
-    rentalDetailInfo['rent_start_time'] = rentalInfo.startTime
-    rentalDetailInfo['rent_end_time'] = rentalInfo.endTime
-    rentalDetailInfo['']
+    rentalDetailInfo[REQUEST_RENTAL_ID] = rentalInfo.id
+    rentalDetailInfo[REQUEST_DATE_BEGIN] = rentalInfo.startTime
+    rentalDetailInfo[REQUEST_DATE_END] = rentalInfo.endTime
+    rentalDetailInfo[REQUEST_DATE_SIGN] = rentalInfo.createdTime
+    rentalDetailInfo[REQUEST_IS_PAID_MANAGEMENT] = rentalInfo.ispaid_management
+    rentalDetailInfo[REQUEST_DATE_PAID_MANAGEMENT] = rentalInfo.paidManagementDate
+    rentalDetailInfo[REQUEST_IS_PAID_RENTAL] = rentalInfo.ispaid_rental
+    rentalDetailInfo[REQUEST_DATE_PAID_RENTAL] = rentalInfo.paidRentalDate
+    rentalDetailInfo[REQUEST_ROOM_ID] = rentalInfo.house.roomNumber
+    rentalDetailInfo[REQUEST_USERNAME] = rentalInfo.tenant.username
+    rentalDetailInfo[REQUEST_LEGAL_NAME] = rentalInfo.tenant.real_name
+    rentalDetailInfo[REQUEST_COM_NAME] = rentalInfo.tenant.company
+    rentalDetailInfo[REQUEST_PHONE] = rentalInfo.tenant.contactNumber
+
+    return return_response(9999, '租赁信息修改成功', rentalDetailInfo)
 
 
-    info = request.POST.dict()
 
-    rental_ID = info.get('rental_ID')
-    user_ID = info.get('user_ID')
-    rent_start_time = info.get('rent_start_time')
-    rent_end_time = info.get('rent_end_time')
-    signing_time = info.get('signing_time')
-    if_pay = info.get('if_pay')
-    pay_time = info.get('pay_time')
+@csrf_exempt
+def rentUserDetailRead(request):
+    if request.method != GETMETHOD:
+        return return_response(100001, '请求格式有误，不是GET')
+
+    user_ID = request.GET.get(REQUEST_USER_ID, '')
 
     tenant_exist = Tenant.objects.filter(id=user_ID).first()
+    
+    if tenant_exist is None:
+        return return_response(99999, '客户不存在')
 
+    userLevelRentalDetail = {}
+    userLevelRentalDetail[REQUEST_USERNAME] = tenant_exist.username
+    userLevelRentalDetail[REQUEST_LEGAL_NAME] = tenant_exist.real_name
+    userLevelRentalDetail[REQUEST_COM_NAME] = tenant_exist.company
+    userLevelRentalDetail[REQUEST_PHONE] = tenant_exist.contactNumber
 
-    rentalInfo = RentalInfo.objects.filter(id=rental_ID).first()
+    rentalInfos = RentalInfo.objects.filter(tenant=tenant_exist)
 
-    if tenant_exist is None or rentalInfo is None:
-        return return_response(9999, '客户或租赁信息不存在')
+    rent_data_list = []
+    for rent in rentalInfos:
+        rent_data = {}
+        rent_data[REQUEST_RENTAL_ID] = rent.id
+        rent_data[REQUEST_DATE_BEGIN] = rent.startTime
+        rent_data[REQUEST_DATE_END] = rent.endTime
+        rent_data[REQUEST_DATE_SIGN] = rent.createdTime
+        rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
+        rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate
+        rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
+        rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate
+        rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
+        rent_data_list.append(rent_data)
 
+    userLevelRentalDetail[REQUEST_RENT_DATA] = rent_data_list
 
-    rentalInfo.tenant = tenant_exist
-    rentalInfo.startTime = rent_start_time
-    rentalInfo.endTime = rent_end_time
-    rentalInfo.createdTime = signing_time
-    rentalInfo.ispaid_rental = if_pay
-    rentalInfo.lastPay = pay_time
-    rentalInfo.save()
-
-    return return_response(9999, '租赁信息修改成功', rentalInfo)
+    return return_response(9999, '租赁信息修改成功', userLevelRentalDetail)
 
 
 '''s
     @param:
     - user_ID:'1', //用户ID
-    - rent_start_time:'', //租赁开始时间
-    - rent_end_time:'', //租赁结束时间
-    - signing_time:'', // 签约时间
+    - date_begin:'', //租赁开始时间
+    - date_end:'', //租赁结束时间
+    - date_sign:'', // 签约时间
     - if_pay:'', //是否缴纳物业费
     - pay_time:'' //物业费缴纳时间
 '''
@@ -131,16 +151,16 @@ def rentDetailRead(request):
 def rentUpdate(request):
     if request.method != POSTMETHOD:
         return return_response(100001, '请求格式有误，不是POST')
-        
+
     info = request.POST.dict()
 
-    rental_ID = info.get('rental_ID')
-    user_ID = info.get('user_ID')
-    rent_start_time = info.get('rent_start_time')
-    rent_end_time = info.get('rent_end_time')
-    signing_time = info.get('signing_time')
-    if_pay = info.get('if_pay')
-    pay_time = info.get('pay_time')
+    rental_ID = info.get(REQUEST_RENTAL_ID)
+    user_ID = info.get(REQUEST_USER_ID)
+    date_begin = info.get(REQUEST_DATE_BEGIN)
+    date_end = info.get(REQUEST_DATE_END)
+    date_sign = info.get(REQUEST_DATE_SIGN)
+    ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
+    date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
     tenant_exist = Tenant.objects.filter(id=user_ID).first()
 
@@ -152,18 +172,14 @@ def rentUpdate(request):
 
 
     rentalInfo.tenant = tenant_exist
-    rentalInfo.startTime = rent_start_time
-    rentalInfo.endTime = rent_end_time
-    rentalInfo.createdTime = signing_time
-    rentalInfo.ispaid_rental = if_pay
-    rentalInfo.lastPay = pay_time
+    rentalInfo.createdTime = date_sign
+    rentalInfo.startTime = date_begin
+    rentalInfo.endTime = date_end
+    rentalInfo.ispaid_management = ispaid_management
+    rentalInfo.paidManagementDate = date_paid_management
     rentalInfo.save()
 
     return return_response(9999, '租赁信息修改成功', rentalInfo)
-
-
-
-
 
 
 '''

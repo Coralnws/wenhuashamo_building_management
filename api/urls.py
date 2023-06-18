@@ -1,5 +1,6 @@
 from django.urls import path
 
+from api.views import rentApi
 from api.views import userApi
 from api.views import staffManagemntApi
 from api.views import paymentManageApi
@@ -12,6 +13,11 @@ urlpatterns = [
     path('user/login', userApi.login),
     path('user/logout', userApi.logout),
 
+
+    path('rent/create', rentApi.rentCreate),
+    path('rent/detailRead', rentApi.rentDetailRead),
+    path('rent/update', rentApi.rentUpdate),
+    path('rent/user/detail', rentApi.rentUserDetailRead),
 
     #Staff Management
     path('staff/createStaff', staffManagemntApi.createStaff),
