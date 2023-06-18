@@ -47,7 +47,7 @@ pipeline {
 
         // This stage is needed when want to rebuild the docker image
         // example: need to run the Dockerfile (i.e: run pip install and so on)
-        stage('Build and deploy Docker container') {
+        stage('Build and Deploy Docker Container') {
             steps {
                 // Build the Docker image
                 sh "docker build -t pms_backend:${BUILD_NUMBER} /var/www/pms_backend"
@@ -58,6 +58,22 @@ pipeline {
 
                 // Run the new container
                 sh "docker run -d -p 8000:8000 -v /var/www/pms_backend:/code pms_backend:${BUILD_NUMBER}"
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarQube Scanner'
+                    def scannerCmd = "${scannerHome}/bin/sonar-scanner"
+                    sh """
+                        ${scannerCmd} \
+                        -Dsonar.login=dd13ebb79932f3b100f79a1d492482175a126636 \
+                        -Dsonar.projectKey=prj_2023_group11_pms_backend \
+                        -Dsonar.projectName=prj_2023_group11_pms_backend \
+                        -Dsonar.host.url=http://10.134.136.70:9000
+                    """
+                }
             }
         }
     }
