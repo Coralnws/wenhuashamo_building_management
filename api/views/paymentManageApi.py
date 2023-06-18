@@ -204,6 +204,8 @@ def getPaymentRecord(request):
 def getPaymentRecord(request):
     if request.method == 'GET':
         tenantId = request.GET.get('tenantId','')
+
+        
         tenant = Tenant.objects.filter(id=tenantId).first()
         PaymentRecord = Payment.objects.filter(tenant=tenant,type=2).order_by('-paymentTime')
     
