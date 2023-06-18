@@ -7,6 +7,13 @@ from api.models.users import CustomUser
 
 from backend import settings
 
+GETMETHOD = 'GET'
+POSTMETHOD = 'POST'
+PUTMETHOD = 'PUT'
+DELETEMETHOD = 'DELETE'
+
+
+
 #send_smtp(newUser, request, newToken, "Activate Account", "register_email.txt", True)
 def send_smtp(user,scholar,request,code,subject, fileName):
     context = {
@@ -57,6 +64,10 @@ def get_auth_user(uid):
     if user:
         return user
     return None
+
+# Centralized return format
+def return_response(code, message, data = []):
+    return UTF8JsonResponse({'errno': code, 'msg': message, 'data': data})
 
 class UTF8JsonResponse(JsonResponse):
     def __init__(self, *args, json_dumps_params=None, **kwargs):
