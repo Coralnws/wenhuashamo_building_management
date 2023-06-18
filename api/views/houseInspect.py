@@ -6,7 +6,6 @@ from api.models import House
 def house_list(request):
     houses = House.objects.all()
 
-    # 计算每层房间的状态信息
     floors = {}
     for house in houses:
         if house.floor not in floors:
@@ -30,6 +29,3 @@ def house_list(request):
     return render(request, 'house_list.html', {'houses': houses, 'floors': floors})
 
 
-def house_detail(request, pk):
-    house = get_object_or_404(House, pk=pk)
-    return render(request, 'house_detail.html', {'house': house})
