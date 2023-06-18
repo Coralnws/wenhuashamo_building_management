@@ -21,7 +21,7 @@ def login(request):
     currentEmailUser = CustomUser.objects.filter(email=username).first()
     currentPhoneUser = CustomUser.objects.filter(contactNumber=username).first()
 
-    if currentUser and currentEmailUser and currentPhoneUser is None:
+    if currentUser is None and currentEmailUser is None and currentPhoneUser is None:
         return UTF8JsonResponse({'errno': 100002, 'msg': '用户不存在'})
 
     if password != currentUser.password:
