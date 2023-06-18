@@ -25,6 +25,7 @@ REQUEST_DATE_PAID_MANAGEMENT = 'date_paid_management'
 REQUEST_IS_PAID_RENTAL = 'is_paid_rental'
 REQUEST_DATE_PAID_RENTAL = 'date_paid_rental'
 
+
 @csrf_exempt
 def add_tenant(request):
     if request.method == 'POST':
@@ -44,6 +45,7 @@ def add_tenant(request):
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
+
 @csrf_exempt
 def delete_tenant(request):
     if request.method == 'POST':
@@ -53,6 +55,7 @@ def delete_tenant(request):
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant deleted successfully!'})
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
+
 
 @csrf_exempt
 def update_tenant(request):
@@ -73,6 +76,7 @@ def update_tenant(request):
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
+
 @csrf_exempt
 def view_tenant(request):
     # if request.method == 'POST':
@@ -86,35 +90,46 @@ def view_tenant(request):
     if request.method != 'POST':
         return UTF8JsonResponse(100001, '请求格式有误，不是GET')
 
-    user_ID = request.GET.get('user_id')
+    # user_ID = request.GET.get('user_id')
+    #
+    # tenant_exist = Tenant.objects.filter(id=user_ID).first()
+    #
+    # if tenant_exist is None:
+    #     return UTF8JsonResponse(99999, '客户不存在')
+    page = request.GET.get('page')
+    num = request.GET.get('num')
+    page = int(page)
+    num = int(num)
+    left = (page-1)*num
+    right = page*num-1
+    tenants = Tenant.objects.all()[left:right]
 
-    tenant_exist = Tenant.objects.filter(id=user_ID).first()
+    tenantDetail = []
+    for tenant in tenants:
+        userLevelRentalDetail = {}
+        userLevelRentalDetail[REQUEST_USERNAME] = tenant.username
+        userLevelRentalDetail[REQUEST_LEGAL_NAME] = tenant.real_name
+        userLevelRentalDetail[REQUEST_COM_NAME] = tenant.company
+        userLevelRentalDetail[REQUEST_PHONE] = tenant.contactNumber
 
-    if tenant_exist is None:
-        return UTF8JsonResponse(99999, '客户不存在')
+        rentalInfos = RentalInfo.objects.filter(tenant=tenant)
 
-    userLevelRentalDetail = {}
-    userLevelRentalDetail[REQUEST_USERNAME] = tenant_exist.username
-    userLevelRentalDetail[REQUEST_LEGAL_NAME] = tenant_exist.real_name
-    userLevelRentalDetail[REQUEST_COM_NAME] = tenant_exist.company
-    userLevelRentalDetail[REQUEST_PHONE] = tenant_exist.contactNumber
+        rent_data_list = []
+        for rent in rentalInfos:
+            rent_data = {}
+            rent_data[REQUEST_RENTAL_ID] = rent.id
+            rent_data[REQUEST_DATE_BEGIN] = rent.startTime
+            rent_data[REQUEST_DATE_END] = rent.endTime
+            rent_data[REQUEST_DATE_SIGN] = rent.createdTime
+            rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
+            rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate
+            rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
+            rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate
+            rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
+            rent_data_list.append(rent_data)
 
-    rentalInfos = RentalInfo.objects.filter(tenant=tenant_exist)
+        userLevelRentalDetail[REQUEST_RENT_DATA] = rent_data_list
 
-    rent_data_list = []
-    for rent in rentalInfos:
-        rent_data = {}
-        rent_data[REQUEST_RENTAL_ID] = rent.id
-        rent_data[REQUEST_DATE_BEGIN] = rent.startTime
-        rent_data[REQUEST_DATE_END] = rent.endTime
-        rent_data[REQUEST_DATE_SIGN] = rent.createdTime
-        rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
-        rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate
-        rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
-        rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate
-        rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
-        rent_data_list.append(rent_data)
+        tenantDetail.append(userLevelRentalDetail)
 
-    userLevelRentalDetail[REQUEST_RENT_DATA] = rent_data_list
-
-    return UTF8JsonResponse({'errno': 1001, 'msg': '返回员工列表成功', 'data': userLevelRentalDetail})
+    return UTF8JsonResponse({'errno': 1001, 'msg': '返回员工列表成功', 'data': tenantDetail})

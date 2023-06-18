@@ -2,7 +2,7 @@
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 
-from api.models import House
+from api.models import House, RentalInfo, Tenant
 from api.utils import UTF8JsonResponse
 
 @csrf_exempt
@@ -20,8 +20,20 @@ def house_list_by_floor(request):
             houseData['id'] = house.id
             houseData['room_number'] = house.roomNumber
             houseData['status'] = house.status
-            # houseData['rental_info'] = house.rentalInfo
+            rentalInfos = RentalInfo.objects.filter(house=house)
 
+            rent_data_list = []
+
+            for rent in rentalInfos:
+                rent_data = {}
+                rent_data['start_time'] = rent.starttime
+                rent_data['end_time'] = rent.endTime
+                rentTenant = Tenant.objects.filter(tenant=rent.tenant)
+                rent_data['company'] = rentTenant.company
+                rent_data['real_name'] = rentTenant.real_name
+                rent_data_list.append(rent_data)
+
+            houseData['rent_data'] = rent_data_list
             houseList.append(houseData)
 
         return UTF8JsonResponse({'errno': 1001, 'msg': '返回房间列表成功', 'data': houseList})
