@@ -158,9 +158,8 @@ def getStaff(request):
             staffData['name']=staff.realname
             staffData['contact'] = staff.contactNumber
             staffData['position']=staff.position
-            if staff.position == '2':
-                staffData['type'] = staff.m_type
-                staffData['status'] = staff.m_status
+            staffData['type'] = staff.m_type
+            staffData['status'] = staff.m_status
             return UTF8JsonResponse({'errno':1001, 'msg': '返回员工信息成功', 'data': staffData})
 
         staffList = CustomUser.objects.filter(Q(position='2') | Q(position='3') | Q(position='4')).order_by('-position')
@@ -173,9 +172,8 @@ def getStaff(request):
             staffData['name']=staff.realname
             staffData['contact'] = staff.contactNumber
             staffData['position']=staff.position
-            if staff.position == '2':
-                staffData['type'] = staff.m_type
-                staffData['status'] = staff.m_status
+            staffData['type'] = staff.m_type
+            staffData['status'] = staff.m_status
 
             staffListData.append(staffData)
 
