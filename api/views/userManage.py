@@ -51,3 +51,37 @@ def logout(request):
         return UTF8JsonResponse({'errno': 100001, 'msg': '请先登录'})
     del request.session['uid']
     return UTF8JsonResponse({'errno': 100000, 'msg': '登出成功'})
+
+@csrf_exempt
+def logout(request):
+    if request.session.get('uid') is None:
+        return UTF8JsonResponse({'errno': 100001, 'msg': '请先登录'})
+    del request.session['uid']
+    return UTF8JsonResponse({'errno': 100000, 'msg': '登出成功'})
+
+
+
+@csrf_exempt
+def changePassword(request):
+    if request.method != 'POST':
+        return UTF8JsonResponse({'errno': 800002, 'msg': '请求格式有误，不是POST'})
+    uid = request.session.get('uid')
+    if uid is None:
+        return UTF8JsonResponse({'errno': 800001, 'msg': '当前cookie为空，未登录，请先登录'})
+    try:
+        info = request.POST.dict()
+        old_password = info.get('old_password')
+        new_password = info.get('new_password')
+    except Exception as e:
+        return UTF8JsonResponse({'errno': 800004, 'msg': '请求数据字段错误'+str(e.args)})
+
+    user = CustomUser.objects.filter(id=uid, password=make_password(old_password,"a","pbkdf2_sha1")).first()
+    if user:
+        user.password = make_password(new_password,"a","pbkdf2_sha1")
+        user.save()
+        return UTF8JsonResponse({'errno': 900020, 'msg': '修改密码成功'})
+    else:
+        return UTF8JsonResponse({'errno': 900021, 'msg': '密码错误'})
+
+
+
