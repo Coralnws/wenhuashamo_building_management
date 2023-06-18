@@ -15,7 +15,7 @@ COPY . code
 WORKDIR /code
 
 # Set environment variables
-ENV DJANGO_SETTINGS_MODULE=yueying.settings
+ENV DJANGO_SETTINGS_MODULE=backend.settings
 ENV PYTHONUNBUFFERED=1
 
 # Expose port 8000
