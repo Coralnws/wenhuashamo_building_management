@@ -1,7 +1,7 @@
 from django.urls import path
 
 from api.views import userManage
-from api.views import managerApi
+from api.views import staffManagemntApi
 from api.views import paymentManageApi
 
 urlpatterns = [
@@ -12,12 +12,16 @@ urlpatterns = [
 
 
     #Staff Management
-    path('staff/createStaff', managerApi.createStaff),
-    path('staff/updateStaff', managerApi.updateStaff),
-    path('staff/delStaff', managerApi.deleteStaff),
-    path('staff/getStaff', managerApi.getStaff),
+    path('staff/createStaff', staffManagemntApi.createStaff),
+    path('staff/updateStaff', staffManagemntApi.updateStaff),
+    path('staff/delStaff', staffManagemntApi.deleteStaff),
+    path('staff/getStaff', staffManagemntApi.getStaff),
 
     #Management Fee
-
+    path('payment/createRecord', paymentManageApi.createRecord),
+    path('payment/delRecord', paymentManageApi.deleteRecord),
+    path('payment/updateRecord', paymentManageApi.updateRecord),
+    path('payment/updateStatus', paymentManageApi.updatePaymentStatus),
+    path('payment/getPayment', paymentManageApi.getPaymentRecord),
 
 ]

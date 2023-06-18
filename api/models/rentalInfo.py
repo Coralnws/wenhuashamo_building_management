@@ -12,10 +12,10 @@ class RentalInfo(models.Model):
     endTime = models.DateTimeField()
     fee = models.IntegerField()  #租赁费
     nextRentalDeadline = models.DateTimeField(null=True)   #租赁费截止 每次付款更新截止日期，若截止日期 < 现在则欠费
-    nextManagementFeeDeadline = models.DateTimeField()   #物业费截止
-    #lastPay = models.DateTimeField()
-    unpaid_rental = models.BooleanField(default=False)
-    unpaid_management = models.BooleanField(default=False)
+    nextManagementFeeDeadline = models.DateTimeField(null=True)   #物业费截止
+    lastPay = models.DateTimeField(null=True)
+    ispaid_rental = models.BooleanField(default=False)
+    ispaid_management = models.BooleanField(default=False)
 
     createdAt = models.DateTimeField(default=timezone.now)
     updatedAt = models.DateTimeField(default=timezone.now)

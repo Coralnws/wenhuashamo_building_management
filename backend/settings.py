@@ -87,14 +87,6 @@ AUTH_USER_MODEL = 'api.CustomUser'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # 选择数据库类型，如mysql
-        'NAME': env('DB_NAME'),  # 数据库名字
-        'USER': env('DB_USER'),  # 数据库的登录用户名
-        'PASSWORD': env('DB_PASSWORD'),  # 密码
-        'HOST': env('DB_HOST'),  # 数据库所在主机
-        'PORT': env('DB_PORT'),
-    },
-    'sqlite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
@@ -178,32 +170,32 @@ SESSION_CACHE_ALIAS = "default"
 
 # SESSION_CACHE_ALIAS = "session"
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/0",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {"max_connections": 100,},
-            "PASSWORD": env('REDIS_PASSWORD'),
-        },
-    },
-    "session": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/0",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {"max_connections": 100,},
-            "PASSWORD": env('REDIS_PASSWORD'),
-        },
-    },
-    "history": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {"max_connections": 100, },
-            "PASSWORD": env('REDIS_PASSWORD'),
-        },
-    },
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/0",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             "CONNECTION_POOL_KWARGS": {"max_connections": 100,},
+#             "PASSWORD": env('REDIS_PASSWORD'),
+#         },
+#     },
+#     "session": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/0",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             "CONNECTION_POOL_KWARGS": {"max_connections": 100,},
+#             "PASSWORD": env('REDIS_PASSWORD'),
+#         },
+#     },
+#     "history": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             "CONNECTION_POOL_KWARGS": {"max_connections": 100, },
+#             "PASSWORD": env('REDIS_PASSWORD'),
+#         },
+#     },
+# }

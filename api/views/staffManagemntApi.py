@@ -35,11 +35,12 @@ def createStaff(request):
         realname_exist = CustomUser.objects.filter(realname=name).count()
         username_exist = CustomUser.objects.filter(username=name).count()
         username = name
-        if realname_exist == username_exist:
-            username  = username+"_"+str(realname_exist)
-        if username_exist < realname_exist:
-            if username_exist != 0:
+        if realname_exist > 0 or username_exist:
+            if realname_exist == username_exist:
                 username  = username+"_"+str(realname_exist)
+            if username_exist < realname_exist:
+                if username_exist != 0:
+                    username  = username+"_" + str(realname_exist)
         #创建账号
         
         if position == '2':
@@ -95,11 +96,12 @@ def updateStaff(request):
                 realname_exist = CustomUser.objects.filter(realname=name).count()
                 username_exist = CustomUser.objects.filter(username=name).count()
                 username = name
-                if realname_exist == username_exist:
-                    username  = username+"_"+str(realname_exist)
-                if username_exist < realname_exist:
-                    if username_exist != 0:
+                if realname_exist > 0 or username_exist:
+                    if realname_exist == username_exist:
                         username  = username+"_"+str(realname_exist)
+                    if username_exist < realname_exist:
+                        if username_exist != 0:
+                            username  = username+"_"+str(realname_exist)
                 user.username = username
             if contact:
                 user.contactNumber = contact
@@ -163,16 +165,7 @@ def getStaff(request):
 
         staffList = CustomUser.objects.filter(Q(position='2') | Q(position='3') | Q(position='4')).order_by('-position')
         #ordered = sorted(staffList, key=operator.attrgetter('position'),reverse=False)
-        '''
-        #根据position顺序排列
-        for staff in staffList:
-            if staff.position == '4':
-                staff.lc = 0;
-            elif staff.postion == '3':
-                staff.lc = 1;
-            elif staff.postion == '2':
-                staff.lc =  2
-         '''       
+
         staffListData=[]
         for staff in staffList:
             staffData={}
