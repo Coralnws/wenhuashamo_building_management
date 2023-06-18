@@ -1,4 +1,3 @@
-
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 
@@ -26,9 +25,9 @@ def house_list_by_floor(request):
 
             for rent in rentalInfos:
                 rent_data = {}
-                rent_data['start_time'] = rent.starttime
+                rent_data['start_time'] = rent.startTime
                 rent_data['end_time'] = rent.endTime
-                rentTenant = Tenant.objects.filter(tenant=rent.tenant)
+                rentTenant = Tenant.objects.filter(id=rent.tenant.id).first()
                 rent_data['company'] = rentTenant.company
                 rent_data['real_name'] = rentTenant.real_name
                 rent_data_list.append(rent_data)
