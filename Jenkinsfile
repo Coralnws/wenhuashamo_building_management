@@ -64,10 +64,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    def scannerHome = tool 'SonarQube Scanner'
-                    def scannerCmd = "${scannerHome}/bin/sonar-scanner"
                     sh """
-                        ${scannerCmd} \
+                        /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube/bin/sonar-scanner \
                         -Dsonar.login=dd13ebb79932f3b100f79a1d492482175a126636 \
                         -Dsonar.projectKey=prj_2023_group11_pms_backend \
                         -Dsonar.projectName=prj_2023_group11_pms_backend \
