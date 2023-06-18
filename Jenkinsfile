@@ -70,8 +70,8 @@ pipeline {
                         -Dsonar.projectKey=prj_2023_group11_pms_backend \
                         -Dsonar.projectName=prj_2023_group11_pms_backend \
                         -Dsonar.host.url=http://10.134.136.70:9000 \
-                        -Dsonar.sources=${$WORKSPACE} \
-                        -Dsonar.projectBaseDir=${WORKSPACE} \
+                        -Dsonar.sources=/var/lib/jenkins/workspace/pms_backend_docker_pipline \
+                        -Dsonar.projectBaseDir=/var/lib/jenkins/workspace/pms_backend_docker_pipline \
                         -Dsonar.exclusions=**/static/**, **/tests/**, **/venv/**, **/migrations/** \
                     """
                 }
