@@ -1,6 +1,8 @@
 import json
 
-from django.http import HttpResponse
+from django.core import serializers
+from django.forms import model_to_dict
+from django.http import HttpResponse, JsonResponse
 
 from api.models import Tenant
 
@@ -50,6 +52,8 @@ def update_tenant(request):
 
 
 def view_tenant(request):
-    company = request.GET.get('company')
-    tenant = Tenant.objects.get(company=company)
-    return tenant
+    if request.method == 'POST':
+        company = request.GET.get('company')
+        tenant = Tenant.objects.get(company=company)
+        res = model_to_dict(tenant)
+        return JsonResponse(res)
