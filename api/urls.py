@@ -1,6 +1,6 @@
 from django.urls import path
 
-from api.views import userManage
+from api.views import userApi
 from api.views import staffManagemntApi
 from api.views import paymentManageApi
 from api.views.houseInspect import house_list_by_floor
@@ -9,8 +9,8 @@ from api.views.messageManage import add_tenant, delete_tenant, update_tenant, vi
 urlpatterns = [
 
     # User Authentication
-    path('user/login', userManage.login),
-    path('user/logout', userManage.logout),
+    path('user/login', userApi.login),
+    path('user/logout', userApi.logout),
 
 
     #Staff Management

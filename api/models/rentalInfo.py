@@ -10,8 +10,8 @@ class RentalInfo(models.Model):
     createdTime = models.DateTimeField(default=timezone.now)
     startTime = models.DateTimeField()
     endTime = models.DateTimeField()
-    rental_fee = models.IntegerField()  #租赁费
-    management_fee = models.IntegerField()  #物业费
+    rental_fee = models.IntegerField(default=0)  #租赁费
+    management_fee = models.IntegerField(default=0)  #物业费
     nextRentalDeadline = models.DateTimeField(null=True)   #租赁费截止 每次付款更新截止日期，若截止日期 < 现在则欠费
     nextManagementFeeDeadline = models.DateTimeField(null=True)   #物业费截止
     paidRentalDate = models.DateTimeField(null=True)
