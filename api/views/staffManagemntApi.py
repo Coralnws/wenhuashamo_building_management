@@ -47,7 +47,7 @@ def createStaff(request):
             # if(user.position != '4' and user.position != '3'):
             #     return UTF8JsonResponse({'errno': 3001, 'msg': '无权限添加维修人员'})
             type = request.POST.get('type')
-            NewMaintenance = CustomUser(username=username,realname=name,position=position,contactNumber=contact,m_type=type,m_status='0')
+            NewMaintenance = CustomUser(username=username,realname=name,position=position,contactNumber=contact,m_type=type,m_status='1')
             NewMaintenance.set_password("wenhuashamo123.")
             NewMaintenance.save()
         
