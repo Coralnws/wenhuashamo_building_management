@@ -57,7 +57,7 @@ pipeline {
                 sh "docker rm pms_backend || true"
 
                 // Run the new container
-                sh "docker run -d -p 8000:8000 -v code:/var/www/pms_backend pms_backend:${BUILD_NUMBER}"
+                sh "docker run -d -p 8000:8000 -v /var/www/pms_backend:/code pms_backend:${BUILD_NUMBER}"
             }
         }
     }
