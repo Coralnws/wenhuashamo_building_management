@@ -163,16 +163,7 @@ def getStaff(request):
 
         staffList = CustomUser.objects.filter(Q(position='2') | Q(position='3') | Q(position='4')).order_by('-position')
         #ordered = sorted(staffList, key=operator.attrgetter('position'),reverse=False)
-        '''
-        #根据position顺序排列
-        for staff in staffList:
-            if staff.position == '4':
-                staff.lc = 0;
-            elif staff.postion == '3':
-                staff.lc = 1;
-            elif staff.postion == '2':
-                staff.lc =  2
-         '''       
+
         staffListData=[]
         for staff in staffList:
             staffData={}
