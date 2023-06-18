@@ -72,7 +72,10 @@ pipeline {
                         -Dsonar.host.url=http://10.134.136.70:9000 \
                         -Dsonar.sources=/var/lib/jenkins/workspace/pms_backend_docker_pipline \
                         -Dsonar.projectBaseDir=/var/lib/jenkins/workspace/pms_backend_docker_pipline \
-                        -Dsonar.exclusions=**/static/**, **/tests/**, **/venv/**, **/migrations/** \
+                        -Dsonar.exclusions=**/static/** \
+                        -Dsonar.exclusions=**/tests/** \
+                        -Dsonar.exclusions=**/venv/** \
+                        -Dsonar.exclusions=**/migrations/** \
                     """
                 }
             }
