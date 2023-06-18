@@ -3,11 +3,29 @@ import json
 from django.core import serializers
 from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
-from api.models import Tenant
+from api.models import Tenant, RentalInfo
 from api.utils import UTF8JsonResponse
 
+REQUEST_RENTAL_ID = 'rental_id'
+REQUEST_USER_ID = 'user_id'
+REQUEST_IS_DELETE = 'is_delete'
+REQUEST_COM_NAME = 'com_name'
+REQUEST_LEGAL_NAME = 'legal_name'
+REQUEST_USERNAME = 'username'
+REQUEST_PHONE = 'phone'
+REQUEST_RENT_DATA = 'rent_data'
+REQUEST_ROOM_ID = 'room_id'
+REQUEST_DATE_BEGIN = 'date_begin'
+REQUEST_DATE_END = 'date_end'
+REQUEST_DATE_SIGN = 'date_sign'
+REQUEST_IS_PAID_MANAGEMENT = 'is_paid_management'
+REQUEST_DATE_PAID_MANAGEMENT = 'date_paid_management'
+REQUEST_IS_PAID_RENTAL = 'is_paid_rental'
+REQUEST_DATE_PAID_RENTAL = 'date_paid_rental'
 
+@csrf_exempt
 def add_tenant(request):
     if request.method == 'POST':
         # 从请求中获取客户信息
@@ -26,7 +44,7 @@ def add_tenant(request):
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
-
+@csrf_exempt
 def delete_tenant(request):
     if request.method == 'POST':
         company = request.GET.get('company')
@@ -36,7 +54,7 @@ def delete_tenant(request):
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
-
+@csrf_exempt
 def update_tenant(request):
     if request.method == 'POST':
         company = request.GET.get('former_company')
@@ -55,12 +73,48 @@ def update_tenant(request):
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
-
+@csrf_exempt
 def view_tenant(request):
-    if request.method == 'POST':
-        company = request.GET.get('company')
-        tenant = Tenant.objects.get(company=company)
-        res = model_to_dict(tenant)
-        return UTF8JsonResponse({'errno': 1001, 'msg': '返回员工列表成功', 'data': res})
-    else:
-        return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
+    # if request.method == 'POST':
+    #     company = request.GET.get('company')
+    #     tenant = Tenant.objects.get(company=company)
+    #     # tenantRental = Payment.objects.all().filter(tenant)
+    #     res = model_to_dict(tenant)
+    #     return UTF8JsonResponse({'errno': 1001, 'msg': '返回员工列表成功', 'data': res})
+    # else:
+    #     return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
+    if request.method != 'POST':
+        return UTF8JsonResponse(100001, '请求格式有误，不是GET')
+
+    user_ID = request.GET.get('user_id')
+
+    tenant_exist = Tenant.objects.filter(id=user_ID).first()
+
+    if tenant_exist is None:
+        return UTF8JsonResponse(99999, '客户不存在')
+
+    userLevelRentalDetail = {}
+    userLevelRentalDetail[REQUEST_USERNAME] = tenant_exist.username
+    userLevelRentalDetail[REQUEST_LEGAL_NAME] = tenant_exist.real_name
+    userLevelRentalDetail[REQUEST_COM_NAME] = tenant_exist.company
+    userLevelRentalDetail[REQUEST_PHONE] = tenant_exist.contactNumber
+
+    rentalInfos = RentalInfo.objects.filter(tenant=tenant_exist)
+
+    rent_data_list = []
+    for rent in rentalInfos:
+        rent_data = {}
+        rent_data[REQUEST_RENTAL_ID] = rent.id
+        rent_data[REQUEST_DATE_BEGIN] = rent.startTime
+        rent_data[REQUEST_DATE_END] = rent.endTime
+        rent_data[REQUEST_DATE_SIGN] = rent.createdTime
+        rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
+        rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate
+        rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
+        rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate
+        rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
+        rent_data_list.append(rent_data)
+
+    userLevelRentalDetail[REQUEST_RENT_DATA] = rent_data_list
+
+    return UTF8JsonResponse({'errno': 1001, 'msg': '返回员工列表成功', 'data': userLevelRentalDetail})

@@ -4,8 +4,8 @@ from api.views import rentApi
 from api.views import userApi
 from api.views import staffManagemntApi
 from api.views import paymentManageApi
-from api.views.houseInspect import house_list_by_floor
-from api.views.messageManage import add_tenant, delete_tenant, update_tenant, view_tenant
+from api.views import messageManage
+from api.views import houseInspect
 
 urlpatterns = [
 
@@ -31,11 +31,14 @@ urlpatterns = [
     path('payment/updateRecord', paymentManageApi.updateRecord),
     path('payment/updateStatus', paymentManageApi.updatePaymentStatus),
     path('payment/getPayment', paymentManageApi.getPaymentRecord),
-    
-    path('add_tenant', add_tenant),
-    path('delete_tenant', delete_tenant),
-    path('update_tenant', update_tenant),
-    path('view_tenant', view_tenant),
-    path('house_inspect', house_list_by_floor),
+
+    #Tenant Management
+    path('tenant/add_tenant',    messageManage.add_tenant),
+    path('tenant/delete_tenant', messageManage.delete_tenant),
+    path('tenant/update_tenant', messageManage.update_tenant),
+    path('tenant/view_tenant',   messageManage.view_tenant),
+
+    #House Inspect
+    path('house_inspect', houseInspect.house_list_by_floor),
 
 ]

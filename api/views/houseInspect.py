@@ -1,10 +1,11 @@
 
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
 
 from api.models import House
 from api.utils import UTF8JsonResponse
 
-
+@csrf_exempt
 def house_list_by_floor(request):
     if request.method == 'POST':
         floor = request.GET.get('floor')
@@ -19,7 +20,7 @@ def house_list_by_floor(request):
             houseData['id'] = house.id
             houseData['room_number'] = house.roomNumber
             houseData['status'] = house.status
-            houseData['rental_info'] = house.rentalInfo
+            # houseData['rental_info'] = house.rentalInfo
 
             houseList.append(houseData)
 

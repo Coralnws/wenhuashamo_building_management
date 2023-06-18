@@ -32,7 +32,7 @@ def rentCreate(request):
     info = request.POST.dict()
     
     user_ID = info.get(REQUEST_USER_ID)
-    room_ID = info.get(REQUEST_ROOM)
+    room_ID = info.get(REQUEST_ROOM_ID)
     date_begin = info.get(REQUEST_DATE_BEGIN)
     date_end = info.get(REQUEST_DATE_END)
     date_sign = info.get(REQUEST_DATE_SIGN)
