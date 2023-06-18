@@ -72,8 +72,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
 
     M_STATUS = (
-        ('0','可用'),
-        ('1','不可用'),
+        ('1','可用'),
+        ('0','不可用'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
