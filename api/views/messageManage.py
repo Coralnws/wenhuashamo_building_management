@@ -31,10 +31,10 @@ REQUEST_DATE_PAID_RENTAL = 'date_paid_rental'
 def add_tenant(request):
     if request.method == 'POST':
         # 从请求中获取客户信息
-        real_name = request.GET.get('real_name')
-        company = request.GET.get('company')
-        contactName = request.GET.get('contactName')
-        contactNumber = request.GET.get('contactNumber')
+        real_name = request.POST.get('real_name')
+        company = request.POST.get('company')
+        contactName = request.POST.get('contactName')
+        contactNumber = request.POST.get('contactNumber')
         # 创建新的客户对象并保存到数据库中
         tenant = Tenant(real_name=real_name, company=company,
                         contactName=contactName,
@@ -50,8 +50,8 @@ def add_tenant(request):
 @csrf_exempt
 def delete_tenant(request):
     if request.method == 'POST':
-        company = request.GET.get('company')
-        tenant = Tenant.objects.get(company=company)
+        id = request.POST.get('user_id')
+        tenant = Tenant.objects.get(id=id)
         tenant.delete()
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant deleted successfully!'})
     else:
@@ -64,10 +64,10 @@ def update_tenant(request):
         id = request.GET.get(REQUEST_USER_ID)
         tenant = Tenant.objects.get(id=id)
         # 更新客户信息
-        tenant.real_name = request.GET.get(REQUEST_LEGAL_NAME)
-        tenant.company = request.GET.get(REQUEST_COM_NAME)
-        tenant.contactName = request.GET.get(REQUEST_USERNAME)
-        tenant.contactNumber = request.GET.get(REQUEST_PHONE)
+        tenant.real_name = request.POST.get('real_name')
+        tenant.company = request.POST.get('company')
+        tenant.contactName = request.POST.get('contactName')
+        tenant.contactNumber = request.POST.get('contactNumber')
 
         # 保存客户对象到数据库中
         tenant.save()
@@ -81,7 +81,7 @@ def update_tenant(request):
 @csrf_exempt
 def search_tenant(request):
     if request.method == 'POST':
-        search_word = request.GET.get('search_word')
+        search_word = request.POST.get('search_word')
         tenant = (
                 Tenant.objects.filter(real_name=search_word).first() or
                 Tenant.objects.filter(company=search_word).first() or
@@ -136,8 +136,8 @@ def view_tenant(request):
     #
     # if tenant_exist is None:
     #     return UTF8JsonResponse(99999, '客户不存在')
-    page = request.GET.get('page')
-    num = request.GET.get('num')
+    page = request.POST.get('page')
+    num = request.POST.get('num')
     page = int(page)
     num = int(num)
     left = (page - 1) * num
