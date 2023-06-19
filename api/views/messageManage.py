@@ -142,7 +142,7 @@ def view_tenant(request):
     page = int(page)
     num = int(num)
     left = (page - 1) * num
-    right = page * num - 1
+    right = page * num
     total = Tenant.objects.all().count()
     tenants = Tenant.objects.all()[left:right]
 
