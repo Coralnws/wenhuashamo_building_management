@@ -14,7 +14,7 @@ class Payment(models.Model):
     is_paid = models.BooleanField(default=False)
 
     paymentTime = models.DateTimeField(default=timezone.now)
-    tenant = models.ForeignKey("Tenant", related_name="tenant_pay",on_delete=models.CASCADE, null=True, blank=True)
+    tenant_pay = models.ForeignKey("Tenant", related_name="tenant_pay",on_delete=models.CASCADE, null=True, blank=True)
     rentalInfo = models.ForeignKey("RentalInfo", related_name="rentalinfo_pay",on_delete=models.CASCADE, null=True, blank=True)
     house =  models.ForeignKey("House",  related_name="house_pay",on_delete=models.CASCADE, null=True, blank=True)
     amount = models.IntegerField()
