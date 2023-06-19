@@ -7,7 +7,7 @@ from api.utils import UTF8JsonResponse
 @csrf_exempt
 def house_list_by_floor(request):
     if request.method == 'GET':
-        floor = request.GET.get('floor')
+        floor = request.GET.get('floor', '')
         if floor == '0':
             houses = House.objects.all()
         else:
@@ -21,7 +21,7 @@ def house_list_by_floor(request):
             houseData['id'] = house.id
             houseData['room_number'] = house.roomNumber
             houseData['status'] = house.status
-            houseData['floor'] = floor
+            houseData['floor'] = house.floor
             rentalInfos = RentalInfo.objects.filter(house=house)
 
             rent_data_list = []
