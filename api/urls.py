@@ -13,6 +13,7 @@ urlpatterns = [
     path('user/login', userApi.login),
     path('user/logout', userApi.logout),
     path('user/change_password', userApi.change_password),
+    path('user/create', staffManagemntApi.create_user),
 
 
     path('rent/create', rentApi.rent_create),
@@ -26,6 +27,7 @@ urlpatterns = [
     path('staff/updateStaff', staffManagemntApi.update_staff),
     path('staff/delStaff', staffManagemntApi.delete_staff),
     path('staff/getStaff', staffManagemntApi.get_staff),
+    
 
     #Management Fee
     path('payment/createRecord', paymentManageApi.create_record),

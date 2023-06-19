@@ -20,6 +20,35 @@ from api.error_utils import *
  # servicemanManage : POST,PUT,DEL
  # searchStaff
 
+@csrf_exempt
+def create_user(request):
+    if request.method != 'POST':  #创建 - 只有超级管理员，创建后添加user
+        return not_post_method()
+
+    tenant_id = request.POST.get('tenant_id')
+    company = request.POST.get('company')
+    name = request.POST.get('realname')
+    contact = request.POST.get('contact')
+    
+    if tenant_id:
+        tenant = Tenant.objects.filter(id=tenant_id).first()
+    elif company:
+        tenant = Tenant.objects.filter(company=company).first()
+    realname_exist = CustomUser.objects.filter(realname=name).count()
+    username_exist = CustomUser.objects.filter(username=name).count()
+    username = name
+    if realname_exist > 0 or username_exist:
+        if realname_exist == username_exist:
+            username  = username+"_"+str(realname_exist)
+        if username_exist < realname_exist:
+            if username_exist != 0:
+                username  = username+"_" + str(realname_exist)
+    
+    new_user = CustomUser(tenant=tenant,username=username,realname=name,position='1',contactNumber=contact)
+    new_user.set_password(DEFAULTPASS)
+    new_user.save()
+
+    return return_response(1001,'成功添加用户')
 
 @csrf_exempt
 def create_staff(request):
@@ -72,7 +101,7 @@ def update_staff(request):
     #     return UTF8JsonResponse({'errno': 3001, 'msg': '当前cookie为空，未登录，请先登录'})
     # user = CustomUser.objects.filter(id=user_id).first()
 
-    if requset.method != 'POST':
+    if request.method != 'POST':
         return not_post_method()
 
     info = request.POST.dict()
@@ -217,3 +246,4 @@ def get_staff_filters(position = None, status = None, types = None, search = Non
     if search:
         filters &= Q(realname__icontains=search) | Q(contactNumber__icontains=search)
     return filters
+

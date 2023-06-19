@@ -95,6 +95,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     thumbnail = models.ImageField(upload_to=thumbnail_to, blank=True)
     createdAt = models.DateTimeField(default=timezone.now)
     updatedAt = models.DateTimeField(default=timezone.now)
+    tenant = models.ForeignKey("Tenant",related_name='belong_to_company', on_delete=models.SET_NULL, null=True, blank=True)
     
     def get_thumbnail_url(self):
         if self.thumbnail and hasattr(self.thumbnail, 'url'):

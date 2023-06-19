@@ -33,16 +33,37 @@ def add_tenant(request):
         # 从请求中获取客户信息
         real_name = request.POST.get('real_name')
         company = request.POST.get('company')
-        contactName = request.POST.get('contactName')
-        contactNumber = request.POST.get('contactNumber')
+        contact_name = request.POST.get('contactName')
+        contact_number = request.POST.get('contactNumber')
         # 创建新的客户对象并保存到数据库中
         tenant = Tenant(real_name=real_name, company=company,
-                        contactName=contactName,
-                        contactNumber=contactNumber)
+                        contactName=contact_name,
+                        contactNumber=contact_number)
         tenant.save()
 
+        realname_exist = CustomUser.objects.filter(realname=real_name).count()
+        username_exist = CustomUser.objects.filter(username=real_name).count()
+        username = real_name
+        if realname_exist > 0 or username_exist:
+            if realname_exist == username_exist:
+                username  = username+"_"+str(realname_exist)
+            if username_exist < realname_exist:
+                if username_exist != 0:
+                    username  = username+"_" + str(realname_exist)
+
+        new_user = CustomUser(tenant=tenant,username=username,realname=real_name,position='1',contactNumber=contact_number)
+        new_user.set_password(DEFAULTPASS)
+        new_user.save()
+
+        data = {}
+        data['username'] = new_user.username
+        data['realname'] = new_user.realname
+        data['position'] = new_user.position
+        data['contact_number'] = new_user.contactNumber
+
+
         # 返回成功信息
-        return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant added successfully!'})
+        return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant added successfully!','data':data})
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 

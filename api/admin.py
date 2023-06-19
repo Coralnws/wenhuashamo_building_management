@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import *
 
 class UserAdminConfig(admin.ModelAdmin):
-    list_display = ('id', 'username', 'realname','email', 'profile')
+    list_display = ('id', 'username', 'realname','email', 'profile','tenant')
 
 class PaymentConfig(admin.ModelAdmin):
     list_display = ('id', 'tenant')
