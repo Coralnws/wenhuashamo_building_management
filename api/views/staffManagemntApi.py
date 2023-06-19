@@ -20,7 +20,7 @@ import operator
 
 
 @csrf_exempt
-def createStaff(request):
+def create_staff(request):
     # userId=request.session.get('uid')
     # if userId is None:
     #     return UTF8JsonResponse({'errno': 3001, 'msg': '当前cookie为空，未登录，请先登录'})
@@ -63,7 +63,7 @@ def createStaff(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
     
 @csrf_exempt
-def updateStaff(request):
+def update_staff(request):
     # userId=request.session.get('uid')
     # if userId is None:
     #     return UTF8JsonResponse({'errno': 3001, 'msg': '当前cookie为空，未登录，请先登录'})
@@ -123,7 +123,7 @@ def updateStaff(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
     
 @csrf_exempt
-def deleteStaff(request):
+def delete_staff(request):
     # userId=request.session.get('uid')
     # if userId is None:
     #     return UTF8JsonResponse({'errno': 3001, 'msg': '当前cookie为空，未登录，请先登录'})
@@ -148,7 +148,7 @@ def deleteStaff(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 @csrf_exempt
-def getStaff(request):
+def get_staff(request):
     if request.method == 'GET':
         userId = request.GET.get('staffId','')
         position = request.GET.get('position','')

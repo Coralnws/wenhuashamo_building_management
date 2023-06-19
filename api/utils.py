@@ -2,6 +2,9 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 import random
+import redis
+from django.conf import settings
+
 
 from api.models.users import CustomUser
 
@@ -12,6 +15,20 @@ POSTMETHOD = 'POST'
 PUTMETHOD = 'PUT'
 DELETEMETHOD = 'DELETE'
 
+
+# Set redis_client
+redis_client = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, password=settings.REDIS_PASSWORD)
+
+# get the user from redis
+# @param:
+#   -key: the sessionID from the front_end 
+def get_user_from_redis(key):
+    user_id = redis_client.get(key)
+    if user_id is not None:
+        user = CustomUser.objects.filter(id=user_id).first()
+        if user:
+            return user
+    return None
 
 
 #send_smtp(newUser, request, newToken, "Activate Account", "register_email.txt", True)
@@ -31,7 +48,7 @@ def send_smtp(user,scholar,request,code,subject, fileName):
     )
 
     email.send(fail_silently=False)
-    #return UTF8JsonResponse({'errno': 1001, 'msg': "邮件已发送"})
+    return UTF8JsonResponse({'errno': 1001, 'msg': "邮件已发送"})
 
 def send_article_smtp(user,article,request,code,subject, fileName):
     context = {

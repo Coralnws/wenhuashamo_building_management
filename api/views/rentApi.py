@@ -26,7 +26,7 @@ REQUEST_DATE_PAID_RENTAL = 'date_paid_rental'
 
 
 @csrf_exempt
-def rentCreate(request):
+def rent_create(request):
     if request.method != POSTMETHOD:
         return return_response(100001, '请求格式有误，不是POST')
         
@@ -70,7 +70,7 @@ def rentCreate(request):
     - pay_time:'' //物业费缴纳时间
 '''
 @csrf_exempt
-def rentDetailRead(request):
+def rent_detail_read(request):
     if request.method != GETMETHOD:
         return return_response(100001, '请求格式有误，不是GET')
 
@@ -101,7 +101,7 @@ def rentDetailRead(request):
 
 
 @csrf_exempt
-def rentUserDetailRead(request):
+def rent_user_detail_read(request):
     if request.method != GETMETHOD:
         return return_response(100001, '请求格式有误，不是GET')
 
@@ -149,7 +149,7 @@ def rentUserDetailRead(request):
     - pay_time:'' //物业费缴纳时间
 '''
 @csrf_exempt
-def rentUpdate(request):
+def rent_update(request):
     if request.method != POSTMETHOD:
         return return_response(100001, '请求格式有误，不是POST')
 
@@ -185,7 +185,7 @@ def rentUpdate(request):
     return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息修改成功', 'data':data})
 
 @csrf_exempt
-def rentDelete(request):
+def rent_delete(request):
     if request.method != POSTMETHOD:
         return return_response(100001, '请求格式有误，不是POST')
     

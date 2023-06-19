@@ -171,10 +171,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #session存入redis缓存 配置
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS = "default"
+# SESSION_ENGINE = "redis_sessions.session"
+# SESSION_CACHE_ALIAS = "default"
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
 
 SESSION_COOKIE_NAME = 'sessionid'  # Default value
+
+# Redis credential
+REDIS_HOST = env('REDIS_HOST')
+REDIS_PORT = env('REDIS_PORT')
+REDIS_PASSWORD = env('REDIS_PASSWORD')
 
 
 # Cache use local for the moment, 
@@ -182,32 +190,32 @@ SESSION_COOKIE_NAME = 'sessionid'  # Default value
 
 # SESSION_CACHE_ALIAS = "session"
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/0",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#             "CONNECTION_POOL_KWARGS": {"max_connections": 100,},
-#             "PASSWORD": env('REDIS_PASSWORD'),
-#         },
-#     },
-#     "session": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/0",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#             "CONNECTION_POOL_KWARGS": {"max_connections": 100,},
-#             "PASSWORD": env('REDIS_PASSWORD'),
-#         },
-#     },
-#     "history": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/1",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#             "CONNECTION_POOL_KWARGS": {"max_connections": 100, },
-#             "PASSWORD": env('REDIS_PASSWORD'),
-#         },
-#     },
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100,},
+            "PASSWORD": env('REDIS_PASSWORD'),
+        },
+    },
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100,},
+            "PASSWORD": env('REDIS_PASSWORD'),
+        },
+    },
+    "history": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://"+ env('REDIS_HOST') +":" + env('REDIS_PORT') + "/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100, },
+            "PASSWORD": env('REDIS_PASSWORD'),
+        },
+    },
+}

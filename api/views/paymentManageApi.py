@@ -14,7 +14,7 @@ import operator
 
 
 @csrf_exempt
-def createRecord(request):
+def create_record(request):
     if request.method == 'POST':
         tenant_id = request.POST.get("tenant_id")
         period = request.POST.get('year')
@@ -39,7 +39,7 @@ def createRecord(request):
 
 """
 @csrf_exempt
-def createRecord(request):
+def create_record(request):
     if request.method == 'POST':
         info = request.POST.dict()
         tenantId = info.get('tenantId') #针对租客
@@ -77,7 +77,7 @@ def createRecord(request):
 """
 
 @csrf_exempt
-def deleteRecord(request):
+def delete_record(request):
     if request.method == 'POST':
         # userId=request.session.get('uid')
         # if userId is None:
@@ -97,7 +97,7 @@ def deleteRecord(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 @csrf_exempt
-def updateRecord(request):
+def update_record(request):
     if request.method == 'POST':
         info = request.POST.dict()
         tenant_id = info.get('tenant_id')
@@ -131,7 +131,7 @@ def updateRecord(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})    
 
 @csrf_exempt
-def updatePaymentStatus(request):
+def update_payment_status(request):
     if request.method == 'POST':
         info = request.POST.dict()
         rentalInfoId = info.get('rentalId')  #针对租赁合约
@@ -191,7 +191,7 @@ def updatePaymentStatus(request):
 
 
 @csrf_exempt
-def getPaymentDetail(request):
+def get_payment_detail(request):
     if request.method == 'GET':
         tenantId = request.GET.get('tenantId','')
         houseId = request.GET.get('houseId','')
@@ -277,7 +277,7 @@ def getPaymentDetail(request):
 
 
 @csrf_exempt
-def getPaymentRecord(request):
+def get_payment_record(request):
     if request.method == 'GET':
         tenantId = request.GET.get('tenantId','')
         tenant = Tenant.objects.filter(id=tenantId).first()
@@ -300,7 +300,7 @@ def getPaymentRecord(request):
 #.strftime("%Y-%m-%d %H:%M")
 
 @csrf_exempt
-def getRecord(request):
+def get_record(request):
     if request.method == 'GET':
         tenant_id = request.GET.get('tenant_id','')
         period = request.GET.get('year','')

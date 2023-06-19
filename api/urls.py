@@ -12,28 +12,29 @@ urlpatterns = [
     # User Authentication
     path('user/login', userApi.login),
     path('user/logout', userApi.logout),
+    path('user/change_password', userApi.change_password),
 
 
-    path('rent/create', rentApi.rentCreate),
-    path('rent/detailRead', rentApi.rentDetailRead),
-    path('rent/update', rentApi.rentUpdate),
-    path('rent/delete', rentApi.rentDelete),
-    path('rent/user/detail', rentApi.rentUserDetailRead),
+    path('rent/create', rentApi.rent_create),
+    path('rent/detailRead', rentApi.rent_detail_read),
+    path('rent/update', rentApi.rent_update),
+    path('rent/delete', rentApi.rent_delete),
+    path('rent/user/detail', rentApi.rent_user_detail_read),
 
     #Staff Management
-    path('staff/createStaff', staffManagemntApi.createStaff),
-    path('staff/updateStaff', staffManagemntApi.updateStaff),
-    path('staff/delStaff', staffManagemntApi.deleteStaff),
-    path('staff/getStaff', staffManagemntApi.getStaff),
+    path('staff/createStaff', staffManagemntApi.create_staff),
+    path('staff/updateStaff', staffManagemntApi.update_staff),
+    path('staff/delStaff', staffManagemntApi.delete_staff),
+    path('staff/getStaff', staffManagemntApi.get_staff),
 
     #Management Fee
-    path('payment/createRecord', paymentManageApi.createRecord),
-    path('payment/delRecord', paymentManageApi.deleteRecord),
-    path('payment/updateRecord', paymentManageApi.updateRecord),
-    path('payment/updateStatus', paymentManageApi.updatePaymentStatus),
-    path('payment/getPayment', paymentManageApi.getPaymentRecord),
-    path('payment/getRecord', paymentManageApi.getRecord),
-    path('payment/getPaymentDetail', paymentManageApi.getPaymentDetail),
+    path('payment/createRecord', paymentManageApi.create_record),
+    path('payment/delRecord', paymentManageApi.delete_record),
+    path('payment/updateRecord', paymentManageApi.update_record),
+    path('payment/updateStatus', paymentManageApi.update_payment_status),
+    path('payment/getPayment', paymentManageApi.getPayment_record),
+    path('payment/getRecord', paymentManageApi.get_record),
+    path('payment/getPaymentDetail', paymentManageApi.get_payment_detail),
 
     #Tenant Management
     path('tenant/add_tenant',    messageManage.add_tenant),
@@ -43,12 +44,12 @@ urlpatterns = [
     path('tenant/search_tenant', messageManage.search_tenant),
 
     #Repair
-    path('repair/createRequest', maintenanceApi.createRequest),
-    path('repair/getRequest', maintenanceApi.getRequest),
-    path('repair/assignTask', maintenanceApi.assignTask),
-    path('repair/closeTask', maintenanceApi.closeTask),
-    path('repair/updateRequest', maintenanceApi.updateRequest),
-    path('repair/delRequest', maintenanceApi.delRequest),
+    path('repair/createRequest', maintenanceApi.create_request),
+    path('repair/getRequest', maintenanceApi.get_request),
+    path('repair/assignTask', maintenanceApi.assign_task),
+    path('repair/closeTask', maintenanceApi.close_task),
+    path('repair/updateRequest', maintenanceApi.update_request),
+    path('repair/delRequest', maintenanceApi.del_request),
 
     #House Inspect
     path('house_inspect', houseInspect.house_list_by_floor),

@@ -29,7 +29,7 @@ import operator
 '''
 
 @csrf_exempt
-def createRequest(request):
+def create_request(request):
     if request.method == 'POST':
         #问题描述、报修时间、报修房间号、报修公司、报修联系人姓名和联系方式
         description = request.POST.get('description')
@@ -53,7 +53,7 @@ def createRequest(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 @csrf_exempt
-def delRequest(request):
+def del_request(request):
     if request.method == 'POST':
         request_id = request.POST.get('request_id')
         record = Repair.objects.filter(id=request_id).first()
@@ -64,7 +64,7 @@ def delRequest(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})  
      
 @csrf_exempt
-def updateRequest(request):
+def update_request(request):
     if request.method == 'POST':
         info = request.POST.dict()
         request_id = info.get('request_id')
@@ -129,7 +129,7 @@ def updateRequest(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 @csrf_exempt
-def getRequest(request):
+def get_request(request):
     if request.method == 'GET':
         status = request.GET.get('status','')
         user_id = request.GET.get('user_id','')
@@ -180,7 +180,7 @@ def getRequest(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 @csrf_exempt
-def assignTask(request):
+def assign_task(request):
     #对客户工单给出初步反馈意见（包括什么时间、谁负责维修，以及维修人联系电话）
     if request.method == 'POST':
         request_id = request.POST.get('request_id')
@@ -208,7 +208,7 @@ def assignTask(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 @csrf_exempt
-def closeTask(request):
+def close_task(request):
     #维修工单的最终状态，包括：问题解决办法，解决时间，解决人 + 维修人员状态更新为可用
     if request.method == 'POST':
         request_id = request.POST.get('request_id')
