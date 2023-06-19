@@ -45,9 +45,6 @@ pipeline {
                     // remove the code, no need anymore
                     sh "rm /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip"
 
-                    // give permission to 755
-                    sh "chmod -R 755 /var/www/pms_backend"
-
                 }
             }
         }
