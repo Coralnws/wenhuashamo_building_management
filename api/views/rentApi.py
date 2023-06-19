@@ -7,6 +7,7 @@ from ..utils import *
 
 
 REQUEST_RENTAL_ID = 'rental_id'
+REQUEST_TENANT_ID = 'tenant_id'
 REQUEST_USER_ID = 'user_id'
 REQUEST_IS_DELETE = 'is_delete'
 REQUEST_COM_NAME = 'com_name'
@@ -31,17 +32,17 @@ def rentCreate(request):
         
     info = request.POST.dict()
     
-    user_ID = info.get(REQUEST_USER_ID)
+    tenant_ID = info.get(REQUEST_TENANT_ID)
     room_ID = info.get(REQUEST_ROOM_ID)
     date_begin = info.get(REQUEST_DATE_BEGIN)
     date_end = info.get(REQUEST_DATE_END)
     date_sign = info.get(REQUEST_DATE_SIGN)
+
     ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
     date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
-
     room_exist = House.objects.filter(roomNumber=room_ID).first()
-    tenant_exist = Tenant.objects.filter(id=user_ID).first()
+    tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
 
     if room_exist is None or tenant_exist is None:
         return return_response(9999, '房间或者客户不存在')

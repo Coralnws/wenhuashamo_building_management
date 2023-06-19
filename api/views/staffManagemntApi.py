@@ -179,11 +179,13 @@ def getStaff(request):
             filter &= Q(m_type=type)
         if search:
             filter &= Q(realname__icontains=search) | Q(contactNumber__icontains=search)
+
+        staff_list = CustomUser.objects.filter(filter).order_by('-position')
         
         if position and type and search is None:
             staff_list = CustomUser.objects.filter(Q(position='2') | Q(position='3') | Q(position='4')).order_by('-position')
-        
-        staff_list = CustomUser.objects.filter(filter).order_by('-position')
+        else:
+            staff_list = CustomUser.objects.filter(filter).order_by('-position')
         
         staffListData=[]
         for staff in staff_list:

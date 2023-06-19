@@ -86,8 +86,10 @@ def deleteRecord(request):
         # if user.position != 4 and user.position != 3:
         #     return UTF8JsonResponse({'errno': 3001, 'msg': '无权限'})
 
-        record_id = request.POST.get('record_id')
-        record = Payment.objects.filter(id=record_id).first()
+        tenant_id = request.POST.get('tenant_id')
+        year = request.POST.get('year')
+        tenant = Tenant.objects.filter(id=tenant_id).first()
+        record = Payment.objects.filter(tenant=tenant,period=year).first()
         record.delete()
     
         return UTF8JsonResponse({'errno':1001, 'msg': '成功删除物业费缴纳信息'})
@@ -98,16 +100,18 @@ def deleteRecord(request):
 def updateRecord(request):
     if request.method == 'POST':
         info = request.POST.dict()
-        record_id = info.get('record_id')
+        tenant_id = info.get('tenant_id')
         period = info.get('year')
+        new_period = info.get('new_year')
         is_paid = info.get('is_paid')
         payment_time = info.get('payment_time')
         amount = info.get('money')
 
-        record = Payment.objects.filter(id=record_id).first()
+        tenant = Tenant.objects.filter(id=tenant_id).first()
+        record = Payment.objects.filter(tenant=tenant,period=period).first()
 
-        if period:
-            record.period = period
+        if new_period:
+            record.period = new_period
         if amount:
             record.amount = amount
         if is_paid:
