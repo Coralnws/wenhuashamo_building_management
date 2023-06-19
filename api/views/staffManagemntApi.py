@@ -152,7 +152,12 @@ def getStaff(request):
     if request.method == 'GET':
         userId = request.GET.get('staffId','')
         position = request.GET.get('position','')
-                                   
+        search = request.GET.get('search','') #名字和电话
+        type = request.GET.get('type','')
+        status = request.GET.get('status','')
+
+        filter = Q()
+
         if userId:
             staff = CustomUser.objects.filter(id=userId).first()
             staffData = {}
@@ -166,12 +171,20 @@ def getStaff(request):
         
         staff_list = None
         if position:
-            staff_list = CustomUser.objects.filter(position=position)
-
-        else:
+            filter &= Q(position=position)
+            #staff_list = CustomUser.objects.filter(position=position)
+        if status:
+            filter &= Q(m_status=status)
+        if type:    
+            filter &= Q(m_type=type)
+        if search:
+            filter &= Q(realname__icontains=search) | Q(contactNumber__icontains=search)
+        
+        if position and type and search is None:
             staff_list = CustomUser.objects.filter(Q(position='2') | Q(position='3') | Q(position='4')).order_by('-position')
-        #ordered = sorted(staffList, key=operator.attrgetter('position'),reverse=False)
-
+        
+        staff_list = CustomUser.objects.filter(filter).order_by('-position')
+        
         staffListData=[]
         for staff in staff_list:
             staffData={}
@@ -189,7 +202,5 @@ def getStaff(request):
 
             staffListData.append(staffData)
 
-
-            
         return UTF8JsonResponse({'errno':1001, 'msg': '返回员工列表成功', 'data': staffListData})
 
