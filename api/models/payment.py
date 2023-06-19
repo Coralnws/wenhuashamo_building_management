@@ -10,7 +10,7 @@ class Payment(models.Model):
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey("Tenant", on_delete=models.CASCADE, null=True, blank=True)
-    period = models.CharField(max_length=10,null=True, blank=True)
+    period = models.CharField(max_length=50,null=True, blank=True)
     is_paid = models.BooleanField(default=False)
 
     paymentTime = models.DateTimeField(default=timezone.now)

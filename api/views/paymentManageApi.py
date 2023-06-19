@@ -12,7 +12,7 @@ from django.forms.models import model_to_dict
 from django.db.models import Q
 import operator
 
-"""
+
 @csrf_exempt
 def createRecord(request):
     if request.method == 'POST':
@@ -22,31 +22,20 @@ def createRecord(request):
         payment_time = request.POST.get('payment_time')
         amount = request.POST.get('money')
 
+        if is_paid == '0':
+            is_paid = False
+        elif is_paid == '1':
+            is_paid = True
+
         tenant = Tenant.objects.filter(id=tenant_id).first()
-        record = Payment(tenant=tenant,period=period,is_paid=is_paid,paymemtTime=payment_time,
-                         )
+        record = Payment(tenant=tenant,period=period,is_paid=is_paid,paymentTime=payment_time,
+                         amount=amount,type=2)
+        record.save()
+        data=model_to_dict(record)
 
-
-
-'''
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey("Tenant", on_delete=models.CASCADE, null=True, blank=True)
-    period = models.CharField(max_length=10,null=True, blank=True)
-    is_paid = models.BooleanField(default=False)
-
-    paymentTime = models.DateTimeField(default=timezone.now)
-    tenant = models.ForeignKey("Tenant", related_name="tenant_pay",on_delete=models.CASCADE, null=True, blank=True)
-    rentalInfo = models.ForeignKey("RentalInfo", related_name="rentalinfo_pay",on_delete=models.CASCADE, null=True, blank=True)
-    house =  models.ForeignKey("House",  related_name="house_pay",on_delete=models.CASCADE, null=True, blank=True)
-    amount = models.IntegerField()
-    type = models.CharField(max_length=10, choices=TYPE,default='0')
-'''
-
-
-
-
-
-
+        return UTF8JsonResponse({'errno':1001, 'msg': '成功添加物业费缴纳信息','data':data})    
+    else:
+        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 """
 @csrf_exempt
@@ -85,6 +74,7 @@ def createRecord(request):
         return UTF8JsonResponse({'errno':1001, 'msg': '成功添加缴费信息','data':data})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
+"""
 
 @csrf_exempt
 def deleteRecord(request):
@@ -96,11 +86,11 @@ def deleteRecord(request):
         # if user.position != 4 and user.position != 3:
         #     return UTF8JsonResponse({'errno': 3001, 'msg': '无权限'})
 
-        recordId = request.POST.get('recordId')
-        record = Payment.objects.filter(id=recordId).first()
+        record_id = request.POST.get('record_id')
+        record = Payment.objects.filter(id=record_id).first()
         record.delete()
     
-        return UTF8JsonResponse({'errno':1001, 'msg': '成功删除缴费信息'})
+        return UTF8JsonResponse({'errno':1001, 'msg': '成功删除物业费缴纳信息'})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
@@ -108,16 +98,22 @@ def deleteRecord(request):
 def updateRecord(request):
     if request.method == 'POST':
         info = request.POST.dict()
-        recordId = info.get('recordId')
-        date = info.get('paymentTime')
-        amount = info.get('amount')
+        record_id = info.get('record_id')
+        period = info.get('year')
+        is_paid = info.get('is_paid')
+        payment_time = info.get('payment_time')
+        amount = info.get('money')
 
-        record = Payment.objects.filter(id=recordId).first()
+        record = Payment.objects.filter(id=record_id).first()
 
-        if date:
-            record.createdTime = date
+        if period:
+            record.period = period
         if amount:
             record.amount = amount
+        if is_paid:
+            record.is_paid = is_paid
+        if payment_time:
+            record.paymentTime = payment_time
         
         record.save()
         data = model_to_dict(record)
@@ -294,3 +290,27 @@ def getPaymentRecord(request):
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
 #.strftime("%Y-%m-%d %H:%M")
+
+@csrf_exempt
+def getRecord(request):
+    if request.method == 'GET':
+        tenant_id = request.GET.get('tenant_id','')
+        period = request.GET.get('year','')
+        tenant = Tenant.objects.filter(id=tenant_id).first()
+        record_list = Payment.objects.filter(tenant=tenant,type=2,period=period).order_by('-period')
+
+        record_list_data=[]
+
+                                            
+        for record in record_list:            
+            data = {}
+            data['id']=record.id
+            data['year']=record.period
+            data['is_paid']=record.is_paid
+            data['payment_time']=record.paymentTime
+            data['money']=record.amount
+            record_list_data.append(data) 
+        
+        return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': record_list_data})
+    else:
+        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
