@@ -46,10 +46,10 @@ def login(request):
         'position': current_user.position,
         'realname': current_user.realname,
         'session_id': session_id,
-        'userId': current_user.id,
-        'valueInRedis': redis_client.get(session_id)
+        'userId': str(current_user.id),
+        'valueInRedis': str(redis_client.get(session_id))
     }
-    return UTF8JsonResponse({'errno': 100000, 'msg': '登录成功', 'data': data})
+    return return_response(100000, '登录成功', data)
 
 # session_id
 @csrf_exempt
@@ -57,12 +57,12 @@ def logout(request):
     if request.method != 'POST':
         return not_post_method()
 
-    session_id = request.POST.get('session_id')
+    session_id = json.loads(request.body)['session_id']
     session_value = redis_client.get(session_id)
     print(f"Before logout session_id: {session_id}")
     print(f"Before logout value session_id: {session_value}")
 
-    if session_exists is not None:
+    if session_value is not None:
         redis_client.delete(session_id)
         return return_response(100000, '登出成功')
     return return_response(100001, '请先登录')

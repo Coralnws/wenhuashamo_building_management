@@ -33,7 +33,7 @@ def create_record(request):
         record.save()
         data=model_to_dict(record)
 
-        return UTF8JsonResponse({'errno':1001, 'msg': '成功添加物业费缴纳信息','data':data})    
+        return return_response(1001, '成功添加物业费缴纳信息', data)
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
