@@ -50,8 +50,8 @@ def add_tenant(request):
 @csrf_exempt
 def delete_tenant(request):
     if request.method == 'POST':
-        id = request.POST.get('user_id')
-        tenant = Tenant.objects.get(id=id)
+        user_id = request.POST.get('user_id')
+        tenant = Tenant.objects.get(id=user_id)
         tenant.delete()
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant deleted successfully!'})
     else:
@@ -91,6 +91,7 @@ def search_tenant(request):
         if tenant is None:
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
+        tenantDetail = []
         userLevelRentalDetail = {}
         userLevelRentalDetail[REQUEST_USERNAME] = tenant.contactName
         userLevelRentalDetail[REQUEST_LEGAL_NAME] = tenant.real_name
@@ -114,8 +115,8 @@ def search_tenant(request):
             rent_data_list.append(rent_data)
 
         userLevelRentalDetail[REQUEST_RENT_DATA] = rent_data_list
-
-        return UTF8JsonResponse({'errno': 1001, 'msg': '查询客户成功', 'data': userLevelRentalDetail})
+        tenantDetail.append(userLevelRentalDetail)
+        return UTF8JsonResponse({'errno': 1001, 'msg': '查询客户成功', 'data': tenantDetail})
 
 @csrf_exempt
 def view_tenant(request):
@@ -148,6 +149,7 @@ def view_tenant(request):
     tenantDetail = []
     for tenant in tenants:
         userLevelRentalDetail = {}
+        userLevelRentalDetail[REQUEST_USER_ID] = tenant.id
         userLevelRentalDetail[REQUEST_USERNAME] = tenant.contactName
         userLevelRentalDetail[REQUEST_LEGAL_NAME] = tenant.real_name
         userLevelRentalDetail[REQUEST_COM_NAME] = tenant.company
