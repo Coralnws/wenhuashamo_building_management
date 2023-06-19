@@ -133,7 +133,7 @@ def getRequest(request):
     if request.method == 'GET':
         status = request.GET.get('status','')
         user_id = request.GET.get('user_id','')
-
+    
         request_list = None
         
         filter = Q()
@@ -142,7 +142,10 @@ def getRequest(request):
             filter &= Q(status=status)
         if user_id:
             user = CustomUser.objects.filter(id=user_id).first()
-            filter &= Q(submitter=user)
+            if user.position == '2':
+                filter &= Q(staff=user)
+            else:
+                filter &= Q(submitter=user)
         
 
         request_list = Repair.objects.filter(filter).order_by('createdTime')
