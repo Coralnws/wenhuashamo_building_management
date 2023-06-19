@@ -134,8 +134,6 @@ def getRequest(request):
         status = request.GET.get('status','')
         user_id = request.GET.get('user_id','')
 
-        
-
         request_list = None
         
         filter = Q()
@@ -164,6 +162,13 @@ def getRequest(request):
                 data['staff_contact'] = request.staff.contactNumber
             if request.solver:
                 data['solver'] = request.staff.realname
+
+            data['createdTime'] = request.createdTime.strftime("%Y-%m-%d %H:%M:%S")
+            if request.repairingTime:
+                data['repairingTime'] = request.repairingTime.strftime("%Y-%m-%d %H:%M:%S")
+            if request.completeTime:
+                data['completeTime'] = request.completeTime.strftime("%Y-%m-%d %H:%M:%S")
+
             
             requestData.append(data)
         
