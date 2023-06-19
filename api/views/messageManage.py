@@ -5,7 +5,7 @@ from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from api.models import Tenant, RentalInfo
+from api.models import Tenant, RentalInfo, Payment
 from api.utils import UTF8JsonResponse
 from ..utils import *
 
@@ -156,7 +156,6 @@ def view_tenant(request):
         user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
 
         rentalInfos = RentalInfo.objects.filter(tenant=tenant)
-
         rent_data_list = []
         for rent in rentalInfos:
             rent_data = {}
@@ -172,6 +171,17 @@ def view_tenant(request):
             rent_data_list.append(rent_data)
 
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
+
+        paymentInfos = Payment.objects.filter(tenant=tenant)
+        property_fees_list = []
+        for pay in paymentInfos:
+            pay_data = {}
+            pay_data['year'] = pay.period
+            pay_data['is_paid'] = pay.is_paid
+            pay_data['date_pay'] = pay.paymentTime
+            pay_data['money'] = pay.amount
+            property_fees_list.append(pay_data)
+        user_level_rental_detail['property_fees_data'] = property_fees_list
 
         tenantDetail.append(user_level_rental_detail)
 
