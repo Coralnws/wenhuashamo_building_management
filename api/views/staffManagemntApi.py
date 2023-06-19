@@ -108,7 +108,7 @@ def updateStaff(request):
             if position:
                 if user.position == '2'and position != '2':
                     user.m_type = '0'
-                    user.m_status = '0'
+                    user.m_status = '1'
                 user.position = position
                 
             if type:
