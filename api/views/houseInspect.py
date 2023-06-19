@@ -20,6 +20,7 @@ def house_list_by_floor(request):
             houseData['id'] = house.id
             houseData['room_number'] = house.roomNumber
             houseData['status'] = house.status
+            houseData['floor'] = floor
             rentalInfos = RentalInfo.objects.filter(house=house)
 
             rent_data_list = []
