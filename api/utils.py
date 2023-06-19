@@ -16,6 +16,8 @@ PUTMETHOD = 'PUT'
 DELETEMETHOD = 'DELETE'
 
 
+DEFAULTPASS = "wenhuashamo123."
+
 # Set redis_client
 redis_client = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, password=settings.REDIS_PASSWORD)
 
