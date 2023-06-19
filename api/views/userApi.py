@@ -54,7 +54,7 @@ def login(request):
 # session_id
 @csrf_exempt
 def logout(request):
-    if request.method != POST:
+    if request.method != 'POST':
         return not_post_method()
 
     session_id = request.POST.get('session_id')
