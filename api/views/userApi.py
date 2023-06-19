@@ -73,21 +73,27 @@ def change_password(request):
     if request.method != 'POST':
         return not_post_method()
 
-    session_id = request.POST.get('session_id')
-    user = get_user_from_redis(session_id)
-    if user is None:
-        return no_user()
+    # session_id = request.POST.get('session_id')
+    # user = get_user_from_redis(session_id)
+    # if user is None:
+    #     return no_user()
 
     try:
         info = request.POST.dict()
-        old_password = request.POST.get('old_password')
-        new_password = request.POST.get('new_password')
+        user_id = info.get('user_id')
+        old_password = info.get('old_password')
+        new_password1 = info.get('new_password1')
+        new_password2 = info.get('new_password2')
     except Exception as e:
         return default_error(e)
 
-    user = CustomUser.objects.filter(id=uid, password=make_password(old_password,"a","pbkdf2_sha1")).first()
+    if new_password1 != new_password2:
+        return return_response(100013, '新密码不同')
+
+
+    user = CustomUser.objects.filter(id=user_id, password=make_password(old_password,"a","pbkdf2_sha1")).first()
     if user:
-        user.password = make_password(new_password,"a","pbkdf2_sha1")
+        user.password = make_password(new_password1,"a","pbkdf2_sha1")
         user.save()
         return return_response(100011, '修改密码成功')
     else:
