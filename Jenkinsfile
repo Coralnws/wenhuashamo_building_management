@@ -46,7 +46,6 @@ pipeline {
                     sh "rm /var/www/allCodes/pms_backend_${BUILD_NUMBER}.zip"
 
                     // give permission to 755
-                    sh "chown -R jenkins:jenkins /var/www/pms_backend"
                     sh "chmod -R 755 /var/www/pms_backend"
 
                 }
