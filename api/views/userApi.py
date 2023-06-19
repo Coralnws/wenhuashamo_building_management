@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from api.models import CustomUser
 from django.views.decorators.csrf import csrf_exempt
 from ..utils import *
-
+import json
 
 @csrf_exempt
 def login(request):
@@ -42,7 +42,7 @@ def login(request):
         'realname': currentUser.realname,
         'session_id':session_id,
         'userId':currentUser.id,
-        'requestuid': request.session.get('uid')
+        'requestuid': request.session.get(session_id),
     }
     return UTF8JsonResponse({'errno': 100000, 'msg': '登录成功', 'data': data})
 
@@ -52,14 +52,6 @@ def logout(request):
         return UTF8JsonResponse({'errno': 100001, 'msg': '请先登录'})
     del request.session['uid']
     return UTF8JsonResponse({'errno': 100000, 'msg': '登出成功'})
-
-@csrf_exempt
-def logout(request):
-    if request.session.get('uid') is None:
-        return UTF8JsonResponse({'errno': 100001, 'msg': '请先登录'})
-    del request.session['uid']
-    return UTF8JsonResponse({'errno': 100000, 'msg': '登出成功'})
-
 
 
 @csrf_exempt
