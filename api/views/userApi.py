@@ -12,9 +12,10 @@ def login(request):
         # return UTF8JsonResponse({'errno': 100004, 'msg': '已经登录，请勿重复登录'})
     if request.method != 'POST':
         return UTF8JsonResponse({'errno': 100001, 'msg': '请求格式有误，不是POST'})
-    info = request.POST.dict()
-    username = info.get('username')
-    password = info.get('password')
+    info = json.loads(request.body)
+
+    username = info['username']
+    password = info['password']
     password = make_password(password, "a", "pbkdf2_sha1")
 
     currentUser = CustomUser.objects.filter(username=username).first()

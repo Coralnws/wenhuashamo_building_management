@@ -64,7 +64,7 @@ pipeline {
                 sh "docker stop pms_backend || true"
                 sh "docker rm pms_backend || true"
 
-                // Run the new container
+                // Run the new container and mount with local directory
                 sh "docker run -d -p 8000:8000 -v /var/www/pms_backend:/code --name pms_backend pms_backend:${BUILD_NUMBER}"
             }
         }
