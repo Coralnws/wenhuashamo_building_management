@@ -89,7 +89,7 @@ def search_tenant(request):
                 Tenant.objects.filter(contactName=search_word).first()
         )
         if tenant is None:
-            return UTF8JsonResponse(100001, '不存在这样的客户')
+            return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
         userLevelRentalDetail = {}
         userLevelRentalDetail[REQUEST_USERNAME] = tenant.contactName
@@ -128,7 +128,7 @@ def view_tenant(request):
     # else:
     #     return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
     if request.method != 'POST':
-        return UTF8JsonResponse(100001, '请求格式有误，不是GET')
+        return UTF8JsonResponse({'errno': 100001, 'msg': '请求格式有误'})
 
     # user_ID = request.GET.get('user_id')
     #
