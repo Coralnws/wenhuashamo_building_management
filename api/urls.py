@@ -38,6 +38,7 @@ urlpatterns = [
     path('tenant/delete_tenant', messageManage.delete_tenant),
     path('tenant/update_tenant', messageManage.update_tenant),
     path('tenant/view_tenant',   messageManage.view_tenant),
+    path('tenant/search_tenant', messageManage.search_tenant),
 
     #House Inspect
     path('house_inspect', houseInspect.house_list_by_floor),
