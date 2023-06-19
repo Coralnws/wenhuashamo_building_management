@@ -18,39 +18,47 @@ def login(request):
     password = info['password']
     password = make_password(password, "a", "pbkdf2_sha1")
 
-    currentUser = CustomUser.objects.filter(username=username).first()
-    currentEmailUser = CustomUser.objects.filter(email=username).first()
-    currentPhoneUser = CustomUser.objects.filter(contactNumber=username).first()
+    current_user = CustomUser.objects.filter(username=username).first()
+    current_email_user = CustomUser.objects.filter(email=username).first()
+    current_phone_user = CustomUser.objects.filter(contactNumber=username).first()
 
-    if currentUser is None and currentEmailUser is None and currentPhoneUser is None:
+    if current_user is None and current_email_user is None and current_phone_user is None:
         return UTF8JsonResponse({'errno': 100002, 'msg': '用户不存在'})
 
-    if password != currentUser.password:
+    if password != current_user.password:
         return UTF8JsonResponse({'errno': 100003, 'msg': '密码错误'})
 
-    request.session['uid'] = str(currentUser.id)
+    request.session['uid'] = str(current_user.id)
     request.session.set_expiry(12*60*60)#12小时有效期
+
+
     if not request.session.session_key:
         request.session.save() #保存之后生成session_key，之后前端以此为标头请求后端
     session_id = request.session.session_key
 
+    print(f"Session ID: {request.session.session_key}")
+    print(f"Session UID: {request.session.get('uid')}")
+
     data = {
-        'username': currentUser.username,
-        'email': currentUser.email,
-        'phonenumber': currentUser.contactNumber,
-        'position': currentUser.position,
-        'realname': currentUser.realname,
+        'username': current_user.username,
+        'email': current_user.email,
+        'phonenumber': current_user.contactNumber,
+        'position': current_user.position,
+        'realname': current_user.realname,
         'session_id':session_id,
-        'userId':currentUser.id,
-        'requestuid': request.session.get(session_id),
+        'userId':current_user.id,
+        'requestuid': request.session.get('uid'),
     }
     return UTF8JsonResponse({'errno': 100000, 'msg': '登录成功', 'data': data})
 
 @csrf_exempt
 def logout(request):
+    print(f"in House Inspect Session ID: {request.session.session_key}")
+    print(f"In House Inspect before logout: {request.session.get('uid')}")
     if request.session.get('uid') is None:
         return UTF8JsonResponse({'errno': 100001, 'msg': '请先登录'})
     del request.session['uid']
+    print(f"Session UID after logout: {request.session.get('uid')}")
     return UTF8JsonResponse({'errno': 100000, 'msg': '登出成功'})
 
 

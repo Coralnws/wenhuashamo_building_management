@@ -46,17 +46,17 @@ def rentCreate(request):
     if room_exist is None or tenant_exist is None:
         return return_response(9999, '房间或者客户不存在')
 
-    rentalInfo = RentalInfo()
-    rentalInfo.house = room_exist
-    rentalInfo.tenant = tenant_exist
-    rentalInfo.createdTime = date_sign
-    rentalInfo.startTime = date_begin
-    rentalInfo.endTime = date_end
-    rentalInfo.ispaid_management = ispaid_management
-    rentalInfo.paidManagementDate = date_paid_management
-    rentalInfo.save()
+    rental_info = RentalInfo()
+    rental_info.house = room_exist
+    rental_info.tenant = tenant_exist
+    rental_info.createdTime = date_sign
+    rental_info.startTime = date_begin
+    rental_info.endTime = date_end
+    rental_info.ispaid_management = ispaid_management
+    rental_info.paidManagementDate = date_paid_management
+    rental_info.save()
 
-    return return_response(9999, '租赁信息新建成功', rentalInfo)
+    return return_response(9999, '租赁信息新建成功', rental_info)
 
 
 '''s
@@ -75,25 +75,25 @@ def rentDetailRead(request):
 
     rental_ID = request.GET.get(REQUEST_RENTAL_ID, '')
 
-    rentalInfo = RentalInfo.objects.filter(id=rental_ID).first()
+    rental_info = RentalInfo.objects.filter(id=rental_ID).first()
 
-    if rentalInfo is None:
+    if rental_info is None:
         return return_response(99999, '租赁信息不存在')
 
     rentalDetailInfo = {}
-    rentalDetailInfo[REQUEST_RENTAL_ID] = rentalInfo.id
-    rentalDetailInfo[REQUEST_DATE_BEGIN] = rentalInfo.startTime
-    rentalDetailInfo[REQUEST_DATE_END] = rentalInfo.endTime
-    rentalDetailInfo[REQUEST_DATE_SIGN] = rentalInfo.createdTime
-    rentalDetailInfo[REQUEST_IS_PAID_MANAGEMENT] = rentalInfo.ispaid_management
-    rentalDetailInfo[REQUEST_DATE_PAID_MANAGEMENT] = rentalInfo.paidManagementDate
-    rentalDetailInfo[REQUEST_IS_PAID_RENTAL] = rentalInfo.ispaid_rental
-    rentalDetailInfo[REQUEST_DATE_PAID_RENTAL] = rentalInfo.paidRentalDate
-    rentalDetailInfo[REQUEST_ROOM_ID] = rentalInfo.house.roomNumber
-    rentalDetailInfo[REQUEST_USERNAME] = rentalInfo.tenant.username
-    rentalDetailInfo[REQUEST_LEGAL_NAME] = rentalInfo.tenant.real_name
-    rentalDetailInfo[REQUEST_COM_NAME] = rentalInfo.tenant.company
-    rentalDetailInfo[REQUEST_PHONE] = rentalInfo.tenant.contactNumber
+    rentalDetailInfo[REQUEST_RENTAL_ID] = rental_info.id
+    rentalDetailInfo[REQUEST_DATE_BEGIN] = rental_info.startTime
+    rentalDetailInfo[REQUEST_DATE_END] = rental_info.endTime
+    rentalDetailInfo[REQUEST_DATE_SIGN] = rental_info.createdTime
+    rentalDetailInfo[REQUEST_IS_PAID_MANAGEMENT] = rental_info.ispaid_management
+    rentalDetailInfo[REQUEST_DATE_PAID_MANAGEMENT] = rental_info.paidManagementDate
+    rentalDetailInfo[REQUEST_IS_PAID_RENTAL] = rental_info.ispaid_rental
+    rentalDetailInfo[REQUEST_DATE_PAID_RENTAL] = rental_info.paidRentalDate
+    rentalDetailInfo[REQUEST_ROOM_ID] = rental_info.house.roomNumber
+    rentalDetailInfo[REQUEST_USERNAME] = rental_info.tenant.username
+    rentalDetailInfo[REQUEST_LEGAL_NAME] = rental_info.tenant.real_name
+    rentalDetailInfo[REQUEST_COM_NAME] = rental_info.tenant.company
+    rentalDetailInfo[REQUEST_PHONE] = rental_info.tenant.contactNumber
 
     return return_response(9999, '租赁信息修改成功', rentalDetailInfo)
 
@@ -111,16 +111,16 @@ def rentUserDetailRead(request):
     if tenant_exist is None:
         return return_response(99999, '客户不存在')
 
-    userLevelRentalDetail = {}
-    userLevelRentalDetail[REQUEST_USERNAME] = tenant_exist.username
-    userLevelRentalDetail[REQUEST_LEGAL_NAME] = tenant_exist.real_name
-    userLevelRentalDetail[REQUEST_COM_NAME] = tenant_exist.company
-    userLevelRentalDetail[REQUEST_PHONE] = tenant_exist.contactNumber
+    user_level_rental_detail = {}
+    user_level_rental_detail[REQUEST_USERNAME] = tenant_exist.username
+    user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant_exist.real_name
+    user_level_rental_detail[REQUEST_COM_NAME] = tenant_exist.company
+    user_level_rental_detail[REQUEST_PHONE] = tenant_exist.contactNumber
 
-    rentalInfos = RentalInfo.objects.filter(tenant=tenant_exist)
+    rental_infos = RentalInfo.objects.filter(tenant=tenant_exist)
 
     rent_data_list = []
-    for rent in rentalInfos:
+    for rent in rental_infos:
         rent_data = {}
         rent_data[REQUEST_RENTAL_ID] = rent.id
         rent_data[REQUEST_DATE_BEGIN] = rent.startTime
@@ -133,9 +133,9 @@ def rentUserDetailRead(request):
         rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
         rent_data_list.append(rent_data)
 
-    userLevelRentalDetail[REQUEST_RENT_DATA] = rent_data_list
+    user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
 
-    return return_response(9999, '租赁信息修改成功', userLevelRentalDetail)
+    return return_response(9999, '租赁信息修改成功', user_level_rental_detail)
 
 
 '''s
@@ -165,66 +165,18 @@ def rentUpdate(request):
     tenant_exist = Tenant.objects.filter(id=user_ID).first()
 
 
-    rentalInfo = RentalInfo.objects.filter(id=rental_ID).first()
+    rentalI_info = RentalInfo.objects.filter(id=rental_ID).first()
 
-    if tenant_exist is None or rentalInfo is None:
+    if tenant_exist is None or rental_info is None:
         return return_response(9999, '客户或租赁信息不存在')
 
 
-    rentalInfo.tenant = tenant_exist
-    rentalInfo.createdTime = date_sign
-    rentalInfo.startTime = date_begin
-    rentalInfo.endTime = date_end
-    rentalInfo.ispaid_management = ispaid_management
-    rentalInfo.paidManagementDate = date_paid_management
-    rentalInfo.save()
+    rental_info.tenant = tenant_exist
+    rental_info.createdTime = date_sign
+    rental_info.startTime = date_begin
+    rental_info.endTime = date_end
+    rental_info.ispaid_management = ispaid_management
+    rental_info.paidManagementDate = date_paid_management
+    rental_info.save()
 
-    return return_response(9999, '租赁信息修改成功', rentalInfo)
-
-
-'''
-
-{
-    user_ID:'', //用户ID
-    is_delete:'', //是否删除
-    com_name:'', //公司名
-    legal_person:'', // 法人名
-    username:'', //联系人姓名
-    phone:'', //联系人电话
-    rent_data: [
-        {
-            room: '601',
-            date_begin: '2021-5-5',
-            date_end: '2024-5-5',
-            date_sign: '2021-4-26',
-            property_fees: '已缴纳',
-            date_pay: '2023-6-3'
-        },
-        {
-            room: '601',
-            date_begin: '2021-5-5',
-            date_end: '2024-5-5',
-            date_sign: '2021-4-26',
-            property_fees: '已缴纳',
-            date_pay: '2023-6-3'
-        },
-        {
-            room: '601',
-            date_begin: '2021-5-5',
-            date_end: '2024-5-5',
-            date_sign: '2021-4-26',
-            property_fees: '已缴纳',
-            date_pay: '2023-6-3'
-        },
-        {
-            room: '601',
-            date_begin: '2021-5-5',
-            date_end: '2024-5-5',
-            date_sign: '2021-4-26',
-            property_fees: '已缴纳',
-            date_pay: '2023-6-3'
-        }
-    ]
-}
-
-'''
+    return return_response(9999, '租赁信息修改成功', rental_info)

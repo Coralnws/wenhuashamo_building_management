@@ -92,11 +92,11 @@ def search_tenant(request):
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
         tenantDetail = []
-        userLevelRentalDetail = {}
-        userLevelRentalDetail[REQUEST_USERNAME] = tenant.contactName
-        userLevelRentalDetail[REQUEST_LEGAL_NAME] = tenant.real_name
-        userLevelRentalDetail[REQUEST_COM_NAME] = tenant.company
-        userLevelRentalDetail[REQUEST_PHONE] = tenant.contactNumber
+        user_level_rental_detail = {}
+        user_level_rental_detail[REQUEST_USERNAME] = tenant.contactName
+        user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
+        user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
+        user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
 
         rentalInfos = RentalInfo.objects.filter(tenant=tenant)
 
@@ -114,8 +114,8 @@ def search_tenant(request):
             rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
             rent_data_list.append(rent_data)
 
-        userLevelRentalDetail[REQUEST_RENT_DATA] = rent_data_list
-        tenantDetail.append(userLevelRentalDetail)
+        user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
+        tenantDetail.append(user_level_rental_detail)
         return UTF8JsonResponse({'errno': 1001, 'msg': '查询客户成功', 'data': tenantDetail})
 
 @csrf_exempt
@@ -148,12 +148,12 @@ def view_tenant(request):
 
     tenantDetail = []
     for tenant in tenants:
-        userLevelRentalDetail = {}
-        userLevelRentalDetail[REQUEST_USER_ID] = tenant.id
-        userLevelRentalDetail[REQUEST_USERNAME] = tenant.contactName
-        userLevelRentalDetail[REQUEST_LEGAL_NAME] = tenant.real_name
-        userLevelRentalDetail[REQUEST_COM_NAME] = tenant.company
-        userLevelRentalDetail[REQUEST_PHONE] = tenant.contactNumber
+        user_level_rental_detail = {}
+        user_level_rental_detail[REQUEST_USER_ID] = tenant.id
+        user_level_rental_detail[REQUEST_USERNAME] = tenant.contactName
+        user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
+        user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
+        user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
 
         rentalInfos = RentalInfo.objects.filter(tenant=tenant)
 
@@ -171,8 +171,8 @@ def view_tenant(request):
             rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
             rent_data_list.append(rent_data)
 
-        userLevelRentalDetail[REQUEST_RENT_DATA] = rent_data_list
+        user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
 
-        tenantDetail.append(userLevelRentalDetail)
+        tenantDetail.append(user_level_rental_detail)
 
     return UTF8JsonResponse({'errno': 1001, 'msg': '返回客户列表成功', 'data': tenantDetail, 'total': total})

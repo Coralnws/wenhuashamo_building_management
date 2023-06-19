@@ -18,7 +18,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
-    DEBUG=(bool, False)
+    DEBUG=(bool, True)
 )
 
 environ.Env.read_env()
@@ -173,6 +173,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
+
+SESSION_COOKIE_NAME = 'sessionid'  # Default value
+
 
 # Cache use local for the moment, 
 # need to open start redis server before able to use in local

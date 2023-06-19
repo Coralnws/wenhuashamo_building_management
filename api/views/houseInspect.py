@@ -17,11 +17,11 @@ def house_list_by_floor(request):
         print(len(houses))
 
         for house in houses:
-            houseData = {}
-            houseData['id'] = house.id
-            houseData['room_number'] = house.roomNumber
-            houseData['status'] = house.status
-            houseData['floor'] = house.floor
+            house_data = {}
+            house_data['id'] = house.id
+            house_data['room_number'] = house.roomNumber
+            house_data['status'] = house.status
+            house_data['floor'] = house.floor
             rentalInfos = RentalInfo.objects.filter(house=house)
 
             rent_data_list = []
@@ -35,8 +35,8 @@ def house_list_by_floor(request):
                 rent_data['real_name'] = rentTenant.real_name
                 rent_data_list.append(rent_data)
 
-            houseData['rent_data'] = rent_data_list
-            houseList.append(houseData)
+            house_data['rent_data'] = rent_data_list
+            houseList.append(house_data)
 
         return UTF8JsonResponse({'errno': 1001, 'msg': '返回房间列表成功', 'data': houseList})
     else:
