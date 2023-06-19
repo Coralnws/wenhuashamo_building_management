@@ -212,7 +212,7 @@ def get_staff_filters(position = None, status = None, types = None, search = Non
         #staff_list = CustomUser.objects.filter(position=position)
     if status:
         filters &= Q(m_status=status)
-    if type:
+    if types:
         filters &= Q(m_type=types)
     if search:
         filters &= Q(realname__icontains=search) | Q(contactNumber__icontains=search)
