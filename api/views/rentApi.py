@@ -38,8 +38,8 @@ def rentCreate(request):
     date_end = info.get(REQUEST_DATE_END)
     date_sign = info.get(REQUEST_DATE_SIGN)
 
-    ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
-    date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
+    #ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
+    #date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
     room_exist = House.objects.filter(roomNumber=room_ID).first()
     tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
@@ -53,12 +53,12 @@ def rentCreate(request):
     rental_info.createdTime = date_sign
     rental_info.startTime = date_begin
     rental_info.endTime = date_end
-    rental_info.ispaid_management = ispaid_management
-    rental_info.paidManagementDate = date_paid_management
+    #rental_info.ispaid_management = ispaid_management
+    #rental_info.paidManagementDate = date_paid_management
     rental_info.save()
+    data=model_to_dict(rental_info)
 
-    return return_response(9999, '租赁信息新建成功', rental_info)
-
+    return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息新建成功', 'data':data})
 
 '''s
     @param:
@@ -155,29 +155,49 @@ def rentUpdate(request):
 
     info = request.POST.dict()
 
-    rental_ID = info.get(REQUEST_RENTAL_ID)
-    user_ID = info.get(REQUEST_USER_ID)
+    tenant_ID = info.get(REQUEST_TENANT_ID)
+    room_ID = info.get(REQUEST_ROOM_ID)
     date_begin = info.get(REQUEST_DATE_BEGIN)
     date_end = info.get(REQUEST_DATE_END)
     date_sign = info.get(REQUEST_DATE_SIGN)
-    ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
-    date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
+    # ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
+    # date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
-    tenant_exist = Tenant.objects.filter(id=user_ID).first()
+    tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
+    house = House.objects.filter(roomNumber=room_ID).first()
 
-
-    rentalI_info = RentalInfo.objects.filter(id=rental_ID).first()
+    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,house=house).first()
 
     if tenant_exist is None or rental_info is None:
         return return_response(9999, '客户或租赁信息不存在')
 
 
-    rental_info.tenant = tenant_exist
+    #rental_info.tenant = tenant_exist
     rental_info.createdTime = date_sign
     rental_info.startTime = date_begin
     rental_info.endTime = date_end
-    rental_info.ispaid_management = ispaid_management
-    rental_info.paidManagementDate = date_paid_management
+    # rental_info.ispaid_management = ispaid_management
+    # rental_info.paidManagementDate = date_paid_management
     rental_info.save()
 
-    return return_response(9999, '租赁信息修改成功', rental_info)
+    data=model_to_dict(rental_info)
+
+    return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息修改成功', 'data':data})
+
+@csrf_exempt
+def rentDelete(request):
+    if request.method != POSTMETHOD:
+        return return_response(100001, '请求格式有误，不是POST')
+    
+    info = request.POST.dict()
+
+    tenant_ID = info.get(REQUEST_TENANT_ID)
+    room_ID = info.get(REQUEST_ROOM_ID)
+
+    tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
+    house_exist = House.objects.filter(roomNumber=room_ID).first()
+    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,house=house_exist).first()
+
+    rental_info.delete()
+
+    return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息删除成功'})

@@ -17,6 +17,7 @@ urlpatterns = [
     path('rent/create', rentApi.rentCreate),
     path('rent/detailRead', rentApi.rentDetailRead),
     path('rent/update', rentApi.rentUpdate),
+    path('rent/delete', rentApi.rentDelete),
     path('rent/user/detail', rentApi.rentUserDetailRead),
 
     #Staff Management

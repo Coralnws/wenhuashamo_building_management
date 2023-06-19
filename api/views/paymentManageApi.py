@@ -115,6 +115,10 @@ def updateRecord(request):
         if amount:
             record.amount = amount
         if is_paid:
+            if is_paid == '1':
+                is_paid = True
+            elif is_paid =='0':
+                is_paid = False
             record.is_paid = is_paid
         if payment_time:
             record.paymentTime = payment_time
