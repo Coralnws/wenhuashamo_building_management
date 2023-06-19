@@ -151,6 +151,8 @@ def deleteStaff(request):
 def getStaff(request):
     if request.method == 'GET':
         userId = request.GET.get('staffId','')
+        position = request.GET.get('position','')
+                                   
         if userId:
             staff = CustomUser.objects.filter(id=userId).first()
             staffData = {}
@@ -161,21 +163,32 @@ def getStaff(request):
             staffData['type'] = staff.m_type
             staffData['status'] = staff.m_status
             return UTF8JsonResponse({'errno':1001, 'msg': '返回员工信息成功', 'data': staffData})
+        
+        staff_list = None
+        if position:
+            staff_list = CustomUser.objects.filter(position=position)
 
-        staffList = CustomUser.objects.filter(Q(position='2') | Q(position='3') | Q(position='4')).order_by('-position')
+        else:
+            staff_list = CustomUser.objects.filter(Q(position='2') | Q(position='3') | Q(position='4')).order_by('-position')
         #ordered = sorted(staffList, key=operator.attrgetter('position'),reverse=False)
 
         staffListData=[]
-        for staff in staffList:
+        for staff in staff_list:
             staffData={}
             staffData['id']=staff.id
             staffData['name']=staff.realname
             staffData['contact'] = staff.contactNumber
             staffData['position']=staff.position
-            staffData['type'] = staff.m_type
-            staffData['status'] = staff.m_status
+            if staff.position != '2':
+                staffData['type'] = '-'
+                staffData['status'] = '-'
+            else:
+                staffData['type'] = staff.m_type
+                staffData['status'] = staff.m_status
+
 
             staffListData.append(staffData)
+
 
             
         return UTF8JsonResponse({'errno':1001, 'msg': '返回员工列表成功', 'data': staffListData})
