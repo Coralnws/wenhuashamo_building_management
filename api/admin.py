@@ -10,6 +10,10 @@ class PaymentConfig(admin.ModelAdmin):
 class TenantConfig(admin.ModelAdmin):
     list_display = ('id', 'username','real_name')
 
+class RepairConfig(admin.ModelAdmin):
+    list_display = ('id', 'createdTime','house','company','contactName','contactNumber','staff',
+                    'staffContact','manager','repairingTime','status','plan','completeTime','solver')
+
 class HouseConfig(admin.ModelAdmin):
     list_display = ('id', 'roomNumber', 'floor')
 
