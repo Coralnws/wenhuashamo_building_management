@@ -18,10 +18,10 @@ def login(request):
     password = make_password(password, "a", "pbkdf2_sha1")
 
     currentUser = CustomUser.objects.filter(username=username).first()
-    #currentEmailUser = CustomUser.objects.filter(email=username).first()
-    #currentPhoneUser = CustomUser.objects.filter(contactNumber=username).first()
+    currentEmailUser = CustomUser.objects.filter(email=username).first()
+    currentPhoneUser = CustomUser.objects.filter(contactNumber=username).first()
 
-    if currentUser is None:
+    if currentUser is None and currentEmailUser is None and currentPhoneUser is None:
         return UTF8JsonResponse({'errno': 100002, 'msg': '用户不存在'})
 
     if password != currentUser.password:
