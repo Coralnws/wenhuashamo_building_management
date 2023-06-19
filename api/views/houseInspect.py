@@ -7,14 +7,15 @@ from api.utils import UTF8JsonResponse
 @csrf_exempt
 def house_list_by_floor(request):
     if request.method == 'POST':
-        floor = request.POST.get('floor')
+        floor = request.GET.get('floor')
         if floor == '0':
             houses = House.objects.all()
         else:
             houses = House.objects.all().filter(floor=floor)
 
-        print(len(houses))
         houseList = []
+        print(len(houses))
+
         for house in houses:
             houseData = {}
             houseData['id'] = house.id
