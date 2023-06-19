@@ -41,6 +41,8 @@ def create_request(request):
         contact_number = request.POST.get('contact_number')
 
         house = House.objects.filter(roomNumber=room).first()
+        if house is None:
+            return UTF8JsonResponse({'errno':7001, 'msg': '房间不存在'})
         submitter = CustomUser.objects.filter(id=user_id).first()
 
         repair = Repair(description=description,house=house,createdTime=time,
