@@ -134,6 +134,8 @@ def getRequest(request):
         status = request.GET.get('status','')
         user_id = request.GET.get('user_id','')
 
+        
+
         request_list = None
         
         filter = Q()
@@ -158,7 +160,8 @@ def getRequest(request):
             if request.manager:
                 data['manager'] = request.manager.realname
             if request.staff:
-                data['staff'] = request.staff.realname
+                data['repair_staff'] = request.staff.realname
+                data['staff_contact'] = request.staff.contactNumber
             if request.solver:
                 data['solver'] = request.staff.realname
             

@@ -10,7 +10,7 @@ def repairPhoto_to(instance, filename):
     
 class Repair(models.Model):
     description = models.CharField(max_length=200)
-    createdTime = models.DateTimeField(auto_now_add=True)
+    createdTime = models.DateTimeField(null=True, blank=True)
     house = models.ForeignKey(House, on_delete=models.CASCADE)
     company = models.CharField(max_length=50,null=True,blank=True)
     submitter = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True,blank=True)

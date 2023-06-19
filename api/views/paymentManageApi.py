@@ -12,7 +12,43 @@ from django.forms.models import model_to_dict
 from django.db.models import Q
 import operator
 
+"""
+@csrf_exempt
+def createRecord(request):
+    if request.method == 'POST':
+        tenant_id = request.POST.get("tenant_id")
+        period = request.POST.get('year')
+        is_paid = request.POST.get('is_paid')
+        payment_time = request.POST.get('payment_time')
+        amount = request.POST.get('money')
 
+        tenant = Tenant.objects.filter(id=tenant_id).first()
+        record = Payment(tenant=tenant,period=period,is_paid=is_paid,paymemtTime=payment_time,
+                         )
+
+
+
+'''
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey("Tenant", on_delete=models.CASCADE, null=True, blank=True)
+    period = models.CharField(max_length=10,null=True, blank=True)
+    is_paid = models.BooleanField(default=False)
+
+    paymentTime = models.DateTimeField(default=timezone.now)
+    tenant = models.ForeignKey("Tenant", related_name="tenant_pay",on_delete=models.CASCADE, null=True, blank=True)
+    rentalInfo = models.ForeignKey("RentalInfo", related_name="rentalinfo_pay",on_delete=models.CASCADE, null=True, blank=True)
+    house =  models.ForeignKey("House",  related_name="house_pay",on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.IntegerField()
+    type = models.CharField(max_length=10, choices=TYPE,default='0')
+'''
+
+
+
+
+
+
+
+"""
 @csrf_exempt
 def createRecord(request):
     if request.method == 'POST':
