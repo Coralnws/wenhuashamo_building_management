@@ -51,7 +51,7 @@ def add_tenant(request):
 def delete_tenant(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
-        tenant = Tenant.objects.get(id=user_id)
+        tenant = Tenant.objects.filter(id=user_id).first()
         tenant.delete()
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant deleted successfully!'})
     else:
@@ -62,7 +62,7 @@ def delete_tenant(request):
 def update_tenant(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
-        tenant = Tenant.objects.get(id=user_id)
+        tenant = Tenant.objects.filter(id=user_id).first()
         # 更新客户信息
         tenant.real_name = request.POST.get('real_name')
         tenant.company = request.POST.get('company')
