@@ -239,27 +239,6 @@ def close_task(request):
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
-'''
-    description = models.CharField(max_length=200)
-    createdTime = models.DateTimeField(auto_now_add=True)
-    house = models.ForeignKey(House, on_delete=models.CASCADE)
-    contactName = models.CharField(max_length=50)
-    contactNumber = models.CharField(max_length=20)
-    staff = models.ForeignKey(CustomUser, related_name="repair_staff",on_delete=models.CASCADE, null=True, blank=True)
-    manager = models.ForeignKey(CustomUser,related_name="repair_manager",  on_delete=models.CASCADE, null=True, blank=True)
-    repairingTime = models.DateTimeField(null=True, blank=True)
-    status_choices = [
-        ('Open', 'Open'),
-        ('In Progress', 'In Progress'),
-        ('Complete', 'Complete'),
-    ]
-    status = models.CharField(max_length=20, choices=status_choices, default='Open')
-    plan = models.TextField(blank=True)
-    complete_time = models.DateTimeField(null=True, blank=True)
-    solver = models.ForeignKey(CustomUser, related_name="repair_solver", on_delete=models.CASCADE, null=True, blank=True)
-'''
-
-
 
 
     

@@ -22,9 +22,9 @@ def create_record(request):
         payment_time = request.POST.get('payment_time')
         amount = request.POST.get('money')
 
-        if is_paid == '0':
+        if is_paid == '未缴费' or is_paid == '0': 
             is_paid = False
-        elif is_paid == '1':
+        elif is_paid == '已缴费' or is_paid == '1':
             is_paid = True
 
         tenant = Tenant.objects.filter(id=tenant_id).first()
@@ -115,10 +115,10 @@ def update_record(request):
         if amount:
             record.amount = amount
         if is_paid:
-            if is_paid == '1':
-                is_paid = True
-            elif is_paid =='0':
+            if is_paid == '未缴费' or is_paid == '0': 
                 is_paid = False
+            elif is_paid == '已缴费' or is_paid == '1':
+                is_paid = True
             record.is_paid = is_paid
         if payment_time:
             record.paymentTime = payment_time
