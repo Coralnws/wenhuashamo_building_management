@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api.models import Tenant, RentalInfo
 from api.utils import UTF8JsonResponse
+from ..utils import *
 
 REQUEST_RENTAL_ID = 'rental_id'
 REQUEST_USER_ID = 'user_id'
