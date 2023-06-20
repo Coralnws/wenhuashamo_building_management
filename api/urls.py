@@ -7,6 +7,8 @@ from api.views import paymentManageApi
 from api.views import messageManage
 from api.views import houseInspect
 from api.views import maintenanceApi
+from api.views import visitRequestApi
+
 urlpatterns = [
 
     # User Authentication
@@ -52,6 +54,9 @@ urlpatterns = [
     path('repair/closeTask', maintenanceApi.close_task),
     path('repair/updateRequest', maintenanceApi.update_request),
     path('repair/delRequest', maintenanceApi.del_request),
+
+    #Visit
+    path('visit/createRequest', visitRequestApi.create_request),
 
     #House Inspect
     path('house_inspect', houseInspect.house_list_by_floor),

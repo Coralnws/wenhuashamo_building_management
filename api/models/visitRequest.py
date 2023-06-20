@@ -1,6 +1,7 @@
 from django.db import models
 
 from api.models.house import House
+from api.models.users import CustomUser
 
 
 class VisitRequest(models.Model):
@@ -8,7 +9,7 @@ class VisitRequest(models.Model):
     ic = models.CharField(max_length=20)
     visit_time = models.DateTimeField()
     company = models.CharField(max_length=20,null=True,blank=True)
-    inviter = models.ForeignKey(House, related_name='inviter',on_delete=models.CASCADE,null=True,blank=True)
+    inviter = models.ForeignKey(CustomUser, related_name='inviter',on_delete=models.CASCADE,null=True,blank=True)
     contact_number = models.CharField(max_length=20)
     otp = models.CharField(max_length=8)
     otp_sent = models.IntegerField()
