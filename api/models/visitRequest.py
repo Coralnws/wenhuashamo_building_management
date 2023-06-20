@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils import timezone
 from api.models.house import House
 from api.models.users import CustomUser
 
@@ -15,5 +15,6 @@ class VisitRequest(models.Model):
     otp_sent = models.IntegerField()
     house = models.ForeignKey(House, related_name='invite_house',on_delete=models.CASCADE,null=True,blank=True)
 
-
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
 
