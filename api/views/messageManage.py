@@ -124,17 +124,17 @@ def search_tenant(request):
         if tenant is None:
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
-        tenantDetail = []
+        tenant_detail = []
         user_level_rental_detail = {}
         user_level_rental_detail[REQUEST_USERNAME] = tenant.contactName
         user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
         user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
         user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
 
-        rentalInfos = RentalInfo.objects.filter(tenant=tenant)
+        rental_infos = RentalInfo.objects.filter(tenant=tenant)
 
         rent_data_list = []
-        for rent in rentalInfos:
+        for rent in rental_infos:
             rent_data = {}
             rent_data[REQUEST_RENTAL_ID] = rent.id
             if rent.startTime:
@@ -153,8 +153,8 @@ def search_tenant(request):
             rent_data_list.append(rent_data)
 
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
-        tenantDetail.append(user_level_rental_detail)
-        return UTF8JsonResponse({'errno': 1001, 'msg': '查询客户成功', 'data': tenantDetail})
+        tenant_detail.append(user_level_rental_detail)
+        return UTF8JsonResponse({'errno': 1001, 'msg': '查询客户成功', 'data': tenant_detail})
 
 @csrf_exempt
 def view_tenant(request):
@@ -184,7 +184,7 @@ def view_tenant(request):
     total = Tenant.objects.all().count()
     tenants = Tenant.objects.all()[left:right]
 
-    tenantDetail = []
+    tenant_detail = []
     for tenant in tenants:
         user_level_rental_detail = {}
         user_level_rental_detail[REQUEST_USER_ID] = tenant.id
@@ -193,9 +193,9 @@ def view_tenant(request):
         user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
         user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
 
-        rentalInfos = RentalInfo.objects.filter(tenant=tenant)
+        rental_infos = RentalInfo.objects.filter(tenant=tenant)
         rent_data_list = []
-        for rent in rentalInfos:
+        for rent in rental_infos:
             rent_data = {}
             rent_data[REQUEST_RENTAL_ID] = rent.id
             if rent.startTime:
@@ -215,9 +215,9 @@ def view_tenant(request):
 
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
 
-        paymentInfos = Payment.objects.filter(tenant=tenant)
+        payment_infos = Payment.objects.filter(tenant=tenant)
         property_fees_list = []
-        for pay in paymentInfos:
+        for pay in payment_infos:
             pay_data = {}
             pay_data['year'] = pay.period
             pay_data['is_paid'] = pay.is_paid
@@ -227,6 +227,6 @@ def view_tenant(request):
             property_fees_list.append(pay_data)
         user_level_rental_detail['property_fees_data'] = property_fees_list
 
-        tenantDetail.append(user_level_rental_detail)
+        tenant_detail.append(user_level_rental_detail)
 
-    return UTF8JsonResponse({'errno': 1001, 'msg': '返回客户列表成功', 'data': tenantDetail, 'total': total})
+    return UTF8JsonResponse({'errno': 1001, 'msg': '返回客户列表成功', 'data': tenant_detail, 'total': total})

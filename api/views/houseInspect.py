@@ -17,7 +17,7 @@ def house_list_by_floor(request):
         else:
             houses = House.objects.all().filter(floor=floor).order_by('roomNumber')
 
-        houseList = []
+        house_list = []
         print(len(houses))
 
         for house in houses:
@@ -27,9 +27,9 @@ def house_list_by_floor(request):
             # house_data['status'] = house.status
             house_data['floor'] = house.floor
 
-            rentalInfos = RentalInfo.objects.filter(house=house).order_by('-endTime')
+            rental_infos = RentalInfo.objects.filter(house=house).order_by('-endTime')
             
-            if len(rentalInfos) > 0:
+            if len(rental_infos) > 0:
                 house_data['status'] = True
             else:
                 house_data['status'] = False
@@ -37,7 +37,7 @@ def house_list_by_floor(request):
             rent_data_list = []
 
             first=True
-            for rent in rentalInfos:
+            for rent in rental_infos:
                 #datetime_obj = datetime.datetime.strptime(rent.endTime, '%Y-%m-%d')
                 if rent.endTime < timezone.now() and first:
                     house.status=False
@@ -53,15 +53,15 @@ def house_list_by_floor(request):
                 rent_data = {}
                 rent_data['start_time'] = rent.startTime
                 rent_data['end_time'] = rent.endTime
-                rentTenant = Tenant.objects.filter(id=rent.tenant.id).first()
-                rent_data['company'] = rentTenant.company
-                rent_data['real_name'] = rentTenant.real_name
+                rent_tenant = Tenant.objects.filter(id=rent.tenant.id).first()
+                rent_data['company'] = rent_tenant.company
+                rent_data['real_name'] = rent_tenant.real_name
                 rent_data_list.append(rent_data)
 
             house_data['rent_data'] = rent_data_list
-            houseList.append(house_data)
+            house_list.append(house_data)
 
-        return UTF8JsonResponse({'errno': 1001, 'msg': '返回房间列表成功', 'data': houseList})
+        return UTF8JsonResponse({'errno': 1001, 'msg': '返回房间列表成功', 'data': house_list})
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
     # for house in houses:

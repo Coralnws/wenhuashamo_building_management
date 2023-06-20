@@ -71,15 +71,15 @@ def update_request(request):
         info = request.POST.dict()
         request_id = info.get('request_id')
         description = info.get('description')
-        createdTime = info.get('submitTime')
+        created_time = info.get('submitTime')
         room = info.get('room')
         company = info.get('company')
-        contactName = info.get('submitterName')
-        contactNumber = info.get('submitterContact')
-        staffId = info.get('assignStaffId')
-        staffContact = info.get('staffContact')
-        managerId = info.get('managerIncharge')
-        repairingTime = info.get('estimateRepairTime')
+        contact_name = info.get('submitterName')
+        contact_number = info.get('submitterContact')
+        staff_id = info.get('assignStaffId')
+        staff_contact = info.get('staffContact')
+        manager_id = info.get('managerIncharge')
+        repairing_time = info.get('estimateRepairTime')
         status = info.get('status')
         plan = info.get('plan')
         complete_time = info.get('complete_time')
@@ -90,27 +90,27 @@ def update_request(request):
         if description:
             print("here")
             record.description = description
-        if createdTime:    
-            record.createdTime = createdTime
+        if created_time:    
+            record.createdTime = created_time
         if room:
             house = House.objects.filter(roomNumber=room)
             record.house=house
         if company:
             record.company = company
-        if contactName:
-            record.contactName = contactName
-        if contactNumber:
-            record.contactNumber = contactNumber
-        if staffId:
-            staff=CustomUser.objects.filter(id=staffId)
+        if contact_name:
+            record.contactName = contact_name
+        if contact_number:
+            record.contactNumber = contact_number
+        if staff_id:
+            staff=CustomUser.objects.filter(id=staff_id)
             record.staff=staff
-        if staffContact:
-            record.staffContact = staffContact
-        if managerId:
-            manager = CustomUser.objects.filter(id=managerId)
+        if staff_contact:
+            record.staffContact = staff_contact
+        if manager_id:
+            manager = CustomUser.objects.filter(id=manager_id)
             record.manager = manager
-        if repairingTime:
-            record.repairingTime = repairingTime
+        if repairing_time:
+            record.repairingTime = repairing_time
         if status:
             record.status = status
         if plan:
@@ -156,7 +156,7 @@ def get_request(request):
 
         request_list = Repair.objects.filter(filter).order_by('createdTime')
     
-        requestData=[]
+        request_data=[]
 
         for request in request_list:
             
@@ -179,9 +179,9 @@ def get_request(request):
                 data['completeTime'] = request.completeTime.strftime("%Y-%m-%d %H:%M:%S")
 
             
-            requestData.append(data)
+            request_data.append(data)
         
-        return UTF8JsonResponse({'errno':1001, 'msg': '成功获取报修列表','data':requestData})
+        return UTF8JsonResponse({'errno':1001, 'msg': '成功获取报修列表','data':request_data})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 

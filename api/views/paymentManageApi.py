@@ -37,54 +37,10 @@ def create_record(request):
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
-"""
-@csrf_exempt
-def create_record(request):
-    if request.method == 'POST':
-        info = request.POST.dict()
-        tenantId = info.get('tenantId') #针对租客
-        houseId = info.get('houseId')  #针对房屋
-        rentalInfoId = info.get('rentalId')  #针对租赁合约
-
-        type = info.get('paymentType')
-        date = info.get('paymentTime')
-        amount = info.get('amount')
-    
-        payment = Payment()
-
-        if tenantId:
-            tenant = Tenant.objects.filter(id=tenantId).first()
-            payment.tenant = tenant
-        if houseId:
-            house = House.objects.filter(id=houseId).first()
-            payment.house = house
-        if rentalInfoId:
-            rentalInfo = RentalInfo.objects.filter(id=rentalInfoId).first()
-            payment.rentalInfo = rentalInfo
-        if type:
-            payment.type = type
-        if date:
-            payment.createdTime = date
-        if amount:
-            payment.amount = amount
-
-        payment.save()
-        data = model_to_dict(payment)
-
-        return UTF8JsonResponse({'errno':1001, 'msg': '成功添加缴费信息','data':data})
-    else:
-        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
-"""
 
 @csrf_exempt
 def delete_record(request):
     if request.method == 'POST':
-        # userId=request.session.get('uid')
-        # if userId is None:
-        #     return UTF8JsonResponse({'errno': 3001, 'msg': '当前cookie为空，未登录，请先登录'})
-        # user = CustomUser.objects.filter(id=userId).first()
-        # if user.position != 4 and user.position != 3:
-        #     return UTF8JsonResponse({'errno': 3001, 'msg': '无权限'})
 
         tenant_id = request.POST.get('tenant_id')
         year = request.POST.get('year')
@@ -134,12 +90,12 @@ def update_record(request):
 def update_payment_status(request):
     if request.method == 'POST':
         info = request.POST.dict()
-        rentalInfoId = info.get('rentalId')  #针对租赁合约
+        rental_info_id = info.get('rentalId')  #针对租赁合约
         type = info.get('type') #0-修改租赁费状态 1-修改物业费状态 
         status = info.get('status') #0=未缴费 1=已缴费
         time  = info.get('paymentTime') #修改的时间
 
-        rental = RentalInfo.objects.filter(id = rentalInfoId).first()
+        rental = RentalInfo.objects.filter(id=rental_info_id).first()
         
         if type == '1': #修改物业费
             if status and status=='0':
@@ -147,22 +103,14 @@ def update_payment_status(request):
                 if time:
                     rental.nextManagementFeeDeadline = time
                 else:
-                    #date = rental.nextManagementFeeDeadline
                     rental.nextManagementFeeDeadline -= datetime.timedelta(days=365)
-                    # date.replace(year = date.year - 1)
-                    # print(date)
-                    # rental.nextManagementFeeDeadline = date
-                
-                
+
             if status and status=='1':
                 rental.ispaid_management = True
                 if time:
                     rental.nextManagementFeeDeadline = time
                 else:
                     rental.nextManagementFeeDeadline += datetime.timedelta(days=365)
-                    # date = rental.nextManagementFeeDeadline
-                    # date.replace(year = date.year + 1)
-                    # rental.nextManagementFeeDeadline = date
         
         if type == '0':
             if status and status=='0':
@@ -171,18 +119,12 @@ def update_payment_status(request):
                     rental.nextRentalDeadline = time
                 else:
                     rental.nextRentalDeadline -= datetime.timedelta(days=365)
-                    # date = rental.nextRentalDeadline
-                    # date.replace(year = date.year - 1)
-                    # rental.nextRentalDeadline = date
             if status and status=='1':
                 rental.ispaid_rental = True
                 if time:
                     rental.nextRentalDeadline = time
                 else:
                     rental.nextRentalDeadline += datetime.timedelta(days=365)
-                    # date = rental.nextRentalDeadline
-                    # date.replace(year = date.year + 1)
-                    # rental.nextRentalDeadline = date
         rental.save()
         data = model_to_dict(rental)
         return UTF8JsonResponse({'errno':1001, 'msg': '成功修改缴费信息','data': data})
@@ -193,49 +135,48 @@ def update_payment_status(request):
 @csrf_exempt
 def get_payment_detail(request):
     if request.method == 'GET':
-        tenantId = request.GET.get('tenantId','')
-        houseId = request.GET.get('houseId','')
-        rentalId = request.GET.get('rentalId','')
+        tenant_id = request.GET.get('tenantId','')
+        house_id = request.GET.get('houseId','')
+        rental_id = request.GET.get('rentalId','')
         type = request.GET.get('type','') #1-租赁费   2-物业费
  
         tenant = None
         house = None
-        PaymentRecord = None
+        payment_record = None
         rental = None
        
-        if tenantId:
-            tenant = Tenant.objects.filter(id=tenantId).first()
-            PaymentRecord = Payment.objects.filter(tenant=tenant,type=type).order_by('-paymentTime')
-        if houseId:
-            house = House.objects.filter(id=houseId).first()
-            PaymentRecord = Payment.objects.filter(house=house,type=type).order_by('-paymentTime')
-        if tenantId and houseId:
-            PaymentRecord = Payment.objects.filter(tenant=tenant,house=house,type=type).order_by('-paymentTime')
+        if tenant_id:
+            tenant = Tenant.objects.filter(id=tenant_id).first()
+            payment_record = Payment.objects.filter(tenant=tenant,type=type).order_by('-paymentTime')
+        if house_id:
+            house = House.objects.filter(id=house_id).first()
+            payment_record = Payment.objects.filter(house=house,type=type).order_by('-paymentTime')
+        if tenant_id and house_id:
+            payment_record = Payment.objects.filter(tenant=tenant,house=house,type=type).order_by('-paymentTime')
         
-        if rentalId:
-            rental = RentalInfo.objects.filter(id=rentalId).first()
+        if rental_id:
+            rental = RentalInfo.objects.filter(id=rental_id).first()
 
-            paymentListData=[]
-            #year = rental.startTime.strftime("%Y")
+            payment_list_data=[]
             year=None
             startyear = rental.startTime.strftime("%Y")
             first=1
         
-            paymentData=[]    
-            index = len(PaymentRecord)
-            for payment in PaymentRecord:
+            payment_data=[]    
+            index = len(payment_record)
+            for payment in payment_record:
                 if first:
                     year = payment.paymentTime.strftime("%Y")
                     first=0
 
                 if payment.paymentTime.strftime("%Y") < year:
-                    paymentListData.append(paymentData) 
-                    paymentData=[]
+                    payment_list_data.append(payment_data) 
+                    payment_data=[]
                     
                     if int(payment.paymentTime.strftime("%Y")) != int(year)-1:
                         while int(payment.paymentTime.strftime("%Y")) != int(year)-1:
-                            paymentListData.append(paymentData) 
-                            paymentData=[]
+                            payment_list_data.append(payment_data) 
+                            payment_data=[]
                             year = str(int(year)-1)
                         year = payment.paymentTime.strftime("%Y")   
                     else:       
@@ -250,54 +191,51 @@ def get_payment_detail(request):
                 data['paymentTime']=payment.paymentTime
                 data['amount']=payment.amount
                 print(data)
-                paymentData.append(data) 
+                payment_data.append(data) 
 
                 index -= 1
 
                 if index == 0 :
                     year = payment.paymentTime.strftime("%Y")
-                    paymentListData.append(paymentData) 
-                    paymentData=[]
+                    payment_list_data.append(payment_data) 
+                    payment_data=[]
 
-            return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': paymentListData})
+            return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': payment_list_data})
 
-        paymentListData=[]
-                                            
-        for payment in PaymentRecord:            
+        payment_list_data=[]
+
+        for payment in payment_record:
             data = {}
             data['id']=payment.id
             data['paymentTime']=payment.paymentTime
             data['amount']=payment.amount
-            paymentListData.append(data) 
+            payment_list_data.append(data) 
                 
-        return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': paymentListData})
+        return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': payment_list_data})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
-#.strftime("%Y-%m-%d %H:%M")
 
 
 @csrf_exempt
 def get_payment_record(request):
     if request.method == 'GET':
-        tenantId = request.GET.get('tenantId','')
-        tenant = Tenant.objects.filter(id=tenantId).first()
-        PaymentRecord = Payment.objects.filter(tenant=tenant,type=2).order_by('-paymentTime')
+        tenant_id = request.GET.get('tenantId','')
+        tenant = Tenant.objects.filter(id=tenant_id).first()
+        payment_record = Payment.objects.filter(tenant=tenant,type=2).order_by('-paymentTime')
     
-        paymentListData=[]
+        payment_list_data=[]
 
-                                            
-        for payment in PaymentRecord:            
+        for payment in payment_record:
             data = {}
             data['id']=payment.id
             data['paymentTime']=payment.paymentTime
             data['amount']=payment.amount
-            paymentListData.append(data) 
+            payment_list_data.append(data) 
 
         
-        return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': paymentListData})
+        return UTF8JsonResponse({'errno':1001, 'msg': '返回缴费记录成功', 'data': payment_list_data})
     else:
-        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
-#.strftime("%Y-%m-%d %H:%M")
+        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 @csrf_exempt
 def get_record(request):
@@ -309,8 +247,7 @@ def get_record(request):
 
         record_list_data=[]
 
-                                            
-        for record in record_list:            
+        for record in record_list:
             data = {}
             data['id']=record.id
             data['year']=record.period
