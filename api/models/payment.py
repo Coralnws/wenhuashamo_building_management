@@ -13,7 +13,7 @@ class Payment(models.Model):
     period = models.CharField(max_length=50,null=True, blank=True)
     is_paid = models.BooleanField(default=False,null=True, blank=True)
 
-    paymentTime = models.DateTimeField(default=timezone.now)
+    paymentTime = models.DateTimeField(null=True, blank=True)
     tenant_pay = models.ForeignKey("Tenant", related_name="tenant_pay",on_delete=models.CASCADE, null=True, blank=True)
     rentalInfo = models.ForeignKey("RentalInfo", related_name="rentalinfo_pay",on_delete=models.CASCADE, null=True, blank=True)
     house =  models.ForeignKey("House",  related_name="house_pay",on_delete=models.CASCADE, null=True, blank=True)
