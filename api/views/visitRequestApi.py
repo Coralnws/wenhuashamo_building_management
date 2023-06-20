@@ -41,22 +41,109 @@ def create_request(request):
     visit_time = request.POST.get('visit_time')
     visitor_contact = request.POST.get('visitor_contact')
     company = request.POST.get('company')
+    room = request.POST.get('room')
 
     inviter = CustomUser.objects.filter(id=user_id).first()
+    house = House.objects.filter(roomNumber=room).first()
 
     code=gen_code()
     
     visit = VisitRequest(name=visitor_name,ic=visitor_ic,contact_number=visitor_contact,visit_time=visit_time,
-                             otp=code,company=company,otp_sent=0,inviter=inviter)
+                             otp=code,company=company,otp_sent=0,inviter=inviter,house=house)
         
     visit.save()
     data=model_to_dict(visit)
 
     return return_response(1001, '创建访客申请成功', data)        
 
+@csrf_exempt
+def del_request(request):
+    if request.method != 'POST':
+        return not_post_method()
 
-        
+    visit_id = request.POST.get('visit_id')
+    visit = VisitRequest.objects.filter(id=visit_id).first()
+    visit.delete()
+
+    return return_response(1001, '删除访客申请成功')        
+
+
+@csrf_exempt
+def update_request(request):
+    if request.method != 'POST':
+        return not_post_method()
     
+    info = request.POST.dict()
+    visit_id = info.get('visit_id')
+    visitor_name = info.get('visitor_name')
+    visitor_ic = info.get('visitor_ic')
+    visit_time = info.get('visit_time')
+    visitor_contact = info.get('visitor_contact')
+    company = info.get('company')
+    resend = info.get('resend')
+    room = info.get('room')
+
+    visit = VisitRequest.objects.filter(id=visit_id).first()
+    if visitor_name:
+        visit.name = visitor_name
+    if visitor_ic:
+        visit.ic = visitor_ic
+    if visit_time:
+        visit.visit_time = visit_time
+    if visitor_contact:
+        visit.contact_number = visitor_contact
+    if company:
+        visit.company = company
+    if resend:
+        code = gen_code
+        visit.otp = code
+    if room:
+        house = House.objects.filter(roomNumber=room).first()
+        visit.house=house
+    
+    visit.save()
+    
+    return return_response(1001, '更新访客申请成功')
+
+@csrf_exempt
+def get_request(request):
+    if request.method != 'GET':
+        return not_get_method()
+    
+    user_id = request.GET.get('user_id','')
+    company = request.GET.get('company','')
+
+    user = CustomUser.objects.filter(id=id).first()
+    position = user.position
+    filter = Q()
+
+    if position == '1':
+        visit_list = VisitRequest.objects.filter(company=company)
+    elif position == '3' or position == '4':
+        if company:
+            visit_list = VisitRequest.objects.filter(company=company)
+        else:
+            visit_list = VisitRequest.objects.all().order_by('-createdAt')
+    
+    
+
+    visit_list_data=[]
+
+    for visit in visit_list:
+        visit_data = {}
+        visit_data['id']=visit.id
+        visit_data['visitor_name']=visit.name
+        visit_data['visitor_ic']=visit.ic
+        visit_data['visitor_time'] = visit.visit_time
+        visit_data['contact_number']=visit.contact_number
+        visit_data['company'] = visit.company
+        visit_data['inviter_name']=visit.inviter.realname
+        visit_data['otp_sent'] = visit.otp_sent
+        visit_data['room'] = visit.house.roomNumber
+
+
+
+
         
 #加个公司属性,otp_sent改成booleanfield
 
