@@ -33,8 +33,8 @@ def rent_create(request):
         
     info = request.POST.dict()
     
-    tenant_ID = info.get(REQUEST_TENANT_ID)
-    room_ID = info.get(REQUEST_ROOM_ID)
+    tenant_id = info.get(REQUEST_TENANT_ID)
+    room_id = info.get(REQUEST_ROOM_ID)
     date_begin = info.get(REQUEST_DATE_BEGIN)
     date_end = info.get(REQUEST_DATE_END)
     date_sign = info.get(REQUEST_DATE_SIGN)
@@ -42,7 +42,7 @@ def rent_create(request):
     #ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
     #date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
-    room_exist = House.objects.filter(roomNumber=room_ID).first()
+    room_exist = House.objects.filter(roomNumber=room_id).first()
 
     datetime_obj = datetime.datetime.strptime(date_end, '%Y-%m-%d')
 
@@ -54,7 +54,7 @@ def rent_create(request):
         room_exist.save()
 
 
-    tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
+    tenant_exist = Tenant.objects.filter(id=tenant_id).first()
 
     if room_exist is None or tenant_exist is None:
         return return_response(9999, '房间或者客户不存在')
