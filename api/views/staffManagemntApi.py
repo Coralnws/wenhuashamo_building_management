@@ -52,11 +52,6 @@ def create_user(request):
 
 @csrf_exempt
 def create_staff(request):
-    # user_id=request.session.get('uid')
-    # if user_id is None:
-    #     return UTF8JsonResponse({'errno': 3001, 'msg': '当前cookie为空，未登录，请先登录'})
-    # user = CustomUser.objects.filter(id=user_id).first()
-    
     if request.method != 'POST':  #创建 - 只有超级管理员，创建后添加user
         return not_post_method()
 
@@ -77,16 +72,14 @@ def create_staff(request):
     #创建账号
     
     if position == '2':
-        # if(user.position != '4' and user.position != '3'):
-        #     return UTF8JsonResponse({'errno': 3001, 'msg': '无权限添加维修人员'})
+        # check for superadmin or admin for permission
         type = request.POST.get('type')
         new_maintenance = CustomUser(username=username,realname=name,position=position,contactNumber=contact,m_type=type,m_status='1')
         new_maintenance.set_password(DEFAULTPASS)
         new_maintenance.save()
     
     else:
-        # if(user.position != '4'):
-        #     return UTF8JsonResponse({'errno': 3001, 'msg': '无权限添加人员'})
+        # check for superadmin for permission
         new_manager = CustomUser(username=username,realname=name,position=position,contactNumber=contact)
         new_manager.set_password(DEFAULTPASS)
         new_manager.save()
@@ -96,10 +89,6 @@ def create_staff(request):
 
 @csrf_exempt
 def update_staff(request):
-    # user_id=request.session.get('uid')
-    # if user_id is None:
-    #     return UTF8JsonResponse({'errno': 3001, 'msg': '当前cookie为空，未登录，请先登录'})
-    # user = CustomUser.objects.filter(id=user_id).first()
 
     if request.method != 'POST':
         return not_post_method()
@@ -112,12 +101,8 @@ def update_staff(request):
     types = info.get('type')
     status = info.get('status')
 
-    # if position and position == '2':
-    #     if(user.position != '4' and user.position != '3'):
-    #         return UTF8JsonResponse({'errno': 3001, 'msg': '无权限修改信息'}) 
-    # elif position:
-    #     if(user.position != '4'):
-    #         return UTF8JsonResponse({'errno': 3001, 'msg': '无权限修改信息'})
+    # only superadmin able to edit normal user info
+    # admin and super admin can edit maintainer info
 
     user = CustomUser.objects.filter(id=user_id).first()
     if user is None:
@@ -158,19 +143,11 @@ def delete_staff(request):
     if request.method != 'POST':
         return not_post_method()
 
-    # user = get_user_from_redis(request.POST.get('session_id'))
-    # if user is None:
-    #     return not_login()
-
     staff_id = request.POST.get('staffId')
     staff = CustomUser.objects.filter(id=staff_id).first()
 
-    # if staff.position == '2':
-    #     if(user.position != '4' and user.position != '3'):
-    #         return UTF8JsonResponse({'errno': 3001, 'msg': '无权限修改信息'}) 
-    # elif:
-    #     if(user.position != '4'):
-    #         return UTF8JsonResponse({'errno': 3001, 'msg': '无权限修改信息'})
+    # only superadmin able to delete normal user info
+    # admin and super admin can delete maintainer info
 
     staff.delete()
 
@@ -182,10 +159,6 @@ def get_staff(request):
     if request.method != 'GET':
         return not_get_method()
 
-    # check user from redis 
-    # user = get_user_from_redis(request.POST.get('session_id'))
-    # if user is None:
-    #     return not_login()
     user_id = request.GET.get('staffId','')
     position = request.GET.get('position','')
     search = request.GET.get('search','') #名字和电话

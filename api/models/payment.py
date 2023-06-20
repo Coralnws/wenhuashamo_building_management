@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 class Payment(models.Model):
-    TYPE = (
+    TYPES = (
         ('0','暂无'),
         ('1','租赁费'),
         ('2','物业费'),
@@ -18,7 +18,7 @@ class Payment(models.Model):
     rentalInfo = models.ForeignKey("RentalInfo", related_name="rentalinfo_pay",on_delete=models.CASCADE, null=True, blank=True)
     house =  models.ForeignKey("House",  related_name="house_pay",on_delete=models.CASCADE, null=True, blank=True)
     amount = models.IntegerField()
-    type = models.CharField(max_length=10, choices=TYPE,default='0')
+    type = models.CharField(max_length=10, choices=TYPES,default='0')
 
 
     createdAt = models.DateTimeField(default=timezone.now)

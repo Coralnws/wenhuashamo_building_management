@@ -51,27 +51,20 @@ def profile_to(instance, filename):
 # Custom User Model
 class CustomUser(AbstractBaseUser, PermissionsMixin):
 
-    GENDER = (
+    GENDERS = (
         ('O', 'Prefer Not to Say'),
         ('M', 'Male'),
         ('F', 'Female'),
     )
 
-    POSITION = (
+    POSITIONS = (
         ('1','普通用户'),
         ('2','维修人员'),
         ('3','普通管理员'),
         ('4','超级管理员'),
     )
 
-    M_TYPE = (
-        ('0','无'),
-        ('1','水'),
-        ('2','电'),
-        ('3','机械'),
-    )
-
-    M_STATUS = (
+    M_STATUSES = (
         ('1','可用'),
         ('0','不可用'),
     )
@@ -80,12 +73,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True)
     realname = models.CharField(max_length=255,blank=True)
     contactNumber = models.CharField(max_length=255,blank=True)
-    position=models.CharField(max_length=1,choices=POSITION,default=POSITION[0][0])
+    position=models.CharField(max_length=1,choices=POSITIONS,default=POSITIONS[0][0])
     email = models.EmailField(blank=True)
     bio = models.TextField(max_length=500, default = "这个人很懒，这么久都还没填写信息")
-    gender = models.CharField(max_length=10, choices=GENDER, default=GENDER[0][0])
+    gender = models.CharField(max_length=10, choices=GENDERS, default=GENDERS[0][0])
     m_type = models.CharField(max_length=10)
-    m_status = models.CharField(max_length=10, choices=M_STATUS, default=M_STATUS[0][0])
+    m_status = models.CharField(max_length=10, choices=M_STATUSES, default=M_STATUSES[0][0])
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     isDeleted = models.BooleanField(default=False)
@@ -113,9 +106,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email',]
-
-    # class Meta:
-    #     app_label = 'api'
 
     def __str__(self):
         return f'{self.username} ({self.id})'

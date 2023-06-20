@@ -5,7 +5,7 @@ from api.models.house import House
 from api.models.users import CustomUser
 from backend.settings import MEDIA_URL
 
-def repairPhoto_to(instance, filename):
+def repair_photo_to(instance, filename):
     return os.path.join('repair', instance.username, str(random.uniform(1000, 9999)) + 'repair.png')
     
 class Repair(models.Model):
@@ -30,7 +30,6 @@ class Repair(models.Model):
     plan = models.TextField(null=True,blank=True)
     completeTime = models.DateTimeField(null=True, blank=True)
     solver = models.ForeignKey(CustomUser, related_name="repair_solver", on_delete=models.CASCADE, null=True, blank=True)
-    #photo = models.ImageField(upload_to=repairPhoto_to, blank=True)
 
 
     def get_photo_url(self):
