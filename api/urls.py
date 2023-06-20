@@ -9,6 +9,8 @@ from api.views import houseInspect
 from api.views import maintenanceApi
 from api.views import visitRequestApi
 
+from api.reminder_cron import schedule_reminder
+
 urlpatterns = [
 
     # User Authentication
@@ -60,5 +62,8 @@ urlpatterns = [
 
     #House Inspect
     path('house_inspect', houseInspect.house_list_by_floor),
+
+    #cron
+    path('cron', schedule_reminder)
 
 ]
