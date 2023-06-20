@@ -186,7 +186,6 @@ def get_staff(request):
     # user = get_user_from_redis(request.POST.get('session_id'))
     # if user is None:
     #     return not_login()
-
     user_id = request.GET.get('staffId','')
     position = request.GET.get('position','')
     search = request.GET.get('search','') #名字和电话
@@ -206,11 +205,12 @@ def get_staff(request):
         return return_response(1001, '返回员工信息成功', staff_data)
 
     staff_list = None
+
     filters = get_staff_filters(position, status, types, search)
 
     staff_list = CustomUser.objects.filter(filters).order_by('-position')
     
-    if position and types and search is None:
+    if len(position) == 0 and len(types) == 0 and len(search) == 0 and len(status) == 0:
         staff_list = CustomUser.objects.filter(Q(position='2') | Q(position='3') | Q(position='4')).order_by('-position')
     else:
         staff_list = CustomUser.objects.filter(filters).order_by('-position')
