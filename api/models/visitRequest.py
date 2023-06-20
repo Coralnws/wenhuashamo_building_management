@@ -7,6 +7,7 @@ class VisitRequest(models.Model):
     name = models.CharField(max_length=100)
     ic = models.CharField(max_length=20)
     visit_time = models.DateTimeField()
+    company = models.CharField(max_length=20,null=True,blank=True)
     inviter = models.ForeignKey(House, related_name='inviter',on_delete=models.CASCADE,null=True,blank=True)
     contact_number = models.CharField(max_length=20)
     otp = models.CharField(max_length=8)
