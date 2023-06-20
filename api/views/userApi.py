@@ -38,6 +38,8 @@ def login(request):
 
     print(f"Session ID: {request.session.session_key}")
     print(f"Session UID: {request.session.get('uid')}")
+    
+    company=None
     if current_user.tenant:
         company = current_user.tenant.company
 
