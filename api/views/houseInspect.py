@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from api.models import House, RentalInfo, Tenant
 from api.utils import UTF8JsonResponse
 
+
 @csrf_exempt
 def house_list_by_floor(request):
     if request.method == 'GET':
@@ -20,9 +21,13 @@ def house_list_by_floor(request):
             house_data = {}
             house_data['id'] = house.id
             house_data['room_number'] = house.roomNumber
-            house_data['status'] = house.status
+            # house_data['status'] = house.status
             house_data['floor'] = house.floor
             rentalInfos = RentalInfo.objects.filter(house=house)
+            if len(rentalInfos) > 0:
+                house_data['status'] = True
+            else:
+                house_data['status'] = False
 
             rent_data_list = []
 
