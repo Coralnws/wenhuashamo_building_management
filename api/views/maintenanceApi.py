@@ -139,6 +139,7 @@ def get_request(request):
         request_list = None
         
         filter = Q()
+        filter &= Q(submitter=user)
 
         if status:
             filter &= Q(status=status)
@@ -148,11 +149,7 @@ def get_request(request):
                 filter &= Q(staff=user)
             elif user.position == '1' and user.tenant:
                 company = user.tenant.company
-                filter &= Q(company=company)
-            else:
-                filter &= Q(submitter=user)
-            
-        
+                filter &= Q(company=company)        
 
         request_list = Repair.objects.filter(filter).order_by('createdTime')
     

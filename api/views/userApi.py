@@ -38,6 +38,8 @@ def login(request):
 
     print(f"Session ID: {request.session.session_key}")
     print(f"Session UID: {request.session.get('uid')}")
+    if current_user.tenant:
+        company = current_user.tenant.company
 
     data = {
         'username': current_user.username,
@@ -47,6 +49,7 @@ def login(request):
         'realname': current_user.realname,
         'session_id': session_id,
         'userId': str(current_user.id),
+        'company':company,
         'valueInRedis': str(redis_client.get(session_id))
     }
     return return_response(100000, '登录成功', data)
