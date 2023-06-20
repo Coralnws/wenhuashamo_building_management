@@ -8,11 +8,11 @@ from api.utils import UTF8JsonResponse
 @csrf_exempt
 def house_list_by_floor(request):
     if request.method == 'GET':
-        floor = request.GET.get('floor', '')
+        floor = request.GET.get('floor','')
         if floor == '0':
-            houses = House.objects.all()
+            houses = House.objects.all().order_by('roomNumber')
         else:
-            houses = House.objects.all().filter(floor=floor)
+            houses = House.objects.all().filter(floor=floor).order_by('roomNumber')
 
         houseList = []
         print(len(houses))
@@ -23,6 +23,8 @@ def house_list_by_floor(request):
             house_data['room_number'] = house.roomNumber
             # house_data['status'] = house.status
             house_data['floor'] = house.floor
+
+            
             rentalInfos = RentalInfo.objects.filter(house=house)
             if len(rentalInfos) > 0:
                 house_data['status'] = True
