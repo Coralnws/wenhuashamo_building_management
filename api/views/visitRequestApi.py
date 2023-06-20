@@ -28,7 +28,6 @@ def gen_code(length=6):
     rand_str = ''
     for i in range(0, 6):
         rand_str += str1[random.randrange(0, len(str1))]
-        print(rand_str)
     return rand_str
 
 @csrf_exempt
