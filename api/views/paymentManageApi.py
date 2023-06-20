@@ -19,7 +19,7 @@ def create_record(request):
         tenant_id = request.POST.get("tenant_id")
         period = request.POST.get('year')
         is_paid = request.POST.get('is_paid')
-        payment_time = request.POST.get('payment_time')
+        payment_time = request.POST.get('payment_time') or None
         amount = request.POST.get('money')
 
         if is_paid == '未缴费' or is_paid == '0': 
