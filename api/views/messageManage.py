@@ -1,6 +1,7 @@
 import json
 
 from django.core import serializers
+from django.db.models import Q
 from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -103,12 +104,16 @@ def update_tenant(request):
 def search_tenant(request):
     if request.method == 'POST':
         search_word = request.POST.get('search_word')
-        tenant = (
-                Tenant.objects.filter(real_name=search_word).first() or
-                Tenant.objects.filter(company=search_word).first() or
-                Tenant.objects.filter(contactNumber=search_word).first() or
-                Tenant.objects.filter(contactName=search_word).first()
-        )
+        tenant = Tenant.objects.filter(
+            Q(real_name__icontains=search_word) |
+            Q(company__icontains=search_word) |
+            Q(contactNumber__icontains=search_word) |
+            Q(contactName__icontains=search_word) |
+            Q(real_name__contains=search_word) |
+            Q(company__contains=search_word) |
+            Q(contactNumber__contains=search_word) |
+            Q(contactName__contains=search_word)
+        ).first()
         if tenant is None:
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
