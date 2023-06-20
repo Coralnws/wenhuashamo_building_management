@@ -36,17 +36,20 @@ def house_list_by_floor(request):
 
             rent_data_list = []
 
+            first=True
             for rent in rentalInfos:
                 #datetime_obj = datetime.datetime.strptime(rent.endTime, '%Y-%m-%d')
-                if rent.endTime < timezone.now():
+                if rent.endTime < timezone.now() and first:
                     house.status=False
                     house_data['status'] = house.status
                     house.save()  
-                else:
+                    first=False
+                elif first:
                     house.status=True
                     house_data['status'] = house.status
                     house.save()  
-
+                    first=False
+                    
                 rent_data = {}
                 rent_data['start_time'] = rent.startTime
                 rent_data['end_time'] = rent.endTime
