@@ -146,8 +146,12 @@ def get_request(request):
             user = CustomUser.objects.filter(id=user_id).first()
             if user.position == '2':
                 filter &= Q(staff=user)
+            elif user.position == '1' and user.tenant:
+                company = user.tenant.company
+                filter &= Q(company=company)
             else:
                 filter &= Q(submitter=user)
+            
         
 
         request_list = Repair.objects.filter(filter).order_by('createdTime')
