@@ -32,44 +32,6 @@ def get_user_from_redis(key):
             return user
     return None
 
-
-#send_smtp(newUser, request, newToken, "Activate Account", "register_email.txt", True)
-def send_smtp(user,scholar,request,code,subject, fileName):
-    context = {
-        'username': user.username,
-        'scholar' : scholar["name"],
-        'code' : code,
-        'email': user.email
-    }
-    print(settings.EMAIL_FROM_USER)
-    email = EmailMessage(
-        subject,
-        render_to_string(fileName, context),
-        settings.EMAIL_FROM_USER, # FROM
-        [user.email],    #TO
-    )
-
-    email.send(fail_silently=False)
-    return UTF8JsonResponse({'errno': 1001, 'msg': "邮件已发送"})
-
-def send_article_smtp(user,article,request,code,subject, fileName):
-    context = {
-        'username': user.username,
-        'article' : article['title'],
-        'code' : code,
-        'email': user.email
-    }
-    print(settings.EMAIL_FROM_USER)
-    email = EmailMessage(
-        subject,
-        render_to_string(fileName, context),
-        settings.EMAIL_FROM_USER, # FROM
-        [user.email],    #TO
-    )
-
-    email.send(fail_silently=False)
-    #return UTF8JsonResponse({'errno': 1001, 'msg': "邮件已发送"})
-
 def gen_code(length=6):
     str1 = '0123456789'
     rand_str = ''

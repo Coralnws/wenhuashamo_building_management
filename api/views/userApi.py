@@ -18,11 +18,13 @@ def login(request):
     password = info['password']
     password = make_password(password, "a", "pbkdf2_sha1")
 
-    current_user = CustomUser.objects.filter(username=username).first()
-    current_email_user = CustomUser.objects.filter(email=username).first()
-    current_phone_user = CustomUser.objects.filter(contactNumber=username).first()
+    current_user = (
+        CustomUser.objects.filter(username=username).first() or
+        CustomUser.objects.filter(email=username).first() or
+        CustomUser.objects.filter(contactNumber=username).first()
+    )
 
-    if current_user is None and current_email_user is None and current_phone_user is None:
+    if current_user is None:
         return UTF8JsonResponse({'errno': 100002, 'msg': '用户不存在'})
 
     if password != current_user.password:
@@ -44,6 +46,7 @@ def login(request):
         company = current_user.tenant.company
 
     data = {
+        'is_change_password': current_user.is_change_password,
         'username': current_user.username,
         'email': current_user.email,
         'phonenumber': current_user.contactNumber,
@@ -99,6 +102,7 @@ def change_password(request):
     user = CustomUser.objects.filter(id=user_id, password=make_password(old_password,"a","pbkdf2_sha1")).first()
     if user:
         user.password = make_password(new_password1,"a","pbkdf2_sha1")
+        user.is_change_password = 1
         user.save()
         return return_response(100011, '修改密码成功')
     else:
