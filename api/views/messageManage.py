@@ -37,10 +37,14 @@ def add_tenant(request):
         contact_name = request.POST.get('contactName')
         contact_number = request.POST.get('contactNumber')
         # 创建新的客户对象并保存到数据库中
+
         tenant = Tenant(real_name=real_name, company=company,
                         contactName=contact_name,
                         contactNumber=contact_number)
-        tenant.save()
+        try:
+            tenant.save()
+        except Exception as e:
+            return UTF8JsonResponse({'errno': 2001, 'msg': '请重新检查所填信息'})
 
         realname_exist = CustomUser.objects.filter(realname=real_name).count()
         username_exist = CustomUser.objects.filter(username=real_name).count()
@@ -92,7 +96,10 @@ def update_tenant(request):
         tenant.contactNumber = request.POST.get('contactNumber')
 
         # 保存客户对象到数据库中
-        tenant.save()
+        try:
+            tenant.save()
+        except Exception as e:
+            return UTF8JsonResponse({'errno': 2001, 'msg': '请重新检查所填信息'})
 
         # 返回成功信息
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant updated successfully!'})
