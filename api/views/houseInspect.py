@@ -3,6 +3,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api.models import House, RentalInfo, Tenant
 from api.utils import UTF8JsonResponse
+from django.utils import timezone
+import datetime
+from django.db.models import Q
 
 @csrf_exempt
 def house_list_by_floor(request):
@@ -23,12 +26,21 @@ def house_list_by_floor(request):
             house_data['status'] = house.status
             house_data['floor'] = house.floor
 
-            
-            rentalInfos = RentalInfo.objects.filter(house=house)
+            rentalInfos = RentalInfo.objects.filter(house=house).order_by('-endTime')
 
             rent_data_list = []
 
             for rent in rentalInfos:
+                #datetime_obj = datetime.datetime.strptime(rent.endTime, '%Y-%m-%d')
+                if rent.endTime < timezone.now():
+                    house.status=False
+                    house_data['status'] = house.status
+                    house.save()  
+                else:
+                    house.status=True
+                    house_data['status'] = house.status
+                    house.save()  
+
                 rent_data = {}
                 rent_data['start_time'] = rent.startTime
                 rent_data['end_time'] = rent.endTime

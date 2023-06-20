@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from api.models import *
 from django.views.decorators.csrf import csrf_exempt
 from ..utils import *
-
+from django.utils import timezone
+import datetime
 
 REQUEST_RENTAL_ID = 'rental_id'
 REQUEST_TENANT_ID = 'tenant_id'
@@ -42,6 +43,17 @@ def rent_create(request):
     #date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
     room_exist = House.objects.filter(roomNumber=room_ID).first()
+
+    datetime_obj = datetime.datetime.strptime(date_end, '%Y-%m-%d')
+
+    if datetime_obj < timezone.now():
+        room_exist.status=False
+        room_exist.save()
+    else:
+        room_exist.status=True
+        room_exist.save()
+
+
     tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
 
     if room_exist is None or tenant_exist is None:
@@ -176,6 +188,16 @@ def rent_update(request):
     rental_info.createdTime = date_sign
     rental_info.startTime = date_begin
     rental_info.endTime = date_end
+
+    datetime_obj = datetime.datetime.strptime(
+    rental_info.endTime, '%Y-%m-%d')
+
+    if datetime_obj < timezone.now():
+        house.status=False
+        house.save()
+    else:
+        house.status=True
+        house.save()
     # rental_info.ispaid_management = ispaid_management
     # rental_info.paidManagementDate = date_paid_management
     rental_info.save()
@@ -197,6 +219,12 @@ def rent_delete(request):
     tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
     house_exist = House.objects.filter(roomNumber=room_ID).first()
     rental_info = RentalInfo.objects.filter(tenant=tenant_exist,house=house_exist).first()
+
+    #datetime_obj = datetime.datetime.strptime(rental_info.endTime, '%Y-%m-%d')
+
+    if rental_info.endTime > timezone.now():
+        house_exist.status=False
+        house_exist.save()
 
     rental_info.delete()
 
