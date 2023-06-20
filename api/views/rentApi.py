@@ -46,7 +46,7 @@ def rent_create(request):
 
     if room_exist is None or tenant_exist is None:
         return return_response(9999, '房间或者客户不存在')
-
+    print(room_exist)
     rental_info = RentalInfo()
     rental_info.house = room_exist
     rental_info.tenant = tenant_exist
