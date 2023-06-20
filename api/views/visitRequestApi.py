@@ -15,14 +15,7 @@ import operator
 from api.utils import *
 from api.error_utils import *
 
-'''
-1. createRequest
-2. delRequest
-3. updateRequest
-4. getRequest
-    - customer(userId)
-    - manager:order by company + time/search by company + room
-'''
+
 def gen_code(length=6):
     str1 = '0123456789'
     rand_str = ''
@@ -53,6 +46,7 @@ def create_request(request):
         
     visit.save()
     data=model_to_dict(visit)
+    data['id']=visit.id
 
     return return_response(1001, '创建访客申请成功', data)        
 
@@ -95,15 +89,16 @@ def update_request(request):
     if company:
         visit.company = company
     if resend:
-        code = gen_code
+        code = gen_code()
         visit.otp = code
     if room:
         house = House.objects.filter(roomNumber=room).first()
         visit.house=house
     
     visit.save()
+    data=model_to_dict(visit)
     
-    return return_response(1001, '更新访客申请成功')
+    return return_response(1001, '更新访客申请成功',data)
 
 @csrf_exempt
 def get_request(request):
@@ -113,19 +108,21 @@ def get_request(request):
     user_id = request.GET.get('user_id','')
     company = request.GET.get('company','')
 
-    user = CustomUser.objects.filter(id=id).first()
+    user = CustomUser.objects.filter(id=user_id).first()
     position = user.position
-    filter = Q()
+
 
     if position == '1':
-        visit_list = VisitRequest.objects.filter(company=company)
+        print("普通用户")
+        user_company = user.tenant.company
+        visit_list = VisitRequest.objects.filter(company=user_company).order_by('-updated_at')
     elif position == '3' or position == '4':
+        print("管理人员")
         if company:
-            visit_list = VisitRequest.objects.filter(company=company)
+            visit_list = VisitRequest.objects.filter(company=company).order_by('-updated_at')
         else:
-            visit_list = VisitRequest.objects.all().order_by('-createdAt')
-    
-    
+            visit_list = VisitRequest.objects.all().order_by('-updated_at')
+
 
     visit_list_data=[]
 
@@ -137,28 +134,11 @@ def get_request(request):
         visit_data['visitor_time'] = visit.visit_time
         visit_data['contact_number']=visit.contact_number
         visit_data['company'] = visit.company
+        visit_data['room'] = visit.house.roomNumber
         visit_data['inviter_name']=visit.inviter.realname
         visit_data['otp_sent'] = visit.otp_sent
-        visit_data['room'] = visit.house.roomNumber
-
-
-
-
         
-#加个公司属性,otp_sent改成booleanfield
 
-'''
-为确保大厦安全，大厦访客必须经过预约登记进入。由客户公司邀请人在系统提出访客申请，包括访客人员姓名、身份证号码、
-到访时间（具体到某日几点）、手机号码。
-申请提交后，系统无需审核，只需要自动于预定到访时间前半小时给访客手机发送动态密码，便于访客密码方式进入大厦。
+        visit_list_data.append(visit_data)
 
-    name = models.CharField(max_length=100)
-    ic = models.CharField(max_length=20)
-    visit_time = models.DateTimeField()
-    company = models.CharField(max_length=20,null=True,blank=True)
-    inviter = models.ForeignKey(House, related_name='inviter',on_delete=models.CASCADE,null=True,blank=True)
-    contact_number = models.CharField(max_length=20)
-    otp = models.CharField(max_length=8)
-    otp_sent = models.IntegerField()
-    house = models.ForeignKey(House, related_name='invite_house',on_delete=models.CASCADE,null=True,blank=True)
-'''
+    return return_response(1001, '获取访客申请列表成功',visit_list_data)
