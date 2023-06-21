@@ -136,8 +136,8 @@ def repair_statistic_year(request):
 
 """
 访客数量：每天和每月数据
-
 """
+#暂时没用
 @csrf_exempt
 def visit_statistic(request):
     if request.method != GETMETHOD:
@@ -157,9 +157,7 @@ def visit_statistic(request):
             num = VisitRequest.objects.filter(visit_time__startswith=day).count()
             data[str(day)] = num
             
-        return_data.append(data)
-
-    
+        return_data.append(data)    
     return UTF8JsonResponse({'errno':1001, 'msg': '成功获取访客数量统计数据','data':return_data})
 
 @csrf_exempt
@@ -175,25 +173,31 @@ def visit_statistic_month(request):
 
     # begin = datetime.date(int(year),int(month),1)
     # end = datetime.date(int(year),int(month),month_day(2023,month))
+
     # 一年里每个月的访客数量
     if month is None:
-        print("month is none")
+        #先筛选出某一年
         year_data_list = VisitRequest.objects.filter(visit_time__startswith=year)
 
-        for i in range(1,13): #计算每个月
+        #对那一年的每一个月去统计公司的数量
+        for i in range(1,13):
+
             time_prefix = None
             if i < 10:
                 time_prefix = year + "-0" + str(i)
             else:
                 time_prefix = year + "-" + str(i)
             
+            #这年的其中一月的数据
             month_data_list = year_data_list.filter(visit_time__startswith=time_prefix)
 
+            #统计各个公司的数据
             for month_data in month_data_list:
                 if company_data.get(month_data.company) is None:
                     company_data[month_data.company] = 0
                 company_data[month_data.company] += 1
 
+            #直接统计数量
             data[str(i)] = len(month_data_list)
 
         return_data['company_data'] = company_data
@@ -201,13 +205,14 @@ def visit_statistic_month(request):
 
         return UTF8JsonResponse({'errno':1001, 'msg': '成功获取访客数量统计数据','data':return_data})
 
-
+    #计算某月的每一天数据
     time_prefix = None
     if int(month) < 10:
         time_prefix = year + "-0" + month
     else:
         time_prefix = year + "-" + month
 
+    #筛出这个月的数据
     month_data_list = VisitRequest.objects.filter(visit_time__startswith=time_prefix).order_by('visit_time')
     """
     for i in range((end - begin).days+1):
@@ -215,6 +220,7 @@ def visit_statistic_month(request):
         #num = month_data_list.filter(visit_time__startswith=day).count()
         data[str(day)] = 0
     """
+    #对这个月的数据，去看有哪一天的数据，有哪间公司的数据
     for month_data in month_data_list:
         if data.get(str(month_data.visit_time.strftime("%Y-%m-%d"))) is None:
             data[str(month_data.visit_time.strftime("%Y-%m-%d"))] = 0
