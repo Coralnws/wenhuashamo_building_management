@@ -183,7 +183,7 @@ def get_request(request):
                 data['repair_staff'] = request.staff.realname
                 data['staff_contact'] = request.staff.contactNumber
             if request.solver:
-                data['solver'] = request.staff.realname
+                data['solver'] = request.solver.realname
 
             data['createdTime'] = request.createdTime.strftime("%Y-%m-%d %H:%M:%S")
             if request.repairingTime:
