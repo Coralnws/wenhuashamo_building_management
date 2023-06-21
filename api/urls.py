@@ -64,6 +64,8 @@ urlpatterns = [
 
     #statistic
     path('statistic/repair', statisticApi.repair_statistic),
+    path('statistic/repair_year', statisticApi.repair_statistic_year),
+    path('statistic/visit', statisticApi.visit_statistic_month),
 
 
     #House Inspect
