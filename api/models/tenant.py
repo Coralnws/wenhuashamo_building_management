@@ -12,6 +12,7 @@ class Tenant(models.Model):
     company = models.CharField(max_length=150, unique=True) #公司名称
     contactName = models.CharField(max_length=150, unique=True)  # 联系人名称
     contactNumber = models.CharField(max_length=150, unique=True) #联系人联系电话
+    email = models.EmailField(blank=True)
 
     # 默认属性
     createdAt = models.DateTimeField(default=timezone.now)

@@ -36,11 +36,12 @@ def add_tenant(request):
         company = request.POST.get('company')
         contact_name = request.POST.get('contactName')
         contact_number = request.POST.get('contactNumber')
+        email = request.POST.get('email') or None
         # 创建新的客户对象并保存到数据库中
 
         tenant = Tenant(real_name=real_name, company=company,
                         contactName=contact_name,
-                        contactNumber=contact_number)
+                        contactNumber=contact_number,email=email)
         try:
             tenant.save()
         except Exception as e:
