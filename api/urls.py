@@ -8,6 +8,7 @@ from api.views import messageManage
 from api.views import houseInspect
 from api.views import maintenanceApi
 from api.views import visitRequestApi
+from api.views import statisticApi
 
 urlpatterns = [
 
@@ -60,6 +61,9 @@ urlpatterns = [
     path('visit/update', visitRequestApi.update_request),
     path('visit/delete', visitRequestApi.del_request),
     path('visit/get', visitRequestApi.get_request),
+
+    #statistic
+    path('statistic/repair', statisticApi.repair_statistic),
 
 
     #House Inspect

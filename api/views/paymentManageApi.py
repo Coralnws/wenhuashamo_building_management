@@ -139,12 +139,13 @@ def get_payment_detail(request):
         house_id = request.GET.get('houseId','')
         rental_id = request.GET.get('rentalId','')
         type = request.GET.get('type','') #1-租赁费   2-物业费
+
+        #必填：tenantId,rentalId,type=2
  
         tenant = None
         house = None
         payment_record = None
         rental = None
-       
         if tenant_id:
             tenant = Tenant.objects.filter(id=tenant_id).first()
             payment_record = Payment.objects.filter(tenant=tenant,type=type).order_by('-paymentTime')
