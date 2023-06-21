@@ -39,6 +39,9 @@ def create_request(request):
         user_id = request.POST.get('user_id')
         contact_user = request.POST.get('contact_name')
         contact_number = request.POST.get('contact_number')
+        expect_date = request.POST.get('expect_date')
+        expect_time_start = request.POST.get('expect_time_start')
+        expect_time_end = request.POST.get('expect_time_end')
 
         house = House.objects.filter(roomNumber=room).first()
         if house is None:
@@ -46,7 +49,9 @@ def create_request(request):
         submitter = CustomUser.objects.filter(id=user_id).first()
 
         repair = Repair(description=description,house=house,createdTime=time,
-                        submitter=submitter,company=company,contactName=contact_user,contactNumber=contact_number)
+                        submitter=submitter,company=company,contactName=contact_user,
+                        contactNumber=contact_number,expect_date=expect_date,
+                        expect_time_start=expect_time_start,expect_time_end=expect_time_end)
         
         repair.save()
         data = model_to_dict(repair)
@@ -83,7 +88,10 @@ def update_request(request):
         status = info.get('status')
         plan = info.get('plan')
         complete_time = info.get('complete_time')
-        solver_id = info.get('solverStaffId')        
+        solver_id = info.get('solverStaffId')
+        expect_date = info.get('expect_date')
+        expect_time_start = info.get('expect_time_start')
+        expect_time_end = info.get('expect_time_end')        
 
         print(request_id)
         record = Repair.objects.filter(id=request_id).first()
@@ -121,7 +129,12 @@ def update_request(request):
         if solver_id:
             solver = CustomUser.objects.filter(id= solver_id)
             record.solver = solver
-
+        if expect_date:
+            record.expect_date = expect_date
+        if expect_time_start:
+            record.expect_time_start = expect_time_start
+        if expect_time_end:
+            record.expect_time_end = expect_time_end
         record.save()
 
         data = model_to_dict(record)
@@ -177,6 +190,12 @@ def get_request(request):
                 data['repairingTime'] = request.repairingTime.strftime("%Y-%m-%d %H:%M:%S")
             if request.completeTime:
                 data['completeTime'] = request.completeTime.strftime("%Y-%m-%d %H:%M:%S")
+            if request.expect_date:
+                data['expect_date'] = request.expect_date.strftime("%Y-%m-%d")
+            if request.expect_time_start:   
+                data['expect_time_start'] = request.expect_time_start.strftime("%H:%M:%S")
+            if request.expect_time_start:   
+                data['expect_time_end'] = request.expect_time_end.strftime("%H:%M:%S")
 
             
             request_data.append(data)

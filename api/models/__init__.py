@@ -6,3 +6,4 @@ from .repair import *
 from .tenant import *
 from .users import *
 from .visitRequest import *
+from .tenantRental import *

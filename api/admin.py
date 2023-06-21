@@ -18,7 +18,7 @@ class HouseConfig(admin.ModelAdmin):
     list_display = ('id', 'roomNumber', 'floor')
 
 class VisitConfig(admin.ModelAdmin):
-    list_display = ('id', 'name', 'ic','visit_time','company','inviter','contact_number','otp')
+    list_display = ('id', 'name', 'ic','visit_time','company','house','inviter','contact_number','otp')
 
 class RentalInfoConfig(admin.ModelAdmin):
     list_display = ('id', 'tenant', 'house','startTime', 'endTime','nextRentalDeadline','nextManagementFeeDeadline')

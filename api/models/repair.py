@@ -19,13 +19,17 @@ class Repair(models.Model):
     staff = models.ForeignKey(CustomUser, related_name="repair_staff",on_delete=models.CASCADE, null=True, blank=True)
     manager = models.ForeignKey(CustomUser,related_name="repair_manager",  on_delete=models.CASCADE, null=True, blank=True)
     repairingTime = models.DateTimeField(null=True, blank=True)
-
     staffContact = models.CharField(max_length=20,null=True,blank=True)
+    expect_date = models.DateTimeField(null=True, blank=True)
+    expect_time_start = models.DateTimeField(null=True, blank=True)
+    expect_time_end = models.DateTimeField(null=True, blank=True)
+
     status_choices = [
         ('Open', 'Open'),
         ('In Progress', 'In Progress'),
         ('Complete', 'Complete'),
     ]
+    
     status = models.CharField(max_length=20, choices=status_choices, default='Open')
     plan = models.TextField(null=True,blank=True)
     completeTime = models.DateTimeField(null=True, blank=True)

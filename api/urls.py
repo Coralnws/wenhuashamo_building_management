@@ -58,7 +58,11 @@ urlpatterns = [
     path('repair/delRequest', maintenanceApi.del_request),
 
     #Visit
-    path('visit/createRequest', visitRequestApi.create_request),
+    path('visit/create', visitRequestApi.create_request),
+    path('visit/update', visitRequestApi.update_request),
+    path('visit/delete', visitRequestApi.del_request),
+    path('visit/get', visitRequestApi.get_request),
+
 
     #House Inspect
     path('house_inspect', houseInspect.house_list_by_floor),
