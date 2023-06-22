@@ -29,37 +29,34 @@ def house_list_by_floor(request):
             # house_data['status'] = house.status
             house_data['floor'] = house.floor
 
-            rental_infos = RentalInfo.objects.filter(house=house).order_by('-endTime')
+            rent_record = TenantRental.objects.filter(house=house)
+
+            #rental_infos = RentalInfo.objects.filter(house=house).order_by('-endTime')
             
-            if len(rental_infos) > 0:
-                house_data['status'] = True
-            else:
-                house_data['status'] = False
+            # if len(rental_infos) > 0:
+            #     house_data['status'] = True
+            # else:
+            #     house_data['status'] = False
 
             rent_data_list = []
 
-            first=True
-            for rent in rental_infos:
-                #datetime_obj = datetime.datetime.strptime(rent.endTime, '%Y-%m-%d')
-                if rent.endTime < timezone.now() and first:
-                    house.status=False
-                    house_data['status'] = house.status
-                    house.save()  
-                    first=False
-                elif first:
-                    house.status=True
-                    house_data['status'] = house.status
-                    house.save()  
-                    first=False
-                    
+            renting = False
+            for rent in rent_record:
                 rent_data = {}
-                rent_data['start_time'] = rent.startTime
-                rent_data['end_time'] = rent.endTime
-                rent_tenant = Tenant.objects.filter(id=rent.tenant.id).first()
-                rent_data['company'] = rent_tenant.company
-                rent_data['real_name'] = rent_tenant.real_name
-                rent_data_list.append(rent_data)
-
+                #datetime_obj = datetime.datetime.strptime(rent.endTime, '%Y-%m-%d')
+                if rent.rental.startTime <= timezone.now() and rent.rental.endTime >= timezone.now():  #
+                    house.status=True
+                    house.save()  
+                    renting = True
+                    
+                    rent_data['start_time'] = rent.rental.startTime
+                    rent_data['end_time'] = rent.rental.endTime
+                    rent_tenant = Tenant.objects.filter(id=rent.rental.tenant.id).first()
+                    rent_data['company'] = rent_tenant.company
+                    rent_data['real_name'] = rent_tenant.real_name
+                    rent_data_list.append(rent_data)
+            
+            house_data['status'] = renting
             house_data['rent_data'] = rent_data_list
             house_list.append(house_data)
 
@@ -101,7 +98,7 @@ def get_company_house(request):
 
     for rental in rental_list:
         rental_info_list = None
-        if rental.startTime < timezone.now() and rental.endTime > timezone.now():
+        if rental.startTime <= timezone.now() and rental.endTime > timezone.now():
             rental_info_list = TenantRental.objects.filter(rental = rental)
 
         if rental_info_list is not None:

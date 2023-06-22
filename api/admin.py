@@ -24,7 +24,7 @@ class TenantRentalConfig(admin.ModelAdmin):
     list_display = ('id', 'house', 'rental')
 
 class RentalInfoConfig(admin.ModelAdmin):
-    list_display = ('id', 'tenant', 'house','startTime', 'endTime','nextRentalDeadline','nextManagementFeeDeadline')
+    list_display = ('id', 'tenant', 'contract_id','startTime', 'endTime','nextRentalDeadline','nextManagementFeeDeadline')
 
 
 admin.site.register(CustomUser, UserAdminConfig)
