@@ -9,6 +9,7 @@ import datetime
 
 REQUEST_RENTAL_ID = 'rental_id'
 REQUEST_TENANT_ID = 'tenant_id'
+REQUEST_CONTRACT_ID = 'contract_id'
 REQUEST_USER_ID = 'user_id'
 REQUEST_IS_DELETE = 'is_delete'
 REQUEST_COM_NAME = 'com_name'
@@ -34,6 +35,7 @@ def rent_create(request):
     info = request.POST.dict()
     
     tenant_id = info.get(REQUEST_TENANT_ID)
+    contract_id = info.get(REQUEST_CONTRACT_ID)
     room_id = info.get(REQUEST_ROOM_ID)
     date_begin = info.get(REQUEST_DATE_BEGIN)
     date_end = info.get(REQUEST_DATE_END)
@@ -41,6 +43,14 @@ def rent_create(request):
 
     #ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
     #date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
+
+    room_list = room_id.split(",")
+    print(room_list)
+
+    #为每个房间建立TenantRental关系
+    for room in room_list:
+        rent = TenantRental()
+
 
     room_exist = House.objects.filter(roomNumber=room_id).first()
 

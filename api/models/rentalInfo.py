@@ -7,6 +7,7 @@ class RentalInfo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     house = models.ForeignKey("House", on_delete=models.CASCADE, null=True, blank=True)
     tenant = models.ForeignKey("Tenant", on_delete=models.CASCADE, null=False, blank=False)
+    contract_id = models.CharField(max_length=20,null=True, blank=True)
     createdTime = models.DateTimeField(default=timezone.now)
     startTime = models.DateTimeField()
     endTime = models.DateTimeField()
