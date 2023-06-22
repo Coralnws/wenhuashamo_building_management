@@ -70,5 +70,6 @@ urlpatterns = [
 
     #House Inspect
     path('house_inspect', houseInspect.house_list_by_floor),
-
+    path('house_company', houseInspect.get_company_house),
+    
 ]
