@@ -55,7 +55,8 @@ urlpatterns = [
     path('repair/closeTask', maintenanceApi.close_task),
     path('repair/updateRequest', maintenanceApi.update_request),
     path('repair/delRequest', maintenanceApi.del_request),
-
+    path('repair/timeslot', maintenanceApi.get_timeslot),
+    
     #Visit
     path('visit/create', visitRequestApi.create_request),
     path('visit/update', visitRequestApi.update_request),

@@ -17,6 +17,9 @@ class RepairConfig(admin.ModelAdmin):
 class HouseConfig(admin.ModelAdmin):
     list_display = ('id', 'roomNumber', 'floor')
 
+class TimeslotConfig(admin.ModelAdmin):
+    list_display = ('id', 'date', 'slot','staff')
+
 class VisitConfig(admin.ModelAdmin):
     list_display = ('id', 'name', 'ic','visit_time','company','house','inviter','contact_number','otp')
     
@@ -34,4 +37,5 @@ admin.site.register(Tenant, TenantConfig)
 admin.site.register(Repair, RepairConfig)
 admin.site.register(VisitRequest,VisitConfig)
 admin.site.register(TenantRental,TenantRentalConfig)
+admin.site.register(Timeslot,TimeslotConfig)
 admin.site.register(RentalInfo, RentalInfoConfig)
