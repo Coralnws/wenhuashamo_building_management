@@ -65,6 +65,10 @@ def del_request(request):
     if request.method == 'POST':
         request_id = request.POST.get('request_id')
         record = Repair.objects.filter(id=request_id).first()
+        if record.status == 'In Progress':
+            time_slot = record.time_slot
+            time_slot.delete()
+
         record.delete()
 
         return UTF8JsonResponse({'errno':1001, 'msg':   '成功删除报修记录'})
@@ -82,7 +86,7 @@ def update_request(request):
         company = info.get('company')
         contact_name = info.get('submitterName')
         contact_number = info.get('submitterContact')
-        staff_id = info.get('assignStaffId')
+        #staff_id = info.get('assignStaffId')
         staff_contact = info.get('staffContact')
         manager_id = info.get('managerIncharge')
         #repairing_time = info.get('estimateRepairTimeSlot')
@@ -93,15 +97,13 @@ def update_request(request):
         expect_date = info.get('expect_date')
         expect_timeslot = info.get('expect_timeslot')   
 
-        print(request_id)
         record = Repair.objects.filter(id=request_id).first()
         if description:
-            print("here")
             record.description = description
         if created_time:    
             record.createdTime = created_time
         if room:
-            house = House.objects.filter(roomNumber=room)
+            house = House.objects.filter(roomNumber=room).first()
             record.house=house
         if company:
             record.company = company
@@ -109,13 +111,13 @@ def update_request(request):
             record.contactName = contact_name
         if contact_number:
             record.contactNumber = contact_number
-        if staff_id:
-            staff=CustomUser.objects.filter(id=staff_id)
-            record.staff=staff
+        # if staff_id:
+        #     staff=CustomUser.objects.filter(id=staff_id).first()
+        #   record.staff=staff
         if staff_contact:
             record.staffContact = staff_contact
         if manager_id:
-            manager = CustomUser.objects.filter(id=manager_id)
+            manager = CustomUser.objects.filter(id=manager_id).first()
             record.manager = manager
         # if repairing_time:
         #     record.repairingTime = repairing_time
@@ -126,7 +128,7 @@ def update_request(request):
         if complete_time:
             record.complete_time = complete_time
         if solver_id:
-            solver = CustomUser.objects.filter(id= solver_id)
+            solver = CustomUser.objects.filter(id= solver_id).first()
             record.solver = solver
         if expect_date:
             record.expect_date = expect_date
@@ -169,11 +171,8 @@ def get_request(request):
         request_data=[]
 
         for record in request_list:
-            
-            
             data=model_to_dict(record)
             data['house'] = record.house.roomNumber
-
             if record.manager:
                 data['manager'] = record.manager.realname
             if record.staff:
@@ -181,25 +180,22 @@ def get_request(request):
                 data['staff_contact'] = record.staff.contactNumber
             if record.solver:
                 data['solver'] = record.solver.realname
-
             data['createdTime'] = record.createdTime.strftime("%Y-%m-%d %H:%M:%S")
-            if record.repairingTime:
-                data['repairingTime'] = record.repairingTime.strftime("%Y-%m-%d %H:%M:%S")
+            if record.time_slot:
+                data['repairing_date'] = record.time_slot.date.strftime("%Y-%m-%d")
+                data['repairing_slot'] = record.time_slot.slot
             if record.completeTime:
                 data['completeTime'] = record.completeTime.strftime("%Y-%m-%d %H:%M:%S")
             if record.expect_date:
                 data['expect_date'] = record.expect_date.strftime("%Y-%m-%d")
-            if record.expect_time_start:   
-                data['expect_time_start'] = record.expect_time_start.strftime("%H:%M:%S")
-            if record.expect_time_start:   
-                data['expect_time_end'] = record.expect_time_end.strftime("%H:%M:%S")
+            data['expect_timeslot'] = record.expect_time_slot
 
-            
             request_data.append(data)
         
         return UTF8JsonResponse({'errno':1001, 'msg': '成功获取报修列表','data':request_data})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
+    
 
 @csrf_exempt
 def assign_task(request):
@@ -214,6 +210,10 @@ def assign_task(request):
         repair_exist = Repair.objects.filter(id=request_id).first()
         staff = CustomUser.objects.filter(id=staff_id).first()
 
+        if repair_exist.time_slot is not None:
+            ori_timeslot = repair_exist.time_slot
+            ori_timeslot.delete()
+
         #由管理员分派，type=1
         time_slot = Timeslot(staff=staff,date=repair_date,slot=repair_slot,type='1',repair_info=repair_exist)
         time_slot.save()
@@ -224,14 +224,13 @@ def assign_task(request):
         repair_exist.status = 'In Progress'
         repair_exist.save()
 
-        data = model_to_dict(repair_exist)
-        
+        data = model_to_dict(repair_exist)        
         #
-        staff.m_status=0
-        staff.save()
+        # staff.m_status=0
+        # staff.save()
 
 
-        return UTF8JsonResponse({'errno':1001, 'msg': '成功分派任务','data':data})
+        return UTF8JsonResponse({'errno':1001, 'msg': '成功分派任务/修改上门时段','data':data})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
@@ -301,15 +300,15 @@ def get_timeslot(request):
         timeslot_list_accurate = timeslot_list.filter(date__startswith=search_date).order_by('slot')
         print(len(timeslot_list_accurate))
         for timeslot in timeslot_list_accurate:
-            if return_data[staff.realname].get(search_date) is None:
-                return_data[staff.realname][search_date] = []
-            return_data[staff.realname][search_date].append(timeslot.slot)
+            if return_data[timeslot.staff.realname].get(search_date) is None:
+                return_data[timeslot.staff.realname][search_date] = []
+            return_data[timeslot.staff.realname][search_date].append(timeslot.slot)
 
 
     return return_response(1001, '返回排班信息',return_data)
 
     
 
-        
 
-# + datetime.timedelta(days=1)).strftime("%Y-%m-%d)
+    
+
