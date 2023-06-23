@@ -51,7 +51,7 @@ def rent_create(request):
 
     rental_exist = RentalInfo.objects.filter(tenant=tenant_exist,contract_id=contract_id).first()
     if rental_exist:
-        return return_response(9999, '合约编号已存在')
+        return return_response(4001, '合约编号已存在')
 
     if tenant_exist is None:
             return return_response(9999, '客户不存在')
@@ -78,14 +78,14 @@ def rent_create(request):
     for room in room_list:
         house = House.objects.filter(roomNumber = room).first()
         if house is None:
-            return return_response(9999, '房间不存在')
+            return return_response(3001, '房间不存在')
         
         #检查房屋在这个时间段是不是已经出租
         rent_room_list = TenantRental.objects.filter(house=house)
         for record in rent_room_list:
             if record.rental.endTime >= date_begin_str and record.rental.endTime <= date_end_str:
                 rental_info.delete()
-                return return_response(9999, '该时间段房间已出租',room)
+                return return_response(2001, '该时间段房间已出租',room)
 
         house.status = status
         house.save()
@@ -247,13 +247,13 @@ def rent_update(request):
     for room in new_room_list:
         house = House.objects.filter(roomNumber = room).first()
         if house is None:
-            return return_response(9999, '房间不存在')
+            return return_response(3001, '房间不存在')
         
         #这边可以添加判断房屋在这个时间段是不是已经出租
         rent_room_list = TenantRental.objects.filter(house=house)
         for rent_room in rent_room_list:
             if rent_room.rental.endTime >= date_begin_str and rent_room.rental.endTime <= date_end_str and rent_room.rental != rental_info:
-                return return_response(9999, '该时间段房间已出租',room)
+                return return_response(2001, '该时间段房间已出租',room)
 
         house.status = status
         house.save()

@@ -7,3 +7,4 @@ from .tenant import *
 from .users import *
 from .visitRequest import *
 from .tenantRental import *
+from .timeSlot import *
