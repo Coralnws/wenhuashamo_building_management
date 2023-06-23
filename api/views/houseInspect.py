@@ -94,21 +94,20 @@ def get_company_house(request):
         return return_response(3001, '该用户不属于任何公司')
     
     rental_list = RentalInfo.objects.filter(tenant = user.tenant)
-    house_arr = []
 
+    house_arr = []
     for rental in rental_list:
         rental_info_list = None
         if rental.startTime <= timezone.now() and rental.endTime > timezone.now():
             rental_info_list = TenantRental.objects.filter(rental = rental)
-
-        if rental_info_list is not None:
+            
             for record in rental_info_list:
                 house_arr.append(record.house.roomNumber)
-        else:
-            return return_response(3001, '用户所属公司无在租房间',house_arr)
-        
-    house_arr = list(set(house_arr))
 
+    
+    house_arr = list(set(house_arr))
+    house_arr = sorted(house_arr)
+    
     return return_response(1001, '返回用户所属公司的所有房间',house_arr)
 
 

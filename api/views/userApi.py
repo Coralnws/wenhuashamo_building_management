@@ -42,8 +42,13 @@ def login(request):
     print(f"Session UID: {request.session.get('uid')}")
     
     company=None
+    company_contact_name=None
+    company_contact_number=None
     if current_user.tenant:
         company = current_user.tenant.company
+        company_contact_name = current_user.tenant.contactName
+        company_contact_number = current_user.tenant.contactNumber
+
 
     data = {
         'is_change_password': current_user.is_change_password,
@@ -55,6 +60,8 @@ def login(request):
         'session_id': session_id,
         'userId': str(current_user.id),
         'company':company,
+        'company_contact_name' : company_contact_name,
+        'company_contact_number' : company_contact_number,
         'valueInRedis': str(redis_client.get(session_id))
     }
     return return_response(100000, '登录成功', data)
