@@ -1,6 +1,7 @@
 from datetime import timedelta
 from datetime import datetime,timedelta
 import time
+import jieba
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
@@ -13,22 +14,30 @@ from django.db.models import Q
 import operator
 from api.utils import *
 from api.error_utils import *
+from api.keywords import water_keywords,electric_keyword,mechanical_keyword,stopwords
 
-'''
-派发维修任务
-更新维修工单的最终状态
-提交报修信息
-发送提醒？
- 
-1.createRequest (报修工单包括：问题描述、报修时间、报修房间号、报修公司、报修联系人姓名和联系方式)
-2.assignTask (对客户工单给出初步反馈意见（包括什么时间、谁负责维修，以及维修人联系电话)
-3.closeTask 维修工单的最终状态，包括：问题解决办法，解决时间，解决人 + 维修人员状态更新为可用
-4.udpateRequest
-5.delRequest
-6.getRequest
-7.getTimeslot
-8.changeTimeslot
-'''
+def auto_assign(text):
+    tokens = jieba.cut(text)  # 使用jieba分词器对文本进行分词
+    filtered_tokens = [token for token in tokens if token not in stopwords]
+
+    print(filtered_tokens)
+    data={}
+    data['1'] = 0
+    data['2'] = 0
+    data['3'] = 0
+
+    for token in filtered_tokens:
+        if token in water_keywords:
+            data['1'] += 1
+        if token in electric_keyword:
+            data['2'] += 1
+        if token in mechanical_keyword:
+            data['3'] += 1
+
+    type_list = sorted(data.items(), key = lambda kv:(kv[0], kv[1]))
+    print(type_list)
+
+
 
 @csrf_exempt
 def create_request(request):
@@ -44,18 +53,30 @@ def create_request(request):
         contact_number = request.POST.get('contact_number')
         expect_date = request.POST.get('expect_date')
         expect_timeslot = request.POST.get('expect_timeslot')
+        type = request.POST.get('type')
 
         house = House.objects.filter(roomNumber=room).first()
         if house is None:
             return UTF8JsonResponse({'errno':7001, 'msg': '房间不存在'})
         submitter = CustomUser.objects.filter(id=user_id).first()
 
+        #智能派单
+        if type is None:
+            type = auto_assign(description)
+        
+        free_staff_list = CustomUser.objects.filter(position='2')
+        print(type(free_staff_list))
+        #available_staff_list = None
+
         repair = Repair(title=title,description=description,house=house,createdTime=time,
                         submitter=submitter,company=company,contactName=contact_user,
                         contactNumber=contact_number,expect_date=expect_date,
-                        expect_time_slot=expect_timeslot)
+                        expect_time_slot=expect_timeslot,type=type)
         
         repair.save()
+
+    
+
         data = model_to_dict(repair)
         return UTF8JsonResponse({'errno':1001, 'msg': '成功添加报修信息','data':data})
     else:

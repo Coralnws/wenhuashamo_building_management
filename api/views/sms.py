@@ -2,6 +2,9 @@ from api.error_utils import *
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.request import CommonRequest
 
+def sendSms(request):
+    phone = request.POST.get('phone')
+    return phone_send(phone)
 
 def phone_send(phone):
     # phone = "18805509919"  # 这里是测试用的，实际使用删除即可
