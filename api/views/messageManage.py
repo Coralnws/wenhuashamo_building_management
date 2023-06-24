@@ -113,47 +113,48 @@ def update_tenant(request):
 def search_tenant(request):
     if request.method == 'POST':
         search_word = request.POST.get('search_word')
-        tenant = Tenant.objects.filter(
+        tenants = Tenant.objects.filter(
             Q(real_name__icontains=search_word) |
             Q(company__icontains=search_word) |
             Q(contactNumber__icontains=search_word) |
             Q(contactName__icontains=search_word) |
             Q(real_name__contains=search_word)
-        ).first()
-        if tenant is None:
+        )
+        if tenants is None:
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
         tenant_detail = []
-        user_level_rental_detail = {}
-        user_level_rental_detail[REQUEST_USERNAME] = tenant.contactName
-        user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
-        user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
-        user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
-        user_level_rental_detail['email'] = tenant.email
+        for tenant in tenants:
+            user_level_rental_detail = {}
+            user_level_rental_detail[REQUEST_USERNAME] = tenant.contactName
+            user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
+            user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
+            user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
+            user_level_rental_detail['email'] = tenant.email
 
-        rental_infos = RentalInfo.objects.filter(tenant=tenant)
+            rental_infos = RentalInfo.objects.filter(tenant=tenant)
 
-        rent_data_list = []
-        for rent in rental_infos:
-            rent_data = {}
-            rent_data[REQUEST_RENTAL_ID] = rent.id
-            if rent.startTime:
-                rent_data[REQUEST_DATE_BEGIN] = rent.startTime.strftime("%Y-%m-%d %H:%M:%S")
-            if rent.endTime:
-                rent_data[REQUEST_DATE_END] = rent.endTime.strftime("%Y-%m-%d %H:%M:%S")
-            if rent.createdTime:
-                rent_data[REQUEST_DATE_SIGN] = rent.createdTime.strftime("%Y-%m-%d %H:%M:%S")
-            rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
-            if rent.paidManagementDate:
-                rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate.strftime("%Y-%m-%d")
-            rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
-            if rent.paidRentalDate:
-                rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
-            rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
-            rent_data_list.append(rent_data)
+            rent_data_list = []
+            for rent in rental_infos:
+                rent_data = {}
+                rent_data[REQUEST_RENTAL_ID] = rent.id
+                if rent.startTime:
+                    rent_data[REQUEST_DATE_BEGIN] = rent.startTime.strftime("%Y-%m-%d %H:%M:%S")
+                if rent.endTime:
+                    rent_data[REQUEST_DATE_END] = rent.endTime.strftime("%Y-%m-%d %H:%M:%S")
+                if rent.createdTime:
+                    rent_data[REQUEST_DATE_SIGN] = rent.createdTime.strftime("%Y-%m-%d %H:%M:%S")
+                rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
+                if rent.paidManagementDate:
+                    rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate.strftime("%Y-%m-%d")
+                rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
+                if rent.paidRentalDate:
+                    rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
+                rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
+                rent_data_list.append(rent_data)
 
-        user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
-        tenant_detail.append(user_level_rental_detail)
+            user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
+            tenant_detail.append(user_level_rental_detail)
         return UTF8JsonResponse({'errno': 1001, 'msg': '查询客户成功', 'data': tenant_detail})
 
 @csrf_exempt
