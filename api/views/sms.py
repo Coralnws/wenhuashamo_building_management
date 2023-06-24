@@ -29,5 +29,6 @@ def phone_send(phone):
 
     request.add_query_param('TemplateParam', "{\"code\":\"%s\"}" % code)
 
-    response = client.do_action_with_exception(request)
+    response = client.do_action_with_exception(request)  # 这里是阿里云官方接口的返回信息
 
+    return code
