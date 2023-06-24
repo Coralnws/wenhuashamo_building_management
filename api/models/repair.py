@@ -16,8 +16,15 @@ class Repair(models.Model):
         ('2','12:00pm-3:00pm'),
         ('3','3:00pm-6:00pm'),
     )
+    TYPE = (
+        ('0','无'),
+        ('1','水'),
+        ('2','电'),
+        ('3','机械'),
+    )
 
     description = models.CharField(max_length=200)
+    title = models.CharField(max_length=200,null=True, blank=True)
     createdTime = models.DateTimeField(null=True, blank=True)
     house = models.ForeignKey(House, on_delete=models.SET_NULL,null=True,blank=True)
     company = models.CharField(max_length=50,null=True,blank=True)
@@ -31,7 +38,8 @@ class Repair(models.Model):
     staffContact = models.CharField(max_length=20,null=True,blank=True)
     expect_date = models.DateTimeField(null=True, blank=True)
     expect_time_slot = models.CharField(max_length=1,choices=TIME_SLOT,default=TIME_SLOT[0][0],null=True, blank=True)
-    
+    type = models.CharField(max_length=10,choices=TYPE,default=TYPE[0][0],null=True, blank=True)
+
     status_choices = [
         ('Open', 'Open'),
         ('In Progress', 'In Progress'),
