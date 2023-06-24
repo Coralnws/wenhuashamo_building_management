@@ -209,7 +209,7 @@ def assign_task(request):
         staff_id =  request.POST.get('staff_id')
         repair_date = request.POST.get('repair_date')
         repair_slot = request.POST.get('repair_slot')
-        staff_contact = request.POST.get('staff_contact')
+        
 
         repair_exist = Repair.objects.filter(id=request_id).first()
         staff = CustomUser.objects.filter(id=staff_id).first()
@@ -224,7 +224,7 @@ def assign_task(request):
 
         repair_exist.staff = staff
         repair_exist.time_slot = time_slot
-        repair_exist.staffContact = staff_contact
+        repair_exist.staffContact = staff.contactNumber
         repair_exist.status = 'In Progress'
         repair_exist.save()
 
@@ -293,21 +293,30 @@ def get_timeslot(request):
     
     timeslot_list = Timeslot.objects.filter(filter).order_by('date')
     staff_list = CustomUser.objects.filter(staff_filter).order_by('realname')
-    return_data = {}
-
+    return_data = []
+    str_date = ""
     for staff in staff_list:
-        return_data[staff.realname] = {}
-    
-    for i in range(int(period)):
-        search_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=i)
-        search_date = search_date.strftime("%Y-%m-%d")
-        timeslot_list_accurate = timeslot_list.filter(date__startswith=search_date).order_by('slot')
-        print(len(timeslot_list_accurate))
-        for timeslot in timeslot_list_accurate:
-            if return_data[timeslot.staff.realname].get(search_date) is None:
-                return_data[timeslot.staff.realname][search_date] = []
-            return_data[timeslot.staff.realname][search_date].append(timeslot.slot)
+        data={}
+        data['id'] = staff.id
+        data['name'] = staff.realname
+        data['type'] = staff.m_type
+        for i in range(1,(int(period)*3 + 1)):
+            str_date = "time" + str(i)
+            data[str_date] = '0'
+            
+        print("here")
+        for j in range(int(period)):
+            search_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=j)
+            search_date = search_date.strftime("%Y-%m-%d")
+            timeslot_list_accurate = timeslot_list.filter(date__startswith=search_date).order_by('slot')
 
+            for timeslot in timeslot_list_accurate:
+                if timeslot.staff == staff:
+                    str_date = "time" + str(3 * int(j) + int(timeslot.slot))
+                    print(timeslot.staff.realname + " - str_date:" + str_date)
+                    data[str_date] = timeslot.type
+
+        return_data.append(data)
 
     return return_response(1001, '返回排班信息',return_data)
 

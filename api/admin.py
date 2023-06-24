@@ -11,8 +11,8 @@ class TenantConfig(admin.ModelAdmin):
     list_display = ('id', 'username','real_name')
 
 class RepairConfig(admin.ModelAdmin):
-    list_display = ('id', 'createdTime','house','company','contactName','staff', 'time_slot','contactNumber',
-                    'staffContact','manager','repairingTime','status','plan','completeTime','solver')
+    list_display = ('id','title','description', 'createdTime','house','company','contactName','staff', 'time_slot','contactNumber',
+                    'staffContact','manager','repairingTime','status','plan','completeTime','solver','type')
 
 class HouseConfig(admin.ModelAdmin):
     list_display = ('id', 'roomNumber', 'floor')

@@ -12,8 +12,9 @@ class Timeslot(models.Model):
         ('3','3:00pm-6:00pm'),
     )
     TYPE = (
-        ('0','智能推荐'),
+        ('0','空闲'),
         ('1','已分派'),
+        ('2','智能推荐')
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
