@@ -10,7 +10,7 @@ from api.views import maintenanceApi
 from api.views import visitRequestApi
 from api.views import statisticApi
 
-from api.reminder_cron import schedule_reminder
+# from api.reminder_cron import schedule_reminder
 
 urlpatterns = [
 
@@ -73,9 +73,6 @@ urlpatterns = [
 
     #House Inspect
     path('house_inspect', houseInspect.house_list_by_floor),
-
-    #cron
-    path('cron', schedule_reminder),
 
     path('house_company', houseInspect.get_company_house),
     
