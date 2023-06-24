@@ -5,8 +5,7 @@ from django.db.models import Q
 from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import re
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+
 from api.models import Tenant, RentalInfo, Payment,TenantRental
 from api.utils import UTF8JsonResponse
 from ..utils import *
@@ -113,23 +112,16 @@ def update_tenant(request):
 @csrf_exempt
 def search_tenant(request):
     if request.method == 'POST':
-        search_word = request.POST.get("search_word")
-        cleaned_word = re.sub(r'[^\w\s]', '', search_word)  # 去除所有非字母数字和空格的字符
-        if not cleaned_word:
-            return Tenant.objects.none()
-
-        vector = (
-                SearchVector('real_name', weight='A') +
-                SearchVector('company', weight='B') +
-                SearchVector('contactNumber', weight='C') +
-                SearchVector('contactName', weight='D')
-        )
-        query = SearchQuery(cleaned_word)
-
-        tenant = Tenant.objects.annotate(
-            search=vector,
-            rank=SearchRank(vector, query)
-        ).filter(search=query).order_by('-rank').distinct()
+        search_word = request.POST.get('search_word')
+        tenant = Tenant.objects.filter(
+            Q(real_name__icontains=search_word) |
+            Q(company__icontains=search_word) |
+            Q(contactNumber__icontains=search_word) |
+            Q(contactName__icontains=search_word) |
+            Q(real_name__contains=search_word)
+        ).first()
+        if tenant is None:
+            return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
         tenant_detail = []
         user_level_rental_detail = {}
