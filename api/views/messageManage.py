@@ -6,7 +6,7 @@ from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from api.models import Tenant, RentalInfo, Payment,TenantRental
+from api.models import Tenant, RentalInfo, Payment, TenantRental
 from api.utils import UTF8JsonResponse
 from ..utils import *
 
@@ -42,7 +42,7 @@ def add_tenant(request):
 
         tenant = Tenant(real_name=real_name, company=company,
                         contactName=contact_name,
-                        contactNumber=contact_number,email=email)
+                        contactNumber=contact_number, email=email)
         try:
             tenant.save()
         except Exception as e:
@@ -53,12 +53,13 @@ def add_tenant(request):
         username = real_name
         if realname_exist > 0 or username_exist:
             if realname_exist == username_exist:
-                username  = username+"_"+str(realname_exist)
+                username = username + "_" + str(realname_exist)
             if username_exist < realname_exist:
                 if username_exist != 0:
-                    username  = username+"_" + str(realname_exist)
+                    username = username + "_" + str(realname_exist)
 
-        new_user = CustomUser(tenant=tenant,username=username,realname=real_name,position='1',contactNumber=contact_number)
+        new_user = CustomUser(tenant=tenant, username=username, realname=real_name, position='1',
+                              contactNumber=contact_number)
         new_user.set_password(DEFAULTPASS)
         new_user.save()
 
@@ -68,9 +69,8 @@ def add_tenant(request):
         data['position'] = new_user.position
         data['contact_number'] = new_user.contactNumber
 
-
         # 返回成功信息
-        return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant added successfully!','data':data})
+        return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant added successfully!', 'data': data})
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
@@ -113,14 +113,15 @@ def update_tenant(request):
 def search_tenant(request):
     if request.method == 'POST':
         search_word = request.POST.get('search_word')
-        tenants = Tenant.objects.filter(
-            Q(real_name=search_word) |
-            Q(company=search_word) |
-            Q(contactNumber=search_word) |
-            Q(contactName=search_word) |
-            Q(real_name=search_word)
-        ).first()
-        if len(tenants) == 0:
+        try:
+            tenants = Tenant.objects.filter(
+                Q(real_name__icontains=search_word) |
+                Q(company__icontains=search_word) |
+                Q(contactNumber__icontains=search_word) |
+                Q(contactName__icontains=search_word) |
+                Q(real_name__contains=search_word)
+            ).first()
+        except:
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
         tenant_detail = []
@@ -156,6 +157,7 @@ def search_tenant(request):
             user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
             tenant_detail.append(user_level_rental_detail)
         return UTF8JsonResponse({'errno': 1001, 'msg': '查询客户成功', 'data': tenant_detail})
+
 
 @csrf_exempt
 def view_tenant(request):
@@ -201,7 +203,7 @@ def view_tenant(request):
             rent_data = {}
             rent_data[REQUEST_RENTAL_ID] = rent.id
             rent_data[REQUEST_CONTRACT_ID] = rent.contract_id
-            room_list = TenantRental.objects.filter(rental = rent)
+            room_list = TenantRental.objects.filter(rental=rent)
             room_data = []
             for room in room_list:
                 room_data.append(room.house.roomNumber)
@@ -219,7 +221,7 @@ def view_tenant(request):
             rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
             if rent.paidRentalDate:
                 rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
-            #rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
+            # rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
             rent_data_list.append(rent_data)
 
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
