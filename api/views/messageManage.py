@@ -122,7 +122,7 @@ def search_tenant(request):
             Q(company__contains=search_word) |
             Q(contactNumber__contains=search_word) |
             Q(contactName__contains=search_word)
-        ).first()
+        )
         if tenant is None:
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
