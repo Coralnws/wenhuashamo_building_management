@@ -132,6 +132,7 @@ def search_tenant(request):
         user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
         user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
         user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
+        user_level_rental_detail['email'] = tenant.email
 
         rental_infos = RentalInfo.objects.filter(tenant=tenant)
 
@@ -194,6 +195,7 @@ def view_tenant(request):
         user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
         user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
         user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
+        user_level_rental_detail['email'] = tenant.email
 
         rental_infos = RentalInfo.objects.filter(tenant=tenant).order_by('contract_id')
         rent_data_list = []
