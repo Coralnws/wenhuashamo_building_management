@@ -9,6 +9,7 @@ from api.views import houseInspect
 from api.views import maintenanceApi
 from api.views import visitRequestApi
 from api.views import statisticApi
+from api.views import libraryManage
 
 urlpatterns = [
 
@@ -72,5 +73,8 @@ urlpatterns = [
     #House Inspect
     path('house_inspect', houseInspect.house_list_by_floor),
     path('house_company', houseInspect.get_company_house),
+
+    #library
+    path('library', libraryManage.get_library),
     
 ]
