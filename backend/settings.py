@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'django_crontab',
+    'django_apscheduler',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -137,8 +139,12 @@ EMAIL_FROM_USER = env('EMAIL_FROM_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = env('EMAIL_USE_TLS')
 EMAIL_PORT = env('EMAIL_PORT')
-EMAIL_SUBJECT_PREFIX = '[学术成果分享平台]'
+EMAIL_SUBJECT_PREFIX = '[物业管理]'
 DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER')
+
+CRONJOBS = [
+    ('*/1 * * * *', 'api.reminder_cron.schedule_reminder', '>> ./test_crontab.log')
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/

@@ -1,0 +1,17 @@
+您好 {{ contact_name }}!
+
+您的租赁信息：
+合同 ID: {{rental_id}}
+公司：{{company_name}}
+合法人员: {{legal_name}}
+房间：{{rooms}}
+合同开始时间：{{start_time}}
+合同结束时间：{{end_time}}
+合同签约时间：{{sign_time}}
+
+剩下一个月就到期了，再次温馨提醒。
+
+___________________________
+
+Property Management Team
+物业管理物业组

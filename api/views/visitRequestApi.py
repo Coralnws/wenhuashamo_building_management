@@ -134,9 +134,13 @@ def get_request(request):
         visit_data['visitor_time'] = visit.visit_time
         visit_data['contact_number']=visit.contact_number
         visit_data['company'] = visit.company
-        visit_data['room'] = visit.house.roomNumber
+        visit_data['room'] = visit.house.roomNumber or None
         visit_data['inviter_name']=visit.inviter.realname
-        visit_data['otp_sent'] = visit.otp_sent
+
+        if position == '3' or position == '4':
+            visit_data['otp_sent'] = visit.otp_sent
+            visit_data['otp'] = visit.otp
+
         
 
         visit_list_data.append(visit_data)

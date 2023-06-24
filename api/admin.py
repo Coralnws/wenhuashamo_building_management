@@ -11,17 +11,23 @@ class TenantConfig(admin.ModelAdmin):
     list_display = ('id', 'username','real_name')
 
 class RepairConfig(admin.ModelAdmin):
-    list_display = ('id', 'createdTime','house','company','contactName','contactNumber','staff',
+    list_display = ('id', 'createdTime','house','company','contactName','staff', 'time_slot','contactNumber',
                     'staffContact','manager','repairingTime','status','plan','completeTime','solver')
 
 class HouseConfig(admin.ModelAdmin):
     list_display = ('id', 'roomNumber', 'floor')
 
+class TimeslotConfig(admin.ModelAdmin):
+    list_display = ('id', 'date', 'slot','staff','type','repair_info')
+
 class VisitConfig(admin.ModelAdmin):
     list_display = ('id', 'name', 'ic','visit_time','company','house','inviter','contact_number','otp')
+    
+class TenantRentalConfig(admin.ModelAdmin):
+    list_display = ('id', 'house', 'rental')
 
 class RentalInfoConfig(admin.ModelAdmin):
-    list_display = ('id', 'tenant', 'house','startTime', 'endTime','nextRentalDeadline','nextManagementFeeDeadline')
+    list_display = ('id', 'tenant', 'contract_id','startTime', 'endTime','nextRentalDeadline','nextManagementFeeDeadline')
 
 
 admin.site.register(CustomUser, UserAdminConfig)
@@ -30,4 +36,6 @@ admin.site.register(House, HouseConfig)
 admin.site.register(Tenant, TenantConfig)
 admin.site.register(Repair, RepairConfig)
 admin.site.register(VisitRequest,VisitConfig)
+admin.site.register(TenantRental,TenantRentalConfig)
+admin.site.register(Timeslot,TimeslotConfig)
 admin.site.register(RentalInfo, RentalInfoConfig)

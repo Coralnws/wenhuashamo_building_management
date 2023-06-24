@@ -8,6 +8,7 @@ from api.views import messageManage
 from api.views import houseInspect
 from api.views import maintenanceApi
 from api.views import visitRequestApi
+from api.views import statisticApi
 
 from api.reminder_cron import schedule_reminder
 
@@ -56,18 +57,26 @@ urlpatterns = [
     path('repair/closeTask', maintenanceApi.close_task),
     path('repair/updateRequest', maintenanceApi.update_request),
     path('repair/delRequest', maintenanceApi.del_request),
-
+    path('repair/timeslot', maintenanceApi.get_timeslot),
+    
     #Visit
     path('visit/create', visitRequestApi.create_request),
     path('visit/update', visitRequestApi.update_request),
     path('visit/delete', visitRequestApi.del_request),
     path('visit/get', visitRequestApi.get_request),
 
+    #statistic
+    path('statistic/repair', statisticApi.repair_statistic),
+    path('statistic/repair_year', statisticApi.repair_statistic_year),
+    path('statistic/visit', statisticApi.visit_statistic_month),
+
 
     #House Inspect
     path('house_inspect', houseInspect.house_list_by_floor),
 
     #cron
-    path('cron', schedule_reminder)
+    path('cron', schedule_reminder),
 
+    path('house_company', houseInspect.get_company_house),
+    
 ]

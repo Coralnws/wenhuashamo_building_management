@@ -6,11 +6,12 @@ from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from api.models import Tenant, RentalInfo, Payment
+from api.models import Tenant, RentalInfo, Payment,TenantRental
 from api.utils import UTF8JsonResponse
 from ..utils import *
 
 REQUEST_RENTAL_ID = 'rental_id'
+REQUEST_CONTRACT_ID = 'contract_id'
 REQUEST_USER_ID = 'user_id'
 REQUEST_IS_DELETE = 'is_delete'
 REQUEST_COM_NAME = 'com_name'
@@ -194,11 +195,18 @@ def view_tenant(request):
         user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
         user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
 
-        rental_infos = RentalInfo.objects.filter(tenant=tenant)
+        rental_infos = RentalInfo.objects.filter(tenant=tenant).order_by('contract_id')
         rent_data_list = []
         for rent in rental_infos:
             rent_data = {}
             rent_data[REQUEST_RENTAL_ID] = rent.id
+            rent_data[REQUEST_CONTRACT_ID] = rent.contract_id
+            room_list = TenantRental.objects.filter(rental = rent)
+            room_data = []
+            for room in room_list:
+                room_data.append(room.house.roomNumber)
+            room_data.sort()
+            rent_data['room_data'] = room_data
             if rent.startTime:
                 rent_data[REQUEST_DATE_BEGIN] = rent.startTime.strftime("%Y-%m-%d")
             if rent.endTime:
@@ -211,7 +219,7 @@ def view_tenant(request):
             rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
             if rent.paidRentalDate:
                 rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
-            rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
+            #rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
             rent_data_list.append(rent_data)
 
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list

@@ -9,6 +9,7 @@ import datetime
 
 REQUEST_RENTAL_ID = 'rental_id'
 REQUEST_TENANT_ID = 'tenant_id'
+REQUEST_CONTRACT_ID = 'contract_id'
 REQUEST_USER_ID = 'user_id'
 REQUEST_IS_DELETE = 'is_delete'
 REQUEST_COM_NAME = 'com_name'
@@ -34,6 +35,7 @@ def rent_create(request):
     info = request.POST.dict()
     
     tenant_id = info.get(REQUEST_TENANT_ID)
+    contract_id = info.get(REQUEST_CONTRACT_ID)
     room_id = info.get(REQUEST_ROOM_ID)
     date_begin = info.get(REQUEST_DATE_BEGIN)
     date_end = info.get(REQUEST_DATE_END)
@@ -42,37 +44,66 @@ def rent_create(request):
     #ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
     #date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
-    room_exist = House.objects.filter(roomNumber=room_id).first()
-
-    datetime_obj = datetime.datetime.strptime(date_end, '%Y-%m-%d')
-
-    if datetime_obj < timezone.now():
-        room_exist.status=False
-        room_exist.save()
-    else:
-        room_exist.status=True
-        room_exist.save()
-
+    room_list = room_id.split(",")
+    print(room_list)
 
     tenant_exist = Tenant.objects.filter(id=tenant_id).first()
 
-    if room_exist is None or tenant_exist is None:
-        return return_response(9999, '房间或者客户不存在')
-    print(room_exist)
+    rental_exist = RentalInfo.objects.filter(tenant=tenant_exist,contract_id=contract_id).first()
+    if rental_exist:
+        return return_response(4001, '合约编号已存在')
+
+    if tenant_exist is None:
+            return return_response(9999, '客户不存在')
+    
+    #添加合约
     rental_info = RentalInfo()
-    rental_info.house = room_exist
+    rental_info.contract_id = contract_id
     rental_info.tenant = tenant_exist
     rental_info.createdTime = date_sign
     rental_info.startTime = date_begin
     rental_info.endTime = date_end
-    #rental_info.ispaid_management = ispaid_management
-    #rental_info.paidManagementDate = date_paid_management
     rental_info.save()
+
+    date_end_str = datetime.datetime.strptime(date_end, '%Y-%m-%d')
+    date_begin_str = datetime.datetime.strptime(date_begin, '%Y-%m-%d')
+    status = None
+
+    if date_begin_str <= timezone.now() and date_end_str >= timezone.now():
+        status=True
+    else:
+        status=False
+        
+    #为每个房间建立TenantRental关系 - house + rental
+    for room in room_list:
+        house = House.objects.filter(roomNumber = room).first()
+        if house is None:
+            return return_response(3001, '房间不存在')
+        
+        #检查房屋在这个时间段是不是已经出租
+        rent_room_list = TenantRental.objects.filter(house=house)
+        for record in rent_room_list:
+            if record.rental.endTime >= date_begin_str and record.rental.endTime <= date_end_str:
+                rental_info.delete()
+                return return_response(2001, '该时间段房间已出租',room)
+
+        house.status = status
+        house.save()
+        rent = TenantRental(house=house,rental=rental_info)
+        rent.save()
+
+    
     data=model_to_dict(rental_info)
+    data['id'] = rental_info.id
+    room_list = TenantRental.objects.filter(rental = rental_info)
+    room_data = []
+    for room in room_list:
+        room_data.append(room.house.roomNumber)
+    data['room_data'] = room_data
 
     return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息新建成功', 'data':data})
 
-'''s
+'''
     @param:
     - user_ID:'1', //用户ID
     - date_begin:'', //租赁开始时间
@@ -168,6 +199,7 @@ def rent_update(request):
     info = request.POST.dict()
 
     tenant_ID = info.get(REQUEST_TENANT_ID)
+    contract_ID = info.get(REQUEST_CONTRACT_ID)
     room_ID = info.get(REQUEST_ROOM_ID)
     date_begin = info.get(REQUEST_DATE_BEGIN)
     date_end = info.get(REQUEST_DATE_END)
@@ -176,33 +208,65 @@ def rent_update(request):
     # date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
     tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
-    house = House.objects.filter(roomNumber=room_ID).first()
-
-    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,house=house).first()
+    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,contract_id=contract_ID).first()
 
     if tenant_exist is None or rental_info is None:
         return return_response(9999, '客户或租赁信息不存在')
 
 
-    #rental_info.tenant = tenant_exist
     rental_info.createdTime = date_sign
     rental_info.startTime = date_begin
     rental_info.endTime = date_end
-
-    datetime_obj = datetime.datetime.strptime(
-    rental_info.endTime, '%Y-%m-%d')
-
-    if datetime_obj < timezone.now():
-        house.status=False
-        house.save()
-    else:
-        house.status=True
-        house.save()
-    # rental_info.ispaid_management = ispaid_management
-    # rental_info.paidManagementDate = date_paid_management
     rental_info.save()
 
+    date_end_str = datetime.datetime.strptime(date_end, '%Y-%m-%d')
+    date_begin_str = datetime.datetime.strptime(date_begin, '%Y-%m-%d')
+
+    status = None
+    if date_begin_str <= timezone.now() and date_end_str >= timezone.now():
+        status=True
+    else:
+        status=False
+
+
+    new_room_list = room_ID.split(",")
+
+    room_list_exist = TenantRental.objects.filter(rental = rental_info)
+
+    for record in room_list_exist:
+        if record.house.roomNumber in new_room_list:
+            record.house.status = status
+            record.house.save()
+            new_room_list.remove(record.house.roomNumber)
+        else:
+            if record.rental.endTime >= timezone.now() and record.rental.startTime <= timezone.now():    
+                record.house.status = not record.house.status
+                record.house.save()
+                record.delete()
+
+    for room in new_room_list:
+        house = House.objects.filter(roomNumber = room).first()
+        if house is None:
+            return return_response(3001, '房间不存在')
+        
+        #这边可以添加判断房屋在这个时间段是不是已经出租
+        rent_room_list = TenantRental.objects.filter(house=house)
+        for rent_room in rent_room_list:
+            if rent_room.rental.endTime >= date_begin_str and rent_room.rental.endTime <= date_end_str and rent_room.rental != rental_info:
+                return return_response(2001, '该时间段房间已出租',room)
+
+        house.status = status
+        house.save()
+        rent = TenantRental(house=house,rental=rental_info)
+        rent.save()
+        
     data=model_to_dict(rental_info)
+    
+    room_list = TenantRental.objects.filter(rental = rental_info)
+    room_data = []
+    for room in room_list:
+        room_data.append(room.house.roomNumber)
+    data['room_data'] = room_data
 
     return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息修改成功', 'data':data})
 
@@ -214,18 +278,20 @@ def rent_delete(request):
     info = request.POST.dict()
 
     tenant_ID = info.get(REQUEST_TENANT_ID)
-    room_ID = info.get(REQUEST_ROOM_ID)
+    contract_ID = info.get(REQUEST_CONTRACT_ID)
 
     tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
-    house_exist = House.objects.filter(roomNumber=room_ID).first()
-    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,house=house_exist).first()
+    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,contract_id=contract_ID).first()
 
-    #datetime_obj = datetime.datetime.strptime(rental_info.endTime, '%Y-%m-%d')
-
-    if rental_info.endTime > timezone.now():
-        house_exist.status=False
-        house_exist.save()
-
+    room_list_exist = TenantRental.objects.filter(rental = rental_info)
+        
+    for record in room_list_exist:
+        if rental_info.startTime <= timezone.now() and rental_info.endTime >= timezone.now(): #当前仍在租赁
+            record.house.status = False
+            record.house.save()
+        
+        record.delete()
+    
     rental_info.delete()
 
     return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息删除成功'})
