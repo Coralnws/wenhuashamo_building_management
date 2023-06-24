@@ -114,12 +114,12 @@ def search_tenant(request):
     if request.method == 'POST':
         search_word = request.POST.get('search_word')
         tenants = Tenant.objects.filter(
-            Q(real_name__icontains=search_word) |
-            Q(company__icontains=search_word) |
-            Q(contactNumber__icontains=search_word) |
-            Q(contactName__icontains=search_word) |
-            Q(real_name__contains=search_word)
-        )
+            Q(real_name=search_word) |
+            Q(company=search_word) |
+            Q(contactNumber=search_word) |
+            Q(contactName=search_word) |
+            Q(real_name=search_word)
+        ).first()
         if len(tenants) == 0:
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
