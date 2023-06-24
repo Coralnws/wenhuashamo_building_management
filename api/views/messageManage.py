@@ -121,8 +121,8 @@ def search_tenant(request):
                 Q(contactName__icontains=search_word) |
                 Q(real_name__contains=search_word)
             ).first()
-        except:
-            return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
+        except Exception as e:
+            return UTF8JsonResponse({'errno': 100001, 'msg': '客户查询失败：{}'.format(str(e))})
 
         tenant_detail = []
         for tenant in tenants:
