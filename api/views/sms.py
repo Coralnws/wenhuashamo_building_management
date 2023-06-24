@@ -6,6 +6,7 @@ from aliyunsdkcore.request import CommonRequest
 def phone_send(phone):
     # phone = "18805509919"  # 这里是测试用的，实际使用删除即可
     # 生成验证码.
+    print("sending sms to :....", phone)
     code = ''
     str1 = '0123456789'
     for i in range(0, 6):
@@ -30,5 +31,8 @@ def phone_send(phone):
     request.add_query_param('TemplateParam', "{\"code\":\"%s\"}" % code)
 
     response = client.do_action_with_exception(request)  # 这里是阿里云官方接口的返回信息
+    print("Reponse from ali:", response)
 
     return code
+
+    

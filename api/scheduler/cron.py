@@ -17,11 +17,22 @@ def start():
     
     scheduler.add_job(
         schedule_fee_email,
-        "interval",
-        seconds= 5,
+        "cron",
+        hour= 12,
+        minute= 6,
+        second= 5,
         id= "schedule_fee_email",
         replace_existing= True
     )
+
+    # scheduler.add_job(
+    #     schedule_otp_sms,
+    #     "interval",
+    #     seconds= 5,
+    #     id= "schedule_otp_sms",
+    #     replace_existing= True
+    # )
+
     scheduler.start()
     print("SCHEDULING STARTINGGGG")
 
