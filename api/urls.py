@@ -11,10 +11,7 @@ from api.views import visitRequestApi
 from api.views import statisticApi
 from api.views import libraryManage
 from api.views import sms
-<<<<<<< HEAD
-=======
 from api.scheduler import sms_reminder
->>>>>>> 99badbcfea65e7a7579c5235a0480b8a664f6052
 
 # from api.reminder_cron import schedule_reminder
 
@@ -84,9 +81,6 @@ urlpatterns = [
     #library
     path('library', libraryManage.get_library),
     path('sms', sms.sendSms),
-<<<<<<< HEAD
-=======
     # path('sms', sms_reminder.schedule_otp_sms),
->>>>>>> 99badbcfea65e7a7579c5235a0480b8a664f6052
     
 ]
