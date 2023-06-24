@@ -123,7 +123,7 @@ def search_tenant(request):
             ).first()
         except Exception as e:
             return UTF8JsonResponse({'errno': 10001, 'msg': '客户查询失败：{}'.format(str(e))})
-        if len(tenant) == 0:
+        if not tenant:
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
         tenant_detail = []
