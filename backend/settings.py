@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-    'django_crontab',
     'django_apscheduler',
 ]
 
@@ -142,16 +141,14 @@ EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_SUBJECT_PREFIX = '[物业管理]'
 DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER')
 
-CRONJOBS = [
-    ('*/1 * * * *', 'api.reminder_cron.schedule_reminder', '>> ./test_crontab.log')
-]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Shanghai'
+# TIME_ZONE = 'Asia/Shanghai'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
