@@ -16,10 +16,10 @@ def get_library(request):
         library_detail = []
         for repair in repairs:
             data = {}
-            data['title'] = '标题'  #
+            data['title'] = repair.title
             data['content'] = repair.description
             data['solve'] = repair.plan
-            data['type'] = '1'  #
+            data['type'] = repair.type
             data['worker'] = repair.solver
             data['contact'] = repair.staffContact
             library_detail.append(data)
