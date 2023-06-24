@@ -120,7 +120,7 @@ def search_tenant(request):
             Q(contactName__icontains=search_word) |
             Q(real_name__contains=search_word)
         )
-        if tenants is None:
+        if len(tenants) == 0:
             return UTF8JsonResponse({'errno': 100001, 'msg': '不存在这样的用户'})
 
         tenant_detail = []
