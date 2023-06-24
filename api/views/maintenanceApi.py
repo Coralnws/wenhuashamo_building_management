@@ -34,6 +34,7 @@ from api.error_utils import *
 def create_request(request):
     if request.method == 'POST':
         #问题描述、报修时间、报修房间号、报修公司、报修联系人姓名和联系方式
+        title = request.POST.get('title')
         description = request.POST.get('description')
         time = request.POST.get('time')
         room = request.POST.get('room')
@@ -49,7 +50,7 @@ def create_request(request):
             return UTF8JsonResponse({'errno':7001, 'msg': '房间不存在'})
         submitter = CustomUser.objects.filter(id=user_id).first()
 
-        repair = Repair(description=description,house=house,createdTime=time,
+        repair = Repair(title=title,description=description,house=house,createdTime=time,
                         submitter=submitter,company=company,contactName=contact_user,
                         contactNumber=contact_number,expect_date=expect_date,
                         expect_time_slot=expect_timeslot)
@@ -80,6 +81,7 @@ def update_request(request):
     if request.method == 'POST':
         info = request.POST.dict()
         request_id = info.get('request_id')
+        title = info.get('title')
         description = info.get('description')
         created_time = info.get('submitTime')
         room = info.get('room')
@@ -98,6 +100,8 @@ def update_request(request):
         expect_timeslot = info.get('expect_timeslot')   
 
         record = Repair.objects.filter(id=request_id).first()
+        if title:
+            record.title = title
         if description:
             record.description = description
         if created_time:    

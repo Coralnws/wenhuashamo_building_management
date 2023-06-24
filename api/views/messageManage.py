@@ -96,7 +96,7 @@ def update_tenant(request):
         tenant.company = request.POST.get('company')
         tenant.contactName = request.POST.get('contactName')
         tenant.contactNumber = request.POST.get('contactNumber')
-
+        tenant.email = request.POST.get('email')
         # 保存客户对象到数据库中
         try:
             tenant.save()
@@ -132,6 +132,7 @@ def search_tenant(request):
         user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
         user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
         user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
+        user_level_rental_detail['email'] = tenant.email
 
         rental_infos = RentalInfo.objects.filter(tenant=tenant)
 
@@ -194,6 +195,7 @@ def view_tenant(request):
         user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
         user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
         user_level_rental_detail[REQUEST_PHONE] = tenant.contactNumber
+        user_level_rental_detail['email'] = tenant.email
 
         rental_infos = RentalInfo.objects.filter(tenant=tenant).order_by('contract_id')
         rent_data_list = []
