@@ -96,7 +96,7 @@ def update_tenant(request):
         tenant.company = request.POST.get('company')
         tenant.contactName = request.POST.get('contactName')
         tenant.contactNumber = request.POST.get('contactNumber')
-
+        tenant.email = request.POST.get('email')
         # 保存客户对象到数据库中
         try:
             tenant.save()
