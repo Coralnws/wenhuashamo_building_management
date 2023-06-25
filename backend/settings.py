@@ -147,8 +147,8 @@ DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER')
 
 LANGUAGE_CODE = 'en-us'
 
-# TIME_ZONE = 'Asia/Shanghai'
-TIME_ZONE = 'Asia/Bangkok'
+TIME_ZONE = 'Asia/Shanghai'
+#TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
