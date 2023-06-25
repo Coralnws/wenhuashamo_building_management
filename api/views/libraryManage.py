@@ -25,4 +25,4 @@ def get_library(request):
             data['contact'] = repair.staffContact
             library_detail.append(data)
 
-        return return_response(1001, '查询知识库成功', library_detail)\
+        return return_response(1001, '查询知识库成功', library_detail)
