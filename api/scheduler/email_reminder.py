@@ -22,9 +22,9 @@ def schedule_fee_email():
     for rental_info in rental_infos:
         print("\n++++++++++")
         print("contact id: ", rental_info.contract_id)
-        print("start_date: ", rental_info.startTime)
-        print("end_date: ", rental_info.endTime)
-        print("sign_date: ", rental_info.createdTime)
+        print("start_date: ", rental_info.startTime.strftime("%Y年 %m月 %d日"))
+        print("end_date: ", rental_info.endTime.strftime("%Y年 %m月 %d日"))
+        print("sign_date: ", rental_info.createdTime.strftime("%Y年 %m月 %d日"))
         send_fee_reminder_smtp(rental_info)
         print("++++++++++")
 
@@ -33,9 +33,9 @@ def send_fee_reminder_smtp(rental_info):
     room_list = ', '.join([str(item.house.roomNumber) for item in TenantRental.objects.filter(rental=rental_info)])
     context = {
         'rental_id': rental_info.contract_id,
-        'sign_time': rental_info.createdTime.date,
-        'start_time': rental_info.startTime.date,
-        'end_time': rental_info.endTime.date,
+        'sign_time': rental_info.createdTime.strftime("%Y年 %m月 %d日"),
+        'start_time': rental_info.startTime.strftime("%Y年 %m月 %d日"),
+        'end_time': rental_info.endTime.strftime("%Y年 %m月 %d日"),
         'company_name': rental_info.tenant.company,
         'legal_name': rental_info.tenant.real_name,
         'contact_name': rental_info.tenant.contactName,
