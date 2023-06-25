@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from ..utils import *
 from django.utils import timezone
 import datetime
+from api.views.paymentManageApi import *
 
 REQUEST_RENTAL_ID = 'rental_id'
 REQUEST_TENANT_ID = 'tenant_id'
@@ -94,7 +95,16 @@ def rent_create(request):
         rent = TenantRental(house=house,rental=rental_info)
         rent.save()
 
-    
+    # # populate contract duration and create
+    # i = 0
+    # curr_date = date_begin
+    # while True:
+    #     curr_date.year += 1
+    #     # when the date is valid
+    #     if curr_date <= date_end:
+    #         payment = Payment()
+    #         payment.
+
     data=model_to_dict(rental_info)
     data['id'] = rental_info.id
     room_list = TenantRental.objects.filter(rental = rental_info)

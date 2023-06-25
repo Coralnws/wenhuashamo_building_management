@@ -20,6 +20,8 @@ class Payment(models.Model):
     amount = models.IntegerField()
     type = models.CharField(max_length=10, choices=TYPES,default='0')
 
+    start_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
 
     createdAt = models.DateTimeField(default=timezone.now)
     updatedAt = models.DateTimeField(default=timezone.now)
