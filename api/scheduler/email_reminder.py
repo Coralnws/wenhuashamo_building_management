@@ -1,32 +1,38 @@
 import datetime
 from django.utils import timezone
-from api.models import RentalInfo
+from api.models import RentalInfo, TenantRental
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 
 def schedule_fee_email():
-    # set fixed date to testing
-    # start_date = datetime.datetime.strptime("2029-12-02", "%Y-%m-%d")
-    # target_date = start_date + datetime.timedelta(days=30)
-    target_date = timezone.now().date() + datetime.timedelta(days=30)
 
-    rental_infos = RentalInfo.objects.filter(endTime=target_date)
+    one_month_later = timezone.now().date() + datetime.timedelta(days=30)
+
+    rental_infos = RentalInfo.objects.filter(
+        startTime__year__lt=one_month_later.year,
+        endTime__year__gte=one_month_later.year,
+        endTime__month=one_month_later.month,
+        endTime__day=one_month_later.day,
+    )
 
     print("+++++ START SENDING REMINDER EMAIL CRON ++++++")
-    print("FOR target date:", target_date)
+    print("FOR target date:", one_month_later)
     for rental_info in rental_infos:
         print("\n++++++++++")
-        print("id: ", rental_info.id)
+        print("contact id: ", rental_info.contract_id)
         print("start_date: ", rental_info.startTime)
         print("end_date: ", rental_info.endTime)
         print("sign_date: ", rental_info.createdTime)
-        #send_fee_reminder_smtp(rental_info)
+        send_fee_reminder_smtp(rental_info)
         print("++++++++++")
 
 
 def send_fee_reminder_smtp(rental_info):
     room_list = ', '.join([str(item.house.roomNumber) for item in TenantRental.objects.filter(rental=rental_info)])
     context = {
-        'rental_id': rental_info.id,
+        'rental_id': rental_info.contract_id,
         'sign_time': rental_info.createdTime.date,
         'start_time': rental_info.startTime.date,
         'end_time': rental_info.endTime.date,

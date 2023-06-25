@@ -80,7 +80,5 @@ urlpatterns = [
 
     #library
     path('library', libraryManage.get_library),
-    path('sms', sms.sendSms),
-    # path('sms', sms_reminder.schedule_otp_sms),
-    
+    path('resend_otp', sms.resend_otp),
 ]

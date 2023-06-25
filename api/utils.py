@@ -1,9 +1,9 @@
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
+from django.conf import settings
 import random
 import redis
-from django.conf import settings
 import json
 
 from api.models.users import CustomUser

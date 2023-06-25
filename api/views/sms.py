@@ -4,10 +4,25 @@ from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.request import CommonRequest
 from api.utils import *
 from django.db.models import Q
+from api.models import *
+from api.scheduler.email_reminder import send_fee_reminder_smtp
 
-def sendSms(request):
-    phone = request.POST.get('phone')
-    return phone_send(phone, 123123)
+def resend_otp(request):
+    if request.method != 'POST':
+        return not_post_method()
+    
+    info = request.POST.dict()
+    visit_id = info.get('visit_id')
+
+    visit = VisitRequest.objects.filter(id=visit_id).first()
+    code = get_random_codes()
+    res = phone_send(phone, code)
+    if res.Code == 'OK':
+        visit.otp = code
+        v.otp_sent += 1
+        v.save()
+
+    return return_response(1001, "成功获取验证码")
 
 
 def phone_send(phone, code):
@@ -36,5 +51,14 @@ def phone_send(phone, code):
 
     response = client.do_action_with_exception(request)  # 这里是阿里云官方接口的返回信息
     res = response.decode('utf-8')
-    print("Reponse from ali:", response.decode('utf-8'))
-    return return_response(100001, "sent sms", json.loads(res))
+    print("Reponse from ali:", res)
+    return json.loads(res)
+
+
+
+def get_random_codes():
+    code = ''
+    str1 = '0123456789'
+    for i in range(0, 6):
+        code += str1[random.randrange(0, len(str1))]
+    return code
