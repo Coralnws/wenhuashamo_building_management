@@ -64,7 +64,7 @@ def create_request(request):
         submitter = CustomUser.objects.filter(id=user_id).first()
         
         #智能派单
-        if repair_type is None:
+        if repair_type is None or repair_type == '0':
             repair_type = auto_assign(description)
         
         # if repair_type != '0':
@@ -176,7 +176,7 @@ def del_request(request):
     if request.method == 'POST':
         request_id = request.POST.get('request_id')
         record = Repair.objects.filter(id=request_id).first()
-        if record and record.status == 'In Progress':
+        if record.status == 'In Progress' and record.time_slot:
             time_slot = record.time_slot
             time_slot.delete()
 
@@ -526,10 +526,11 @@ def get_timeslot(request):
             data[str_date] = '0'
 
         #这边把推荐的时间段设成2
-        interval = datetime.datetime.strptime(target_date, "%Y-%m-%d") - datetime.datetime.strptime(start_date, "%Y-%m-%d")
-        if staff == target_staff:
-            str_date = "time" + str(3 * int(interval.days) + int(target_slot))
-            data[str_date] = '2'
+        if repair_type != '0':
+            interval = datetime.datetime.strptime(target_date, "%Y-%m-%d") - datetime.datetime.strptime(start_date, "%Y-%m-%d")
+            if staff == target_staff:
+                str_date = "time" + str(3 * int(interval.days) + int(target_slot))
+                data[str_date] = '2'
             
         for j in range(int(period)):
             search_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=j)
