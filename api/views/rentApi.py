@@ -85,7 +85,7 @@ def rent_create(request):
         rent_room_list = TenantRental.objects.filter(house=house)
         #检查这些租赁信息里面有没有重叠的
         for record in rent_room_list:
-            if (record.rental.startTime >= date_begin_str and record.rental.startTime <= date_end_str) or (record.rental.endTime >= date_begin_str and record.rental.endTime <= date_end_str):
+            if (record.rental.startTime >= date_begin_str and record.rental.startTime <= date_end_str) or (record.rental.endTime >= date_begin_str and record.rental.endTime <= date_end_str) or     (record.rental.startTime <= date_begin_str and record.rental.endTime >= date_end_str) or(date_begin_str <= record.rental.startTime and record.rental.endTime <= date_end_str):
                 rental_info.delete()
                 return return_response(2001, '该时间段房间已出租',room)
 
@@ -256,9 +256,11 @@ def rent_update(request):
             return return_response(3001, '房间不存在')
         
         #这边可以添加判断房屋在这个时间段是不是已经出租
+        
         rent_room_list = TenantRental.objects.filter(house=house)
+
         for rent_room in rent_room_list:
-            if (rent_room.rental.startTime >= date_begin_str and rent_room.rental.startTime <= date_end_str) or (rent_room.rental.endTime >= date_begin_str and rent_room.rental.endTime <= date_end_str) and rent_room.rental != rental_info:
+            if (record.rental.startTime >= date_begin_str and record.rental.startTime <= date_end_str) or (record.rental.endTime >= date_begin_str and record.rental.endTime <= date_end_str) or     (record.rental.startTime <= date_begin_str and record.rental.endTime >= date_end_str) or(date_begin_str <= record.rental.startTime and record.rental.endTime <= date_end_str) and rent_room.rental != rental_info:
                 return return_response(2001, '该时间段房间已出租',room)
 #
         house.status = status

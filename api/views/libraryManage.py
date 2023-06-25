@@ -20,7 +20,7 @@ def get_library(request):
             data['content'] = repair.description
             data['solve'] = repair.plan
             data['type'] = repair.type
-            data['worker'] = repair.solver
+            data['worker'] = repair.solver.realname
             data['contact'] = repair.staffContact
             library_detail.append(data)
 
