@@ -81,9 +81,11 @@ def rent_create(request):
             return return_response(3001, '房间不存在')
         
         #检查房屋在这个时间段是不是已经出租
+        #拿这个房间的所有租赁信息
         rent_room_list = TenantRental.objects.filter(house=house)
+        #检查这些租赁信息里面有没有重叠的
         for record in rent_room_list:
-            if record.rental.endTime >= date_begin_str and record.rental.endTime <= date_end_str:
+            if (record.rental.startTime >= date_begin_str and record.rental.startTime <= date_end_str) or (record.rental.endTime >= date_begin_str and record.rental.endTime <= date_end_str):
                 rental_info.delete()
                 return return_response(2001, '该时间段房间已出租',room)
 
@@ -213,11 +215,16 @@ def rent_update(request):
     if tenant_exist is None or rental_info is None:
         return return_response(9999, '客户或租赁信息不存在')
 
-
-    rental_info.createdTime = date_sign
-    rental_info.startTime = date_begin
-    rental_info.endTime = date_end
+    if date_sign:
+        rental_info.createdTime = date_sign
+    if date_begin:
+        rental_info.startTime = date_begin
+    if date_end:
+        rental_info.endTime = date_end
     rental_info.save()
+
+    if room_ID is None:
+        return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息修改成功'})
 
     date_end_str = datetime.datetime.strptime(date_end, '%Y-%m-%d')
     date_begin_str = datetime.datetime.strptime(date_begin, '%Y-%m-%d')
@@ -227,7 +234,6 @@ def rent_update(request):
         status=True
     else:
         status=False
-
 
     new_room_list = room_ID.split(",")
 
@@ -252,9 +258,9 @@ def rent_update(request):
         #这边可以添加判断房屋在这个时间段是不是已经出租
         rent_room_list = TenantRental.objects.filter(house=house)
         for rent_room in rent_room_list:
-            if rent_room.rental.endTime >= date_begin_str and rent_room.rental.endTime <= date_end_str and rent_room.rental != rental_info:
+            if (rent_room.rental.startTime >= date_begin_str and rent_room.rental.startTime <= date_end_str) or (rent_room.rental.endTime >= date_begin_str and rent_room.rental.endTime <= date_end_str) and rent_room.rental != rental_info:
                 return return_response(2001, '该时间段房间已出租',room)
-
+#
         house.status = status
         house.save()
         rent = TenantRental(house=house,rental=rental_info)

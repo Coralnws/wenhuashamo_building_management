@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import *
 
 class UserAdminConfig(admin.ModelAdmin):
-    list_display = ('id', 'username', 'realname','email', 'profile','tenant')
+    list_display = ('id', 'username', 'realname','position','m_type','email', 'profile','tenant')
 
 class PaymentConfig(admin.ModelAdmin):
     list_display = ('id', 'tenant')
@@ -11,7 +11,7 @@ class TenantConfig(admin.ModelAdmin):
     list_display = ('id', 'username','real_name')
 
 class RepairConfig(admin.ModelAdmin):
-    list_display = ('id','title','description', 'createdTime','house','company','contactName','staff', 'time_slot','contactNumber',
+    list_display = ('id','title','description', 'createdTime','house','company','contactName','submitter','staff', 'time_slot','contactNumber',
                     'staffContact','manager','repairingTime','status','plan','completeTime','solver','type')
 
 class HouseConfig(admin.ModelAdmin):

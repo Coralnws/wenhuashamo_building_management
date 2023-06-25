@@ -10,7 +10,7 @@ water_keywords = [
 ]
 
 electric_keyword = [
-    "断路器","变压器","接触器","继电器","配电盘","电线","电缆","电压","电流","电池","开关","电力"
+    "电","没电","断路","变压器","接触器","继电器","配电盘","电线","电缆","电压","电流","电池","开关","电力"
     "插头","插座","熔断器","稳压器","整流器","电阻","电容器","晶体管","二极管","发电机",
     "电源","电机","电子系统","电线短路","电流过载","电力故障","电气火灾",
     "电磁干扰","电源中断","电网稳定性","电压骤降","电压超标","电气设备维护","电气设备检修",
@@ -21,6 +21,7 @@ electric_keyword = [
     "气体断路器","电气","电路","短路","开路","接地","电流","电容","电感","电源",
     "负载","导线","绝缘","连接","接头","电子元件","半导体","二极管","三极管","晶体管",
     "集成电路","微处理器","电阻器","电感器","变压器","稳压器","开关","电闸","电路板"
+    "连接","网","网络","无线","接触","跳电","停电"
 ]
 
 mechanical_keyword = [
@@ -40,18 +41,28 @@ mechanical_keyword = [
     "水饮机","设备","传感器","调节器","暖器","马达"
 ]
 
-stopwords = ["啊","哎","唉","俺","按","吧","把","甭","别","嘿","很","乎","会","或","既","及","啦","了","们","你","您","哦","砰","啊","你","我","他","她","它",'的','是', '在', '和','请',"一直"]
+stopwords = ["啊","哎","唉","俺","按","吧","把","甭","别","嘿","很","乎","会","或","既","及","啦","了","们","你","您","哦","砰","啊","你","我","他","她","它",'的','是', '在', '和','请',"一直","(",")",":","?"]
 
+'''
 def auto_assign(text):
     tokens = jieba.cut(text)  # 使用jieba分词器对文本进行分词
-    filtered_tokens = [token for token in tokens if token not in stopwords]
-
+    #filtered_tokens = [token for token in tokens if token not in stopwords]
+    """
     print(filtered_tokens)
     data={}
     data['1'] = 0
     data['2'] = 0
     data['3'] = 0
+    """ 
 
+    if any(text in item for item in water_keywords):
+        print("字符串在水关键词里面")
+    if any(text in item for item in electric_keyword):
+        print("字符串在电关键词里面")
+    if any(text in item for item in mechanical_keyword):
+        print("字符串在机械关键词里面")
+
+    """
     for token in filtered_tokens:
         if token in water_keywords:
             data['1'] += 1
@@ -59,11 +70,12 @@ def auto_assign(text):
             data['2'] += 1
         if token in mechanical_keyword:
             data['3'] += 1
+    """
 
-    
-    type_list = sorted(data.items(), key = lambda kv:(kv[0], kv[1]))
-    print(type_list)
+    #type_list = sorted(data.items(), key = lambda kv:(kv[0], kv[1]))
+    #print(type_list)
 
-    return type_list[0][0]
+    #return type_list[0][0]
     
 print(auto_assign("厕所水龙头一直在漏水"))
+'''

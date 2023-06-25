@@ -18,23 +18,23 @@ from api.keywords import water_keywords,electric_keyword,mechanical_keyword,stop
 
 def auto_assign(text):
     tokens = jieba.cut(text)  # 使用jieba分词器对文本进行分词
-    filtered_tokens = [token for token in tokens if token not in stopwords]
+    #filtered_tokens = [token for token in tokens if token not in stopwords]
 
-    print(filtered_tokens)
     data={}
     data['1'] = 0
     data['2'] = 0
     data['3'] = 0
 
-    for token in filtered_tokens:
-        if token in water_keywords:
-            data['1'] += 1
-        if token in electric_keyword:
-            data['2'] += 1
-        if token in mechanical_keyword:
-            data['3'] += 1
+    for token in tokens:
+        if token not in stopwords:
+            if token in water_keywords:
+                data['1'] += 1
+            if token in electric_keyword:
+                data['2'] += 1
+            if token in mechanical_keyword:
+                data['3'] += 1
 
-    type_list = sorted(data.items(), key = lambda kv:(kv[0], kv[1]))
+    type_list = sorted(data.items(),  key=lambda x: x[1], reverse=True)
     print(type_list)
 
 
@@ -53,7 +53,7 @@ def create_request(request):
         contact_number = request.POST.get('contact_number')
         expect_date = request.POST.get('expect_date')
         expect_timeslot = request.POST.get('expect_timeslot')
-        type = request.POST.get('type')
+        repair_type = request.POST.get('type')
 
         house = House.objects.filter(roomNumber=room).first()
         if house is None:
@@ -61,19 +61,42 @@ def create_request(request):
         submitter = CustomUser.objects.filter(id=user_id).first()
 
         #智能派单
-        if type is None:
-            type = auto_assign(description)
+        if repair_type is None:
+            repair_type = auto_assign(description)
         
-        free_staff_list = CustomUser.objects.filter(position='2')
-        print(type(free_staff_list))
+        #筛选出类型匹配的维修人员
+        staff_list = CustomUser.objects.filter(position='2',m_type__startswith='1')
+
+        #第一轮先查看有没有完全一致的排班时间
+        #第一轮没有的话就从当前开始往后看，直到有一个符合的（前面没有也一定会遇到后面最早可以的时间）
+        assign = False
+        accurate = 1
+        next_date = expect_date
+        next_slot = expect_timeslot
+        while not assign:
+            for staff in staff_list:
+                #每个员工查看他的空档，如果有空档直接派单,检查存不存在这个时间，存在就代表没空
+                unavailable_timeslot = Timeslot.objects.filter(staff=staff,date=next_date,slot=next_slot).first()
+                if unavailable_timeslot is None:
+                    assign_timeslot = Timeslot(date=next_date,slot=next_slot,staff=staff,type=2)
+                    assign = True
+                    break
+            
+            accurate += 1
+            date.strftime("%Y-%m-%d")+ datetime.timedelta(days=i)
+
+        
+        #for staff in staff_list:
+        #print(staff_list)
+        #print(type(free_staff_list))
         #available_staff_list = None
 
         repair = Repair(title=title,description=description,house=house,createdTime=time,
                         submitter=submitter,company=company,contactName=contact_user,
                         contactNumber=contact_number,expect_date=expect_date,
-                        expect_time_slot=expect_timeslot,type=type)
+                        expect_time_slot=expect_timeslot,type=repair_type)
         
-        repair.save()
+        #repair.save()
 
     
 
