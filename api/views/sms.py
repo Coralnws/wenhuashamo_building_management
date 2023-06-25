@@ -7,10 +7,6 @@ from django.db.models import Q
 
 def sendSms(request):
     phone = request.POST.get('phone')
-    return phone_send(phone)
-
-def sendSms(request):
-    phone = request.POST.get('phone')
     return phone_send(phone, 123123)
 
 
