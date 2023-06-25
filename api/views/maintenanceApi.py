@@ -67,108 +67,105 @@ def create_request(request):
         if repair_type is None:
             repair_type = auto_assign(description)
         
-        if repair_type != '0':
+        # if repair_type != '0':
         
-            if repair_type == '1':
-                staff_list = CustomUser.objects.filter(position='2',m_type__startswith='1').order_by('?')
-            elif repair_type == '2':
-                staff_list = CustomUser.objects.filter(position=2,m_type__regex=r'\w1\w').order_by('?')
-            elif repair_type == '3':
-                staff_list = CustomUser.objects.filter(position='2',m_type__endswith='1').order_by('?')
+        #     if repair_type == '1':
+        #         staff_list = CustomUser.objects.filter(position='2',m_type__startswith='1').order_by('?')
+        #     elif repair_type == '2':
+        #         staff_list = CustomUser.objects.filter(position=2,m_type__regex=r'\w1\w').order_by('?')
+        #     elif repair_type == '3':
+        #         staff_list = CustomUser.objects.filter(position='2',m_type__endswith='1').order_by('?')
             
             
-            print("符合类型的维修人员：")
-            for staff in staff_list:
-                print(staff.realname)
+        #     print("符合类型的维修人员：")
+        #     for staff in staff_list:
+        #         print(staff.realname)
             
 
-            expect_date = datetime.datetime.strptime(expect_date, "%Y-%m-%d")
-            #print(type(expect_date))
-            interval = 0
-            check_slot = [1,0,0,0]
-            assign = False
-            search_date = expect_date
-            search_slot = expect_timeslot
-            forward = False
-            stop_backward = False
-            while not assign:  #循环天
-            #从0开始，每一次拿expect日期往前-period和+period，然后查看同一slot有没有，没有的话就查其它slot
-            #筛出那天的某一员工的timeslot 
-                if forward and interval > 0:
-                    search_date = (expect_date - timedelta(days=interval)).strftime("%Y-%m-%d")
-                    if search_date <= timezone.now().strftime("%Y-%m-%d"):
-                        if search_date < timezone.now().strftime("%Y-%m-%d"):
-                            search_date = (expect_date + timedelta(days=interval)).strftime("%Y-%m-%d")
-                            stop_backward = True
-                        else:
-                            stop_backward = True
-                            if timezone.now().strftime("%H:%M:%S") < "09:00:00":
-                                search_slot = '1'
-                            elif timezone.now().strftime("%H:%M:%S") < "12:00:00":
-                                search_slot = '2'
-                            elif timezone.now().strftime("%H:%M:%S") < "15:00:00":
-                                search_slot = '3'
-                            else:
-                                search_date = (expect_date + timedelta(days=interval)).strftime("%Y-%m-%d")
-                                forward = not forward
+        #     expect_date = datetime.datetime.strptime(expect_date, "%Y-%m-%d")
+        #     #print(type(expect_date))
+        #     interval = 0
+        #     check_slot = [1,0,0,0]
+        #     assign = False
+        #     search_date = expect_date
+        #     search_slot = expect_timeslot
+        #     forward = False
+        #     stop_backward = False
+        #     while not assign:  #循环天
+        #     #从0开始，每一次拿expect日期往前-period和+period，然后查看同一slot有没有，没有的话就查其它slot
+        #     #筛出那天的某一员工的timeslot 
+        #         if forward and interval > 0:
+        #             search_date = (expect_date - timedelta(days=interval)).strftime("%Y-%m-%d")
+        #             if search_date <= timezone.now().strftime("%Y-%m-%d"):
+        #                 if search_date < timezone.now().strftime("%Y-%m-%d"):
+        #                     search_date = (expect_date + timedelta(days=interval)).strftime("%Y-%m-%d")
+        #                     stop_backward = True
+        #                 else:
+        #                     stop_backward = True
+        #                     if timezone.now().strftime("%H:%M:%S") < "09:00:00":
+        #                         search_slot = '1'
+        #                     elif timezone.now().strftime("%H:%M:%S") < "12:00:00":
+        #                         search_slot = '2'
+        #                     elif timezone.now().strftime("%H:%M:%S") < "15:00:00":
+        #                         search_slot = '3'
+        #                     else:
+        #                         search_date = (expect_date + timedelta(days=interval)).strftime("%Y-%m-%d")
+        #                         forward = not forward
                     
-                            stop_backward = True   
-                elif not forward and interval > 0:
-                    print("forward and interval > 0")
-                    search_date = (expect_date + timedelta(days=interval)).strftime("%Y-%m-%d")
-                    interval += 1
-                elif interval == 0:
-                    search_date = expect_date.strftime("%Y-%m-%d")
-                    interval += 1
+        #                     stop_backward = True   
+        #         elif not forward and interval > 0:
+        #             print("forward and interval > 0")
+        #             search_date = (expect_date + timedelta(days=interval)).strftime("%Y-%m-%d")
+        #             interval += 1
+        #         elif interval == 0:
+        #             search_date = expect_date.strftime("%Y-%m-%d")
+        #             interval += 1
                 
-                while True:  #一天内循环找slot
-                    print("search_date = " + str(search_date))
-                    print("search_slot = " + str(search_slot))
-                    for staff in staff_list:
-                        #先看准准的时间有没有空
-                        unavailable_timeslot = Timeslot.objects.filter(staff=staff,date__startswith=search_date,slot=search_slot).first()
-                        if unavailable_timeslot is None: #有空
-                            assign_timeslot = Timeslot(date=search_date,slot=search_slot,staff=staff,type=2) #智能推荐
-                            assign = True
-                            print("找到时间 - " + staff.realname)
-                            break
-                        else:
-                            print("没有空档 - " + staff.realname)
+        #         while True:  #一天内循环找slot
+        #             print("search_date = " + str(search_date))
+        #             print("search_slot = " + str(search_slot))
+        #             for staff in staff_list:
+        #                 #先看准准的时间有没有空
+        #                 unavailable_timeslot = Timeslot.objects.filter(staff=staff,date__startswith=search_date,slot=search_slot).first()
+        #                 if unavailable_timeslot is None: #有空
+        #                     assign_timeslot = Timeslot(date=search_date,slot=search_slot,staff=staff,type=2) #智能推荐
+        #                     assign = True
+        #                     print("找到时间 - " + staff.realname)
+        #                     break
+        #                 else:
+        #                     print("没有空档 - " + staff.realname)
 
-                    check_slot[int(search_slot)] = 1
-                    if 0 in check_slot:
-                        search_slot = check_slot.index(0)
-                    if 0 not in check_slot or assign:
-                        break
+        #             check_slot[int(search_slot)] = 1
+        #             if 0 in check_slot:
+        #                 search_slot = check_slot.index(0)
+        #             if 0 not in check_slot or assign:
+        #                 break
                     
-                check_slot = [1,0,0,0]
-                search_slot = expect_timeslot
-                if not stop_backward:
-                    print("往另一边")
-                    forward = not forward
+        #         check_slot = [1,0,0,0]
+        #         search_slot = expect_timeslot
+        #         if not stop_backward:
+        #             print("往另一边")
+        #             forward = not forward
                 
-            assign_timeslot.save()
+        #     assign_timeslot.save()
 
-            repair = Repair(title=title,description=description,house=house,createdTime=time,
-                            submitter=submitter,company=company,contactName=contact_user,
-                            contactNumber=contact_number,expect_date=expect_date,
-                            expect_time_slot=expect_timeslot,type=repair_type,time_slot=assign_timeslot,
-                            staff=assign_timeslot.staff,staffContact=assign_timeslot.staff.contactNumber)
+        #     repair = Repair(title=title,description=description,house=house,createdTime=time,
+        #                     submitter=submitter,company=company,contactName=contact_user,
+        #                     contactNumber=contact_number,expect_date=expect_date,
+        #                     expect_time_slot=expect_timeslot,type=repair_type,time_slot=assign_timeslot,
+        #                     staff=assign_timeslot.staff,staffContact=assign_timeslot.staff.contactNumber)
             
-            repair.save()
+        #     repair.save()
 
-            assign_timeslot.repair_info = repair
-            assign_timeslot.save()
-        else:
-            repair = Repair(title=title,description=description,house=house,createdTime=time,
-                            submitter=submitter,company=company,contactName=contact_user,
-                            contactNumber=contact_number,expect_date=expect_date,
-                            expect_time_slot=expect_timeslot,type=repair_type)
+        #     assign_timeslot.repair_info = repair
+        #     assign_timeslot.save()
+        # else:
+        repair = Repair(title=title,description=description,house=house,createdTime=time,
+                        submitter=submitter,company=company,contactName=contact_user,
+                        contactNumber=contact_number,expect_date=expect_date,
+                        expect_time_slot=expect_timeslot,type=repair_type)
 
-            repair.save()
-
-
-
+        repair.save()
         data = model_to_dict(repair)
         return UTF8JsonResponse({'errno':1001, 'msg': '成功添加报修信息','data':data})
     else:
@@ -210,7 +207,8 @@ def update_request(request):
         complete_time = info.get('complete_time')
         solver_id = info.get('solverStaffId')
         expect_date = info.get('expect_date')
-        expect_timeslot = info.get('expect_timeslot')   
+        expect_timeslot = info.get('expect_timeslot')  
+        type = info.get('type','') 
 
         record = Repair.objects.filter(id=request_id).first()
         if title:
@@ -251,6 +249,8 @@ def update_request(request):
             record.expect_date = expect_date
         if expect_timeslot:
             record.expect_time_slot = expect_timeslot
+        if type:
+            record.type = type
 
         record.save()
 
@@ -389,9 +389,115 @@ def get_timeslot(request):
     
     start_date = request.GET.get('start_date','')
     period = request.GET.get('period','')
-    
+    repair_id = request.GET.get('repair_id','')
     staff_id = request.GET.get('staff_id','')
 
+    repair = Repair.objects.filter(id=repair_id).first()
+    repair_type = repair.type
+    expect_date = repair.expect_date
+    expect_timeslot = repair.expect_time_slot
+    
+    target_staff = None
+    target_date = None
+    target_slot = None
+
+
+    if repair_type != '0':
+        if repair_type == '1':
+            staff_list = CustomUser.objects.filter(position='2',m_type__startswith='1').order_by('?')
+        elif repair_type == '2':
+            staff_list = CustomUser.objects.filter(position=2,m_type__regex=r'\w1\w').order_by('?')
+        elif repair_type == '3':
+            staff_list = CustomUser.objects.filter(position='2',m_type__endswith='1').order_by('?')
+        
+        
+        print("符合类型的维修人员：")
+        for staff in staff_list:
+            print(staff.realname)
+        
+        expect_date = repair.expect_date
+        print(expect_date)
+        interval = 0
+        check_slot = [1,0,0,0]
+        assign = False
+        search_date = expect_date
+        search_slot = expect_timeslot
+        forward = False
+        stop_backward = False
+        while not assign:  #循环天
+        #从0开始，每一次拿expect日期往前-period和+period，然后查看同一slot有没有，没有的话就查其它slot
+        #筛出那天的某一员工的timeslot 
+            if forward and interval > 0:
+                search_date = (expect_date - timedelta(days=interval)).strftime("%Y-%m-%d")
+                if search_date <= timezone.now().strftime("%Y-%m-%d"):
+                    if search_date < timezone.now().strftime("%Y-%m-%d"):
+                        search_date = (expect_date + timedelta(days=interval)).strftime("%Y-%m-%d")
+                        stop_backward = True
+                    else:
+                        stop_backward = True
+                        if timezone.now().strftime("%H:%M:%S") < "09:00:00":
+                            search_slot = '1'
+                        elif timezone.now().strftime("%H:%M:%S") < "12:00:00":
+                            search_slot = '2'
+                        elif timezone.now().strftime("%H:%M:%S") < "15:00:00":
+                            search_slot = '3'
+                        else:
+                            search_date = (expect_date + timedelta(days=interval)).strftime("%Y-%m-%d")
+                            forward = not forward
+                
+                        stop_backward = True   
+            elif not forward and interval > 0:
+                print("forward and interval > 0")
+                search_date = (expect_date + timedelta(days=interval)).strftime("%Y-%m-%d")
+                interval += 1
+            elif interval == 0:
+                search_date = expect_date.strftime("%Y-%m-%d")
+                interval += 1
+            
+            while True:  #一天内循环找slot
+                print("search_date = " + str(search_date))
+                print("search_slot = " + str(search_slot))
+                for staff in staff_list:
+                    #先看准准的时间有没有空
+                    unavailable_timeslot = Timeslot.objects.filter(staff=staff,date__startswith=search_date,slot=search_slot).first()
+                    if unavailable_timeslot is None: #有空
+                        target_date = search_date
+                        target_slot = search_slot
+                        target_staff = staff
+                        # assign_timeslot = Timeslot(date=search_date,slot=search_slot,staff=staff,type=2) #智能推荐
+                        assign = True
+                        print("找到时间 - " + staff.realname)
+                        break
+                    else:
+                        print("没有空档 - " + staff.realname)
+
+                check_slot[int(search_slot)] = 1
+                if 0 in check_slot:
+                    search_slot = check_slot.index(0)
+                if 0 not in check_slot or assign:
+                    break
+                
+            check_slot = [1,0,0,0]
+            search_slot = expect_timeslot
+            if not stop_backward:
+                forward = not forward
+            
+        # assign_timeslot.save()
+
+        # repair.time_slot = assign_timeslot
+        # repair = Repair(title=title,description=description,house=house,createdTime=time,
+        #                 submitter=submitter,company=company,contactName=contact_user,
+        #                 contactNumber=contact_number,expect_date=expect_date,
+        #                 expect_time_slot=expect_timeslot,type=repair_type,time_slot=assign_timeslot,
+        #                 staff=assign_timeslot.staff,staffContact=assign_timeslot.staff.contactNumber)
+        
+        # repair.save()
+
+        # assign_timeslot.repair_info = repair
+        # assign_timeslot.save()
+    
+    print(target_date)
+    print(target_slot)
     filter = Q()
     staff_filter = Q(position='2')
     if staff_id:
@@ -413,11 +519,18 @@ def get_timeslot(request):
         data['id'] = staff.id
         data['name'] = staff.realname
         data['type'] = staff.m_type
+
+
         for i in range(1,(int(period)*3 + 1)):
             str_date = "time" + str(i)
             data[str_date] = '0'
+
+        #这边把推荐的时间段设成2
+        interval = datetime.datetime.strptime(target_date, "%Y-%m-%d") - datetime.datetime.strptime(start_date, "%Y-%m-%d")
+        if staff == target_staff:
+            str_date = "time" + str(3 * int(interval.days) + int(target_slot))
+            data[str_date] = '2'
             
-        print("here")
         for j in range(int(period)):
             search_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=j)
             search_date = search_date.strftime("%Y-%m-%d")
@@ -425,6 +538,10 @@ def get_timeslot(request):
 
             for timeslot in timeslot_list_accurate:
                 if timeslot.staff == staff:
+                    print("search_date = "+search_date)
+                    print("target_date = "+target_date)
+                    
+
                     str_date = "time" + str(3 * int(j) + int(timeslot.slot))
                     print(timeslot.staff.realname + " - str_date:" + str_date)
                     data[str_date] = timeslot.type
