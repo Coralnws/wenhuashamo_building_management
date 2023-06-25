@@ -138,23 +138,30 @@ def search_tenant(request):
         rental_infos = RentalInfo.objects.filter(tenant=tenant)
 
         rent_data_list = []
-        for rent in rental_infos:
-            rent_data = {}
-            rent_data[REQUEST_RENTAL_ID] = rent.id
-            if rent.startTime:
-                rent_data[REQUEST_DATE_BEGIN] = rent.startTime.strftime("%Y-%m-%d %H:%M:%S")
-            if rent.endTime:
-                rent_data[REQUEST_DATE_END] = rent.endTime.strftime("%Y-%m-%d %H:%M:%S")
-            if rent.createdTime:
-                rent_data[REQUEST_DATE_SIGN] = rent.createdTime.strftime("%Y-%m-%d %H:%M:%S")
-            rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
-            if rent.paidManagementDate:
-                rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate.strftime("%Y-%m-%d")
-            rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
-            if rent.paidRentalDate:
-                rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
-            rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
-            rent_data_list.append(rent_data)
+        if rental_infos:
+            for rent in rental_infos:
+                rent_data = {}
+                rent_data[REQUEST_RENTAL_ID] = rent.id
+                rent_data[REQUEST_CONTRACT_ID] = rent.contract_id
+                room_list = TenantRental.objects.filter(rental = rent)
+                room_data = []
+                for room in room_list:
+                    room_data.append(room.house.roomNumber)
+                room_data.sort()
+                rent_data['room_data'] = room_data
+                if rent.startTime:
+                    rent_data[REQUEST_DATE_BEGIN] = rent.startTime.strftime("%Y-%m-%d %H:%M:%S")
+                if rent.endTime:
+                    rent_data[REQUEST_DATE_END] = rent.endTime.strftime("%Y-%m-%d %H:%M:%S")
+                if rent.createdTime:
+                    rent_data[REQUEST_DATE_SIGN] = rent.createdTime.strftime("%Y-%m-%d %H:%M:%S")
+                rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
+                if rent.paidManagementDate:
+                    rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate.strftime("%Y-%m-%d")
+                rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
+                if rent.paidRentalDate:
+                    rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
+                rent_data_list.append(rent_data)
 
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
         tenant_detail.append(user_level_rental_detail)
@@ -222,7 +229,6 @@ def view_tenant(request):
             rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
             if rent.paidRentalDate:
                 rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
-            #rent_data[REQUEST_ROOM_ID] = rent.house.roomNumber
             rent_data_list.append(rent_data)
 
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list

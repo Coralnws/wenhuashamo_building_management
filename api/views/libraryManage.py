@@ -1,7 +1,8 @@
 from django.db.models import Q
 
 from api.models import Repair
-from api.utils import UTF8JsonResponse
+from api.utils import UTF8JsonResponse, return_response
+import json
 
 
 def get_library(request):
@@ -20,8 +21,8 @@ def get_library(request):
             data['content'] = repair.description
             data['solve'] = repair.plan
             data['type'] = repair.type
-            data['worker'] = repair.solver
+            data['worker'] = repair.solver.username
             data['contact'] = repair.staffContact
             library_detail.append(data)
 
-        return UTF8JsonResponse({'errno': 1001, 'msg': '查询知识库成功', 'data': library_detail})
+        return return_response(1001, '查询知识库成功', library_detail)\
