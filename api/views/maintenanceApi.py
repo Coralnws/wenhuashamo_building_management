@@ -397,9 +397,9 @@ def get_timeslot(request):
     expect_date = repair.expect_date
     expect_timeslot = repair.expect_time_slot
     
-    target_staff = None
-    target_date = None
-    target_slot = None
+    target_staff = []
+    target_date = []
+    target_slot = []
 
 
     if repair_type != '0':
@@ -416,15 +416,15 @@ def get_timeslot(request):
             print(staff.realname)
         
         expect_date = repair.expect_date
-        print(expect_date)
+        # print(expect_date)
         interval = 0
         check_slot = [1,0,0,0]
-        assign = False
+        assign = 0
         search_date = expect_date
         search_slot = expect_timeslot
         forward = False
         stop_backward = False
-        while not assign:  #循环天
+        while assign < 2:  #循环天
         #从0开始，每一次拿expect日期往前-period和+period，然后查看同一slot有没有，没有的话就查其它slot
         #筛出那天的某一员工的timeslot 
             if forward and interval > 0:
@@ -461,13 +461,16 @@ def get_timeslot(request):
                     #先看准准的时间有没有空
                     unavailable_timeslot = Timeslot.objects.filter(staff=staff,date__startswith=search_date,slot=search_slot).first()
                     if unavailable_timeslot is None: #有空
-                        target_date = search_date
-                        target_slot = search_slot
-                        target_staff = staff
+                        target_date.append(search_date)
+                        target_slot.append(search_slot)
+                        target_staff.append(staff)
                         # assign_timeslot = Timeslot(date=search_date,slot=search_slot,staff=staff,type=2) #智能推荐
-                        assign = True
+                        assign += 1
                         print("找到时间 - " + staff.realname)
-                        break
+                        if assign < 2:
+                            continue
+                        else:
+                            break
                     else:
                         print("没有空档 - " + staff.realname)
 
@@ -496,8 +499,7 @@ def get_timeslot(request):
         # assign_timeslot.repair_info = repair
         # assign_timeslot.save()
     
-    print(target_date)
-    print(target_slot)
+
     filter = Q()
     staff_filter = Q(position='2')
     if staff_id:
@@ -527,9 +529,10 @@ def get_timeslot(request):
 
         #这边把推荐的时间段设成2
         if repair_type != '0':
-            interval = datetime.datetime.strptime(target_date, "%Y-%m-%d") - datetime.datetime.strptime(start_date, "%Y-%m-%d")
-            if staff == target_staff:
-                str_date = "time" + str(3 * int(interval.days) + int(target_slot))
+            if staff in target_staff:
+                index = target_staff.index(staff)
+                interval = datetime.datetime.strptime(target_date[index], "%Y-%m-%d") - datetime.datetime.strptime(start_date, "%Y-%m-%d")
+                str_date = "time" + str(3 * int(interval.days) + int(target_slot[index]))
                 data[str_date] = '2'
             
         for j in range(int(period)):
@@ -539,10 +542,9 @@ def get_timeslot(request):
 
             for timeslot in timeslot_list_accurate:
                 if timeslot.staff == staff:
-                    print("search_date = "+search_date)
-                    print("target_date = "+target_date)
-                    
-
+                    # print("search_date = "+search_date)
+                    # print("target_date = "+target_date)
+                
                     str_date = "time" + str(3 * int(j) + int(timeslot.slot))
                     print(timeslot.staff.realname + " - str_date:" + str_date)
                     data[str_date] = timeslot.type
