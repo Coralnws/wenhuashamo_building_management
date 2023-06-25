@@ -476,10 +476,10 @@ def get_timeslot(request):
                         target_slot.append(search_slot)
                         target_staff.append(staff)
                         # assign_timeslot = Timeslot(date=search_date,slot=search_slot,staff=staff,type=2) #智能推荐
-                        assign += 1
                         print("找到时间 - " + staff.realname)
+                        assign += 1
                         if assign < 2:
-                            continue
+                            continue 
                         else:
                             break
                     else:
@@ -488,7 +488,7 @@ def get_timeslot(request):
                 check_slot[int(search_slot)] = 1
                 if 0 in check_slot:
                     search_slot = check_slot.index(0)
-                if 0 not in check_slot or assign:
+                if 0 not in check_slot or assign >= 2:
                     break
                 
             check_slot = [1,0,0,0]
