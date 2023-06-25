@@ -12,7 +12,7 @@ from django.db.models import Q
 import operator
 from api.utils import *
 from api.error_utils import *
-from api.keywords import water_keywords,electric_keyword,mechanical_keyword,stopwords
+from api.keywords import water_keywords,electric_keyword,mechanical_keyword,stopwords,water_main_keywords,electric_main_keyword,mechanical_main_keyword
 
 def auto_assign(text):
     tokens = jieba.cut(text)  # 使用jieba分词器对文本进行分词
@@ -25,14 +25,24 @@ def auto_assign(text):
     data['3'] = 0
 
     for word in tokens:
+        print(word)
         if word not in stopwords:
-            if any(item in word for item in water_keywords):
+            if any(item in word for item in water_main_keywords):
+                data['1'] += 3
+                print("水主关键词出现")
+            elif any(item in word for item in water_keywords):
                 data['1'] += 1
                 print("水关键词出现")
-            if any(item in word for item in electric_keyword):
+            elif any(item in word for item in electric_main_keyword):
+                data['2'] += 2
+                print("电主关键词出现")
+            elif any(item in word for item in electric_keyword):
                 data['2'] += 1
                 print("电关键词出现")
-            if any(item in word for item in mechanical_keyword):
+            elif any(item in word for item in mechanical_main_keyword):
+                data['3'] += 3
+                print("机械关键词出现")
+            elif any(item in word for item in mechanical_keyword):
                 data['3'] += 1
                 print("机械关键词出现")
 
@@ -65,6 +75,7 @@ def create_request(request):
         
         #智能派单
         if repair_type is None or repair_type == '0':
+            print("auto_assign")
             repair_type = auto_assign(description)
         
         # if repair_type != '0':
