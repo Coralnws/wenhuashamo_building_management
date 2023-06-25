@@ -8,11 +8,13 @@ import json
 def get_library(request):
     if request.method == 'GET':
         search = request.GET.get('search', '')
-        repairs = Repair.objects.filter(
-            Q(title__icontains=search) |
-            Q(description__icontains=search) |
-            Q(plan__icontains=search)
-        )
+
+        filter = Q(status='Complete')
+        if search:
+            filter &= Q(title__icontains=search) | Q(description__icontains=search) | Q(plan__icontains=search)
+
+        repairs = Repair.objects.filter(filter)
+
 
         library_detail = []
         for repair in repairs:

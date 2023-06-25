@@ -21,7 +21,7 @@ electric_keyword = [
     "气体断路器","电气","电路","短路","开路","接地","电流","电容","电感","电源",
     "负载","导线","绝缘","连接","接头","电子元件","半导体","二极管","三极管","晶体管",
     "集成电路","微处理器","电阻器","电感器","变压器","稳压器","开关","电闸","电路板"
-    "连接","网","网络","无线","接触","跳电","停电"
+    "连接","网","网络","无线","跳电","停电"
 ]
 
 mechanical_keyword = [
@@ -47,6 +47,7 @@ stopwords = ["啊","哎","唉","俺","按","吧","把","甭","别","嘿","很","
 def auto_assign(text):
     tokens = jieba.cut(text)  # 使用jieba分词器对文本进行分词
     #filtered_tokens = [token for token in tokens if token not in stopwords]
+
     """
     print(filtered_tokens)
     data={}
@@ -55,12 +56,13 @@ def auto_assign(text):
     data['3'] = 0
     """ 
 
-    if any(text in item for item in water_keywords):
-        print("字符串在水关键词里面")
-    if any(text in item for item in electric_keyword):
-        print("字符串在电关键词里面")
-    if any(text in item for item in mechanical_keyword):
-        print("字符串在机械关键词里面")
+    for word in tokens:
+        if any(word in item for item in water_keywords):
+            print("字符串在水关键词里面")
+        if any(word in item for item in electric_keyword):
+            print("字符串在电关键词里面")
+        if any(word in item for item in mechanical_keyword):
+            print("字符串在机械关键词里面")
 
     """
     for token in filtered_tokens:
@@ -77,5 +79,5 @@ def auto_assign(text):
 
     #return type_list[0][0]
     
-print(auto_assign("厕所水龙头一直在漏水"))
+print(auto_assign("电线接触不良"))
 '''
