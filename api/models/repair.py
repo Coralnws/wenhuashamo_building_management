@@ -45,6 +45,7 @@ class Repair(models.Model):
         ('Open', 'Open'),
         ('In Progress', 'In Progress'),
         ('Complete', 'Complete'),
+        ('Incomplete', 'Incomplete'),
     ]
     
     status = models.CharField(max_length=20, choices=status_choices, default='Open')
