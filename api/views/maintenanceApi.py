@@ -28,7 +28,7 @@ def auto_assign(text):
         print(word)
         if word not in stopwords:
             if any(item in word for item in water_main_keywords):
-                data['1'] += 3
+                data['1'] += 2
                 print("水主关键词出现")
             elif any(item in word for item in water_keywords):
                 data['1'] += 1
@@ -40,7 +40,7 @@ def auto_assign(text):
                 data['2'] += 1
                 print("电关键词出现")
             elif any(item in word for item in mechanical_main_keyword):
-                data['3'] += 3
+                data['3'] += 2
                 print("机械关键词出现")
             elif any(item in word for item in mechanical_keyword):
                 data['3'] += 1
@@ -76,7 +76,7 @@ def create_request(request):
         #智能派单
         if repair_type is None or repair_type == '0':
             print("auto_assign")
-            repair_type = auto_assign(description)
+            repair_type = auto_assign(title+description)
         
         # if repair_type != '0':
         
