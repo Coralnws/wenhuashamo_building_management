@@ -31,13 +31,6 @@ def house_list_by_floor(request):
 
             rent_record = TenantRental.objects.filter(house=house)
 
-            #rental_infos = RentalInfo.objects.filter(house=house).order_by('-endTime')
-            
-            # if len(rental_infos) > 0:
-            #     house_data['status'] = True
-            # else:
-            #     house_data['status'] = False
-
             rent_data_list = []
 
             renting = False
@@ -63,6 +56,8 @@ def house_list_by_floor(request):
         return UTF8JsonResponse({'errno': 1001, 'msg': '返回房间列表成功', 'data': house_list})
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
+
+
     # for house in houses:
     #     if house.floor not in floors:
     #         floors[house.floor] = {

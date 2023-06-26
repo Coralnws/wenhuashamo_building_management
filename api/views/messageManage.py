@@ -88,7 +88,10 @@ def delete_tenant(request):
 
         if rental > 0 and payment > 0:
             return UTF8JsonResponse({'errno': 3001, 'msg': '无法删除客户!'})
-
+        
+        user_exist = CustomUser.objects.filter(tenant=tenant).first()
+        if user_exist:
+            user_exist.delete()
         tenant.delete()
     
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant deleted successfully!'})
@@ -179,23 +182,9 @@ def search_tenant(request):
 
 @csrf_exempt
 def view_tenant(request):
-    # if request.method == 'POST':
-    #     company = request.GET.get('company')
-    #     tenant = Tenant.objects.get(company=company)
-    #     # tenantRental = Payment.objects.all().filter(tenant)
-    #     res = model_to_dict(tenant)
-    #     return UTF8JsonResponse({'errno': 1001, 'msg': '返回员工列表成功', 'data': res})
-    # else:
-    #     return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
     if request.method != 'POST':
         return UTF8JsonResponse({'errno': 100001, 'msg': '请求格式有误'})
 
-    # user_ID = request.GET.get('user_id')
-    #
-    # tenant_exist = Tenant.objects.filter(id=user_ID).first()
-    #
-    # if tenant_exist is None:
-    #     return UTF8JsonResponse(99999, '客户不存在')
     page = request.POST.get('page')
     num = request.POST.get('num')
     page = int(page)
