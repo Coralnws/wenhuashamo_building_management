@@ -56,7 +56,8 @@ def add_tenant(request):
         tenant.company = company
         tenant.contactName = request.POST.get('contactName')
         tenant.email = request.POST.get('email') or None
-        tenant.contactNumber = request.POST.get('contactNumber')
+        contact_number =  request.POST.get('contactNumber')
+        tenant.contactNumber = contact_number
         try:
             tenant.save()
         except Exception as e:
