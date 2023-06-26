@@ -149,3 +149,15 @@ def get_request(request):
         visit_list_data.append(visit_data)
 
     return return_response(1001, '获取访客申请列表成功',visit_list_data)
+
+@csrf_exempt
+def reset_request(request):
+    if request.method != 'GET':
+        return not_get_method()
+    current_date = date.today()
+    visit_list = VisitRequest.objects.filter(visit_time__gt=current_date)
+
+    for visit in visit_list:
+        print(visit.visit_time)
+        visit.otp_sent = 0
+        visit.save()

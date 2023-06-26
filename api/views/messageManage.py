@@ -85,8 +85,11 @@ def delete_tenant(request):
         rental = RentalInfo.objects.filter(tenant=tenant,endTime__gte=current_date).count()
         payment = Payment.objects.filter(tenant=tenant,is_paid=False).count()
 
-        if rental > 0 and payment > 0:
-            return UTF8JsonResponse({'errno': 3001, 'msg': '无法删除客户!'})
+        if rental > 0:
+            return UTF8JsonResponse({'errno': 3001, 'msg': '合同未到期，无法删除客户'})
+        
+        if payment > 0:
+            return UTF8JsonResponse({'errno': 4001, 'msg': '客户仍有欠费记录，无法删除客户'})
         
         user_exist = CustomUser.objects.filter(tenant=tenant).first()
         if user_exist:
@@ -95,7 +98,7 @@ def delete_tenant(request):
     
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant deleted successfully!'})
     else:
-        return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
+        return UTF8JsonResponse({'errno': 9001, 'msg': 'Request Method Error'})
 
 
 @csrf_exempt

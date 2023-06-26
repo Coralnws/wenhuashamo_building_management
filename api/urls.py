@@ -76,4 +76,6 @@ urlpatterns = [
     path('library', libraryManage.get_library),
     path('resend_otp', sms.resend_otp),
 
+    path('reset_request', visitRequestApi.reset_request),
+    
 ]
