@@ -41,7 +41,7 @@ def create_request(request):
 
     code=gen_code()
 
-    visit_time_obj = datetime.datetime.strptime(visit_time, "%Y-%m-%d %H:%I:%S")
+    visit_time_obj = datetime.datetime.strptime(visit_time, "%Y-%m-%d %H:%M:%S")
     otp_send = 0 if visit_time_obj > timezone.now() else 1
 
     visit = VisitRequest(name=visitor_name,ic=visitor_ic,contact_number=visitor_contact,visit_time=visit_time,

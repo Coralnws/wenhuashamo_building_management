@@ -97,7 +97,44 @@ def del_request(request):
         return UTF8JsonResponse({'errno':1001, 'msg':   '成功删除报修记录'})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})  
-     
+
+
+def update_request_support(
+    record,
+    title,
+    description,
+    created_time,
+    room,
+    company,
+    contact_name,
+    contact_number,
+    staff_contact,
+    manager_id,
+    status ):
+    if title:
+        record.title = title
+    if description:
+        record.description = description
+    if created_time:    
+        record.createdTime = created_time
+    if room:
+        house = House.objects.filter(roomNumber=room).first()
+        record.house=house
+    if company:
+        record.company = company
+    if contact_name:
+        record.contactName = contact_name
+    if contact_number:
+        record.contactNumber = contact_number
+    if staff_contact:
+        record.staffContact = staff_contact
+    if manager_id:
+        manager = CustomUser.objects.filter(id=manager_id).first()
+        record.manager = manager
+    if status:
+        record.status = status
+
+
 @csrf_exempt
 def update_request(request):
     if request.method == 'POST':
@@ -121,28 +158,19 @@ def update_request(request):
         type = info.get('type','') 
 
         record = Repair.objects.filter(id=request_id).first()
-        if title:
-            record.title = title
-        if description:
-            record.description = description
-        if created_time:    
-            record.createdTime = created_time
-        if room:
-            house = House.objects.filter(roomNumber=room).first()
-            record.house=house
-        if company:
-            record.company = company
-        if contact_name:
-            record.contactName = contact_name
-        if contact_number:
-            record.contactNumber = contact_number
-        if staff_contact:
-            record.staffContact = staff_contact
-        if manager_id:
-            manager = CustomUser.objects.filter(id=manager_id).first()
-            record.manager = manager
-        if status:
-            record.status = status
+        update_request_support(
+            record,
+            title,
+            description,
+            created_time,
+            room,
+            company,
+            contact_name,
+            contact_number,
+            staff_contact,
+            manager_id,
+            status )
+
         if plan:
             record.plan = plan
         if complete_time:
