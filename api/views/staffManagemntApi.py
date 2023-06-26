@@ -121,6 +121,10 @@ def update_staff(request):
             user.contactNumber = contact
         if position:
             if user.position == '2'and position != '2':
+                repair_list = Repair.objects.filter(staff=user,status='In Progress').count()
+                if repair_list > 0:
+                    return UTF8JsonResponse({'errno':3001, 'msg': '维修人员尚有未完成的维修单子，无法删除'})
+                
                 user.m_type = '-'
                 user.m_status = '-'
             user.position = position
@@ -129,7 +133,7 @@ def update_staff(request):
             user.m_type = types
         if status:
             user.m_status = status
-        user.save()
+        #user.save()
     except Exception as e:
         return default_error(e)
     return return_response(1001,'修改信息成功')
@@ -142,6 +146,11 @@ def delete_staff(request):
 
     staff_id = request.POST.get('staffId')
     staff = CustomUser.objects.filter(id=staff_id).first()
+
+    if staff.position == '2':
+        repair_list = Repair.objects.filter(staff=staff,status='In Progress').count()
+        if repair_list is not None:
+            return UTF8JsonResponse({'errno':3001, 'msg': '维修人员尚有未完成的维修单子，无法删除'})
 
     # only superadmin able to delete normal user info
     # admin and super admin can delete maintainer info
