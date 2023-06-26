@@ -48,27 +48,21 @@ def add_tenant(request):
 
         real_name = request.POST.get('real_name')
         tenant.real_name = real_name
-        tenant.company = request.POST.get('company')
-        try:
-            tenant.save()
-        except Exception as e:
+        company = request.POST.get('company')
+        company_exist = Tenant.objects.filter(company=company).count()
+        if company_exist > 0:
             return UTF8JsonResponse({'errno': 2001, 'msg': '公司名已存在，请重新填写'})
-
+    
+        tenant.company = company
         tenant.contactName = request.POST.get('contactName')
-
+        tenant.email = request.POST.get('email') or None
         tenant.contactNumber = request.POST.get('contactNumber')
         try:
             tenant.save()
         except Exception as e:
             return UTF8JsonResponse({'errno': 2001, 'msg': '联系人电话已被使用，请重新填写'})
         
-        tenant.email = request.POST.get('email') or None
         # 创建新的客户对象并保存到数据库中
-
-        try:
-            tenant.save()
-        except Exception as e:
-            return UTF8JsonResponse({'errno': 2001, 'msg': '请重新检查所填信息'})
 
         username = check_name_repeat(real_name)
 
