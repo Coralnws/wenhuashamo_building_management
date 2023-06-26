@@ -573,7 +573,6 @@ def save_library(request):
         return not_post_method()
 
     repair_id = request.POST.get('repair_id')
-    print(repair_id)
     title = request.POST.get('title')
     description = request.POST.get('description')
 

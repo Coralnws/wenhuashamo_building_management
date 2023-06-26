@@ -11,7 +11,7 @@ def get_library(request):
 
         filter = Q()
         if search:
-            filter &= Q(title__icontains=search) | Q(description__icontains=search) | Q(sulution__icontains=search)
+            filter &= Q(title__icontains=search) | Q(description__icontains=search) | Q(solution__icontains=search)
 
         libraries = Library.objects.filter(filter)
 
