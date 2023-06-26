@@ -403,17 +403,20 @@ def get_timeslot(request):
     repair_id = request.GET.get('repair_id','')
     staff_id = request.GET.get('staff_id','')
 
-    repair = Repair.objects.filter(id=repair_id).first()
-    repair_type = repair.type
-    expect_date = repair.expect_date
-    expect_timeslot = repair.expect_time_slot
+    repair_type = None
+    
+    if len(repair_id) > 0:
+        repair = Repair.objects.filter(id=repair_id).first()
+        repair_type = repair.type
+        expect_date = repair.expect_date
+        expect_timeslot = repair.expect_time_slot
     
     target_staff = []
     target_date = []
     target_slot = []
 
 
-    if repair_type != '0':
+    if repair_type is not None and repair_type != '0':
         if repair_type == '1':
             staff_list = CustomUser.objects.filter(position='2',m_type__startswith='1').order_by('?')
         elif repair_type == '2':
