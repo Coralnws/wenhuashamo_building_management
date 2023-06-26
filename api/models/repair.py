@@ -40,7 +40,8 @@ class Repair(models.Model):
     expect_date = models.DateTimeField(null=True, blank=True)
     expect_time_slot = models.CharField(max_length=1,choices=TIME_SLOT,default=TIME_SLOT[0][0],null=True, blank=True)
     type = models.CharField(max_length=10,choices=TYPE,default=TYPE[0][0],null=True, blank=True)
-
+    library_status = models.BooleanField(default=False)
+    
     status_choices = [
         ('Open', 'Open'),
         ('In Progress', 'In Progress'),
