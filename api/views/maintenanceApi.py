@@ -12,7 +12,7 @@ from django.db.models import Q
 import operator
 from api.utils import *
 from api.error_utils import *
-from api.keywords import water_keywords,electric_keyword,mechanical_keyword,stopwords,water_main_keywords,electric_main_keyword,mechanical_main_keyword
+from api.keywords import water_keywords,electric_keyword,mechanical_keyword,stopwords,water_main_keywords,electric_main_keyword,mechanical_main_keyword,non_type_keywords
 
 def auto_assign(text):
 
@@ -22,25 +22,34 @@ def auto_assign(text):
     data['2'] = 0
     data['3'] = 0
 
-    if any(item in text for item in water_main_keywords):
-        data['1'] += 2
-        print("水主关键词出现")
-    if any(item in text for item in water_keywords):
-        data['1'] += 1
-        print("水关键词出现")
-    if any(item in text for item in electric_main_keyword):
-        data['2'] += 2
-        print("电主关键词出现")
-    if any(item in text for item in electric_keyword):
-        data['2'] += 1
-        print("电关键词出现")
-    if any(item in text for item in mechanical_main_keyword):
-        data['3'] += 3
-        print("机械主关键词出现")
-    if any(item in text for item in mechanical_keyword):
-        data['3'] += 1
-        print("机械关键词出现")
-            
+    if any(item in text for item in non_type_keywords):
+        return '0'
+
+    for item in water_main_keywords:
+        if item in text:
+            data['1'] += 2
+            print("水主关键词出现")
+    for item in water_keywords:
+        if item in text:
+            data['1'] += 1
+            print("水关键词出现")
+    for item in electric_main_keyword:
+        if item in text:
+            data['2'] += 2
+            print("电主关键词出现")
+    for item in electric_keyword:
+        if item in text:
+            data['2'] += 1
+            print("电关键词出现")
+    for item in mechanical_main_keyword:
+        if item in text:
+            data['3'] += 3
+            print("机械主关键词出现")
+    for item in mechanical_keyword:
+        if item in text:
+            data['3'] += 1
+            print("机械关键词出现")
+
     type_list = sorted(data.items(), key=lambda x: (-x[1], -ord(x[0][0])))
     print(type_list)
 
