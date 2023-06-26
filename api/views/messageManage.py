@@ -87,7 +87,10 @@ def delete_tenant(request):
 
         if rental > 0 and payment > 0:
             return UTF8JsonResponse({'errno': 3001, 'msg': '无法删除客户!'})
-
+        
+        user_exist = CustomUser.objects.filter(tenant=tenant).first()
+        if user_exist:
+            user_exist.delete()
         tenant.delete()
     
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant deleted successfully!'})
