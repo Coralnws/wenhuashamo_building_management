@@ -78,8 +78,6 @@ def update_record(request):
     else:
         return not_post_method()
 
-        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
-
 @csrf_exempt
 def update_payment_status(request):
     if request.method == 'POST':

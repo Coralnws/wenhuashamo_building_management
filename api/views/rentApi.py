@@ -42,9 +42,6 @@ def rent_create(request):
     date_end = info.get(REQUEST_DATE_END)
     date_sign = info.get(REQUEST_DATE_SIGN)
 
-    #ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
-    #date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
-
     room_list = room_id.split(",")
     print(room_list)
 
@@ -231,8 +228,6 @@ def rent_update(request):
     date_begin = info.get(REQUEST_DATE_BEGIN)
     date_end = info.get(REQUEST_DATE_END)
     date_sign = info.get(REQUEST_DATE_SIGN)
-    # ispaid_management = info.get(REQUEST_IS_PAID_MANAGEMENT)
-    # date_paid_management = info.get(REQUEST_DATE_PAID_MANAGEMENT)
 
     tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
     rental_info = RentalInfo.objects.filter(tenant=tenant_exist,contract_id=contract_ID).first()

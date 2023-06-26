@@ -10,14 +10,14 @@ def repair_photo_to(instance, filename):
     return os.path.join('repair', instance.username, str(random.uniform(1000, 9999)) + 'repair.png')
     
 class Repair(models.Model):
-    TIME_SLOT = (
+    TIME_SLOTS = (
         ('0','None'),
         ('1','9:00am-12:00pm'),
         ('2','12:00pm-3:00pm'),
         ('3','3:00pm-6:00pm'),
     )
     
-    TYPE = (
+    TYPES = (
         ('0','未分类'),
         ('1','水'),
         ('2','电'),
@@ -38,8 +38,8 @@ class Repair(models.Model):
     time_slot = models.ForeignKey(Timeslot,related_name="repair_time",  on_delete=models.SET_NULL, null=True, blank=True)
     staffContact = models.CharField(max_length=20,null=True,blank=True)
     expect_date = models.DateTimeField(null=True, blank=True)
-    expect_time_slot = models.CharField(max_length=1,choices=TIME_SLOT,default=TIME_SLOT[0][0],null=True, blank=True)
-    type = models.CharField(max_length=10,choices=TYPE,default=TYPE[0][0],null=True, blank=True)
+    expect_time_slot = models.CharField(max_length=1,choices=TIME_SLOTS,default=TIME_SLOTS[0][0],null=True, blank=True)
+    type = models.CharField(max_length=10,choices=TYPES,default=TYPES[0][0],null=True, blank=True)
     library_status = models.BooleanField(default=False)
     
     status_choices = [

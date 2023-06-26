@@ -148,7 +148,6 @@ DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER')
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Shanghai'
-#TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
@@ -174,9 +173,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #session存入redis缓存 配置
 
-# SESSION_ENGINE = "redis_sessions.session"
-# SESSION_CACHE_ALIAS = "default"
-
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
@@ -191,7 +187,6 @@ REDIS_PASSWORD = env('REDIS_PASSWORD')
 # Cache use local for the moment, 
 # need to open start redis server before able to use in local
 
-# SESSION_CACHE_ALIAS = "session"
 
 CACHES = {
     "default": {

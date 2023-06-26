@@ -40,9 +40,8 @@ def create_user(request):
     if realname_exist > 0 or username_exist:
         if realname_exist == username_exist:
             username  = username+"_"+str(realname_exist)
-        if username_exist < realname_exist:
-            if username_exist != 0:
-                username  = username+"_" + str(realname_exist)
+        if username_exist < realname_exist and username_exist != 0:
+            username  = username+"_" + str(realname_exist)
     
     new_user = CustomUser(tenant=tenant,username=username,realname=name,position='1',contactNumber=contact)
     new_user.set_password(DEFAULTPASS)
@@ -66,9 +65,8 @@ def create_staff(request):
     if realname_exist > 0 or username_exist:
         if realname_exist == username_exist:
             username  = username+"_"+str(realname_exist)
-        if username_exist < realname_exist:
-            if username_exist != 0:
-                username  = username+"_" + str(realname_exist)
+        if username_exist < realname_exist and username_exist != 0:
+            username  = username+"_" + str(realname_exist)
     #创建账号
     
     if position == '2':
@@ -116,9 +114,8 @@ def update_staff(request):
             if realname_exist > 0 or username_exist:
                 if realname_exist == username_exist:
                     username  = username+"_"+str(realname_exist)
-                if username_exist < realname_exist:
-                    if username_exist != 0:
-                        username  = username+"_"+str(realname_exist)
+                if username_exist < realname_exist and username_exist != 0:
+                    username  = username+"_"+str(realname_exist)
             user.username = username
         if contact:
             user.contactNumber = contact
@@ -221,7 +218,6 @@ def get_staff_filters(position = None, status = None, types = None, search = Non
     filters = Q()
     if position:
         filters &= Q(position=position)
-        #staff_list = CustomUser.objects.filter(position=position)
     if status:
         filters &= Q(m_status=status)
     if types:
