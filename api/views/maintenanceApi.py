@@ -312,6 +312,16 @@ def close_task(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 
+
+def get_timeslot_staff_list(repair_type):
+    if repair_type == '1':
+        staff_list = CustomUser.objects.filter(position='2',m_type__startswith='1').order_by('?')
+    elif repair_type == '2':
+        staff_list = CustomUser.objects.filter(position='2',m_type__regex=r'\w1\w').order_by('?')
+    else:
+        staff_list = CustomUser.objects.filter(position='2',m_type__endswith='1').order_by('?')
+    return staff_list
+
 @csrf_exempt
 def get_timeslot(request):
     if request.method != GETMETHOD:
@@ -336,13 +346,7 @@ def get_timeslot(request):
 
 
     if repair_type is not None and repair_type != '0':
-        if repair_type == '1':
-            staff_list = CustomUser.objects.filter(position='2',m_type__startswith='1').order_by('?')
-        elif repair_type == '2':
-            staff_list = CustomUser.objects.filter(position=2,m_type__regex=r'\w1\w').order_by('?')
-        elif repair_type == '3':
-            staff_list = CustomUser.objects.filter(position='2',m_type__endswith='1').order_by('?')
-        
+        staff_list = get_timeslot_staff_list(repair_type)
 
         expect_date = repair.expect_date
 

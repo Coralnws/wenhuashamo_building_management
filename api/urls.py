@@ -37,13 +37,7 @@ urlpatterns = [
     
 
     #Management Fee
-    path('payment/createRecord', paymentManageApi.create_record),
-    path('payment/delRecord', paymentManageApi.delete_record),
     path('payment/updateRecord', paymentManageApi.update_record),
-    path('payment/updateStatus', paymentManageApi.update_payment_status),
-    path('payment/getPayment', paymentManageApi.get_payment_record),
-    path('payment/getRecord', paymentManageApi.get_record),
-    path('payment/getPaymentDetail', paymentManageApi.get_payment_detail),
 
     #Tenant Management
     path('tenant/add_tenant',    messageManage.add_tenant),
