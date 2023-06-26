@@ -40,9 +40,12 @@ def create_request(request):
     house = House.objects.filter(roomNumber=room).first()
 
     code=gen_code()
-    
+
+    visit_time_obj = datetime.datetime.strptime(visit_time, "%Y-%m-%d %H:%I:%S")
+    otp_send = 0 if visit_time_obj > timezone.now() else 1
+
     visit = VisitRequest(name=visitor_name,ic=visitor_ic,contact_number=visitor_contact,visit_time=visit_time,
-                             otp=code,company=company,otp_sent=0,inviter=inviter,house=house)
+                             otp=code,company=company,otp_sent=otp_send,inviter=inviter,house=house)
         
     visit.save()
     data=model_to_dict(visit)
