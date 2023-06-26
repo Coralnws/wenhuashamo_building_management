@@ -44,16 +44,27 @@ def check_name_repeat(real_name):
 def add_tenant(request):
     if request.method == 'POST':
         # 从请求中获取客户信息
+        tenant = Tenant()
+
         real_name = request.POST.get('real_name')
-        company = request.POST.get('company')
-        contact_name = request.POST.get('contactName')
-        contact_number = request.POST.get('contactNumber')
-        email = request.POST.get('email') or None
+        tenant.real_name = real_name
+        tenant.company = request.POST.get('company')
+        try:
+            tenant.save()
+        except Exception as e:
+            return UTF8JsonResponse({'errno': 2001, 'msg': '公司名已存在，请重新填写'})
+
+        tenant.contactName = request.POST.get('contactName')
+
+        tenant.contactNumber = request.POST.get('contactNumber')
+        try:
+            tenant.save()
+        except Exception as e:
+            return UTF8JsonResponse({'errno': 2001, 'msg': '联系人电话已被使用，请重新填写'})
+        
+        tenant.email = request.POST.get('email') or None
         # 创建新的客户对象并保存到数据库中
 
-        tenant = Tenant(real_name=real_name, company=company,
-                        contactName=contact_name,
-                        contactNumber=contact_number,email=email)
         try:
             tenant.save()
         except Exception as e:
