@@ -25,29 +25,29 @@ def auto_assign(text):
     data['3'] = 0
 
     for word in tokens:
-        print(word)
+        #print(word)
         if word not in stopwords:
             if any(item in word for item in water_main_keywords):
                 data['1'] += 2
-                print("水主关键词出现")
+                #print("水主关键词出现")
             elif any(item in word for item in water_keywords):
                 data['1'] += 1
-                print("水关键词出现")
+                #print("水关键词出现")
             elif any(item in word for item in electric_main_keyword):
                 data['2'] += 2
-                print("电主关键词出现")
+                #print("电主关键词出现")
             elif any(item in word for item in electric_keyword):
                 data['2'] += 1
-                print("电关键词出现")
+                #print("电关键词出现")
             elif any(item in word for item in mechanical_main_keyword):
                 data['3'] += 2
-                print("机械关键词出现")
+                #print("机械关键词出现")
             elif any(item in word for item in mechanical_keyword):
                 data['3'] += 1
-                print("机械关键词出现")
+                #print("机械关键词出现")
 
     type_list = sorted(data.items(), key=lambda x: (-x[1], x[0]))
-    print(type_list)
+    #print(type_list)
 
     return type_list[0][0]
 
@@ -75,7 +75,7 @@ def create_request(request):
         
         #智能派单
         if repair_type is None or repair_type == '0':
-            print("auto_assign")
+            #print("auto_assign")
             repair_type = auto_assign(title+description)
         
         # if repair_type != '0':
@@ -425,9 +425,9 @@ def get_timeslot(request):
             staff_list = CustomUser.objects.filter(position='2',m_type__endswith='1').order_by('?')
         
         
-        print("符合类型的维修人员：")
-        for staff in staff_list:
-            print(staff.realname)
+        # print("符合类型的维修人员：")
+        # for staff in staff_list:
+        #     print(staff.realname)
         
         expect_date = repair.expect_date
         # print(expect_date)
@@ -560,7 +560,7 @@ def get_timeslot(request):
                     # print("target_date = "+target_date)
                 
                     str_date = "time" + str(3 * int(j) + int(timeslot.slot))
-                    print(timeslot.staff.realname + " - str_date:" + str_date)
+                    #print(timeslot.staff.realname + " - str_date:" + str_date)
                     data[str_date] = timeslot.type
 
         return_data.append(data)
@@ -575,12 +575,14 @@ def save_library(request):
     repair_id = request.POST.get('repair_id')
     title = request.POST.get('title')
     description = request.POST.get('description')
+    solution = request.POST.get('solution')
 
     repair = Repair.objects.filter(id=repair_id).first()
-    print(repair.staff)
+    repair.library_status=False
+    repair.save()
 
     library = Library(title=title,description=description,staff_name=repair.staff.realname,
-                      staff_contact=repair.staff.contactNumber,solution=repair.plan,type=repair.type)
+                      staff_contact=repair.staff.contactNumber,solution=solution,type=repair.type)
 
     library.save()
 

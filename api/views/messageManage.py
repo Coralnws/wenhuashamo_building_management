@@ -1,3 +1,4 @@
+from datetime import date
 import json
 
 from django.core import serializers
@@ -80,7 +81,16 @@ def delete_tenant(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         tenant = Tenant.objects.filter(id=user_id).first()
+        current_date = date.today()
+
+        rental = RentalInfo.objects.filter(tenant=tenant,endTime__gte=current_date).count()
+        payment = Payment.objects.filter(tenant=tenant,is_paid=False).count()
+
+        if rental > 0 and payment > 0:
+            return UTF8JsonResponse({'errno': 3001, 'msg': '无法删除客户!'})
+
         tenant.delete()
+    
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant deleted successfully!'})
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
