@@ -573,13 +573,15 @@ def save_library(request):
         return not_post_method()
 
     repair_id = request.POST.get('repair_id')
+    print(repair_id)
     title = request.POST.get('title')
     description = request.POST.get('description')
 
     repair = Repair.objects.filter(id=repair_id).first()
+    print(repair.staff)
 
     library = Library(title=title,description=description,staff_name=repair.staff.realname,
-                      staff_contact=repair.staff.contactNumber,solution=repair.staff.plan,type=repair.type)
+                      staff_contact=repair.staff.contactNumber,solution=repair.plan,type=repair.type)
 
     library.save()
 
