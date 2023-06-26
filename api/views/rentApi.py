@@ -129,7 +129,7 @@ def rent_create(request):
 
 '''
     @param:
-    - user_ID:'1', //用户ID
+    - user_id:'1', //用户ID
     - date_begin:'', //租赁开始时间
     - date_end:'', //租赁结束时间
     - date_sign:'', // 签约时间
@@ -148,22 +148,22 @@ def rent_detail_read(request):
     if rental_info is None:
         return return_response(99999, '租赁信息不存在')
 
-    rentalDetailInfo = {}
-    rentalDetailInfo[REQUEST_RENTAL_ID] = rental_info.id
-    rentalDetailInfo[REQUEST_DATE_BEGIN] = rental_info.startTime
-    rentalDetailInfo[REQUEST_DATE_END] = rental_info.endTime
-    rentalDetailInfo[REQUEST_DATE_SIGN] = rental_info.createdTime
-    rentalDetailInfo[REQUEST_IS_PAID_MANAGEMENT] = rental_info.ispaid_management
-    rentalDetailInfo[REQUEST_DATE_PAID_MANAGEMENT] = rental_info.paidManagementDate
-    rentalDetailInfo[REQUEST_IS_PAID_RENTAL] = rental_info.ispaid_rental
-    rentalDetailInfo[REQUEST_DATE_PAID_RENTAL] = rental_info.paidRentalDate
-    rentalDetailInfo[REQUEST_ROOM_ID] = rental_info.house.roomNumber
-    rentalDetailInfo[REQUEST_USERNAME] = rental_info.tenant.username
-    rentalDetailInfo[REQUEST_LEGAL_NAME] = rental_info.tenant.real_name
-    rentalDetailInfo[REQUEST_COM_NAME] = rental_info.tenant.company
-    rentalDetailInfo[REQUEST_PHONE] = rental_info.tenant.contactNumber
+    rental_detail_info = {}
+    rental_detail_info[REQUEST_RENTAL_ID] = rental_info.id
+    rental_detail_info[REQUEST_DATE_BEGIN] = rental_info.startTime
+    rental_detail_info[REQUEST_DATE_END] = rental_info.endTime
+    rental_detail_info[REQUEST_DATE_SIGN] = rental_info.createdTime
+    rental_detail_info[REQUEST_IS_PAID_MANAGEMENT] = rental_info.ispaid_management
+    rental_detail_info[REQUEST_DATE_PAID_MANAGEMENT] = rental_info.paidManagementDate
+    rental_detail_info[REQUEST_IS_PAID_RENTAL] = rental_info.ispaid_rental
+    rental_detail_info[REQUEST_DATE_PAID_RENTAL] = rental_info.paidRentalDate
+    rental_detail_info[REQUEST_ROOM_ID] = rental_info.house.roomNumber
+    rental_detail_info[REQUEST_USERNAME] = rental_info.tenant.username
+    rental_detail_info[REQUEST_LEGAL_NAME] = rental_info.tenant.real_name
+    rental_detail_info[REQUEST_COM_NAME] = rental_info.tenant.company
+    rental_detail_info[REQUEST_PHONE] = rental_info.tenant.contactNumber
 
-    return return_response(9999, '租赁信息修改成功', rentalDetailInfo)
+    return return_response(9999, '租赁信息修改成功', rental_detail_info)
 
 
 
@@ -172,9 +172,9 @@ def rent_user_detail_read(request):
     if request.method != GETMETHOD:
         return return_response(100001, '请求格式有误，不是GET')
 
-    user_ID = request.GET.get(REQUEST_USER_ID, '')
+    user_id = request.GET.get(REQUEST_USER_ID, '')
 
-    tenant_exist = Tenant.objects.filter(id=user_ID).first()
+    tenant_exist = Tenant.objects.filter(id=user_id).first()
     
     if tenant_exist is None:
         return return_response(99999, '客户不存在')
@@ -208,7 +208,7 @@ def rent_user_detail_read(request):
 
 '''s
     @param:
-    - user_ID:'1', //用户ID
+    - user_id:'1', //用户ID
     - date_begin:'', //租赁开始时间
     - date_end:'', //租赁结束时间
     - date_sign:'', // 签约时间
@@ -222,15 +222,15 @@ def rent_update(request):
 
     info = request.POST.dict()
 
-    tenant_ID = info.get(REQUEST_TENANT_ID)
-    contract_ID = info.get(REQUEST_CONTRACT_ID)
-    room_ID = info.get(REQUEST_ROOM_ID)
+    tenant_id = info.get(REQUEST_TENANT_ID)
+    contract_id = info.get(REQUEST_CONTRACT_ID)
+    room_id = info.get(REQUEST_ROOM_ID)
     date_begin = info.get(REQUEST_DATE_BEGIN)
     date_end = info.get(REQUEST_DATE_END)
     date_sign = info.get(REQUEST_DATE_SIGN)
 
-    tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
-    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,contract_id=contract_ID).first()
+    tenant_exist = Tenant.objects.filter(id=tenant_id).first()
+    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,contract_id=contract_id).first()
 
     if tenant_exist is None or rental_info is None:
         return return_response(9999, '客户或租赁信息不存在')
@@ -243,7 +243,7 @@ def rent_update(request):
         rental_info.endTime = date_end
     rental_info.save()
 
-    if room_ID is None:
+    if room_id is None:
         return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息修改成功'})
 
     date_end_str = datetime.datetime.strptime(date_end, '%Y-%m-%d')
@@ -255,7 +255,7 @@ def rent_update(request):
     else:
         status=False
 
-    new_room_list = room_ID.split(",")
+    new_room_list = room_id.split(",")
 
     room_list_exist = TenantRental.objects.filter(rental = rental_info)
 
@@ -305,11 +305,11 @@ def rent_delete(request):
     
     info = request.POST.dict()
 
-    tenant_ID = info.get(REQUEST_TENANT_ID)
-    contract_ID = info.get(REQUEST_CONTRACT_ID)
+    tenant_id = info.get(REQUEST_TENANT_ID)
+    contract_id = info.get(REQUEST_CONTRACT_ID)
 
-    tenant_exist = Tenant.objects.filter(id=tenant_ID).first()
-    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,contract_id=contract_ID).first()
+    tenant_exist = Tenant.objects.filter(id=tenant_id).first()
+    rental_info = RentalInfo.objects.filter(tenant=tenant_exist,contract_id=contract_id).first()
 
     room_list_exist = TenantRental.objects.filter(rental = rental_info)
         

@@ -26,7 +26,6 @@ def house_list_by_floor(request):
             house_data = {}
             house_data['id'] = house.id
             house_data['room_number'] = house.roomNumber
-            # house_data['status'] = house.status
             house_data['floor'] = house.floor
 
             rent_record = TenantRental.objects.filter(house=house)
@@ -36,7 +35,6 @@ def house_list_by_floor(request):
             renting = False
             for rent in rent_record:
                 rent_data = {}
-                #datetime_obj = datetime.datetime.strptime(rent.endTime, '%Y-%m-%d')
                 if rent.rental.startTime <= timezone.now() and rent.rental.endTime >= timezone.now():  #
                     house.status=True
                     house.save()  
@@ -56,26 +54,6 @@ def house_list_by_floor(request):
         return UTF8JsonResponse({'errno': 1001, 'msg': '返回房间列表成功', 'data': house_list})
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
-
-
-    # for house in houses:
-    #     if house.floor not in floors:
-    #         floors[house.floor] = {
-    #             'rooms': [],
-    #             'vacant_count': 0,
-    #             'rented_count': 0,
-    #         }
-    #     if house.status:
-    #         floors[house.floor]['rented_count'] += 1
-    #     else:
-    #         floors[house.floor]['vacant_count'] += 1
-    #     floors[house.floor]['rooms'].append(house)
-    #
-    # # 计算每层房间状态的总占比
-    # total_count = len(houses)
-    # for floor in floors.values():
-    #     floor['vacant_ratio'] = floor['vacant_count'] / total_count * 100
-    #     floor['rented_ratio'] = floor['rented_count'] / total_count * 100
 
 @csrf_exempt
 def get_company_house(request):

@@ -11,9 +11,8 @@ from api.views import visitRequestApi
 from api.views import statisticApi
 from api.views import libraryManage
 from api.views import sms
-from api.scheduler import sms_reminder
+from api.scheduler import sms_reminder, email_reminder
 
-# from api.reminder_cron import schedule_reminder
 
 urlpatterns = [
 

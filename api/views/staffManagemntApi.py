@@ -200,9 +200,7 @@ def get_staff(request):
             working = False
             timeslot_list = Timeslot.objects.filter(staff=staff)
             for time_slot in timeslot_list:
-                #print(timezone.now().strftime("%Y-%m-%d"))
                 if time_slot.date.strftime("%Y-%m-%d") == timezone.now().strftime("%Y-%m-%d"):
-                    #print("working is true")
                     working = True
             if working:
                 staff_data['status'] = '0'

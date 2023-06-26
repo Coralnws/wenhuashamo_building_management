@@ -55,9 +55,8 @@ def add_tenant(request):
         if realname_exist > 0 or username_exist:
             if realname_exist == username_exist:
                 username  = username+"_"+str(realname_exist)
-            if username_exist < realname_exist:
-                if username_exist != 0:
-                    username  = username+"_" + str(realname_exist)
+            if username_exist < realname_exist and username_exist != 0:
+                username  = username+"_" + str(realname_exist)
 
         new_user = CustomUser(tenant=tenant,username=username,realname=real_name,position='1',contactNumber=contact_number)
         new_user.set_password(DEFAULTPASS)
