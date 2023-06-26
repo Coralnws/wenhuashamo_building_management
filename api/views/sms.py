@@ -16,8 +16,8 @@ def resend_otp(request):
 
     visit = VisitRequest.objects.filter(id=visit_id).first()
     code = get_random_codes()
-    res = phone_send(phone, code)
-    if res.Code == 'OK':
+    res = phone_send(visit.contact_number, code)
+    if res['Code'] == 'OK':
         visit.otp = code
         v.otp_sent += 1
         v.save()

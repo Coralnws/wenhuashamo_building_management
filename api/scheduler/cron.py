@@ -18,7 +18,7 @@ def start():
     scheduler.add_job(
         schedule_fee_email,
         "cron",
-        hour= 0,
+        hour= 15,
         minute= 0,
         second= 0,
         id= "schedule_fee_email",

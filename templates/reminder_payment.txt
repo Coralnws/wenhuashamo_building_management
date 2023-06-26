@@ -1,0 +1,18 @@
+您好 {{ contact_name }}!
+
+您有一条合同今年的租赁费即将到期，请注意缴纳。
+如已缴纳，请忽略此条信息。
+
+您的租赁信息：
+缴费周期: {{period}}
+公司: {{company_name}}
+法人: {{legal_name}}
+房间: {{rooms}}
+合同开始时间: {{start_time}}
+合同结束时间: {{end_time}}
+合同签约时间: {{sign_time}}
+
+___________________________
+
+Property Management Team
+物业管理物业组
