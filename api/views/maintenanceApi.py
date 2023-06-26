@@ -404,7 +404,7 @@ def get_timeslot(request):
     staff_id = request.GET.get('staff_id','')
 
     repair_type = None
-    
+
     if len(repair_id) > 0:
         repair = Repair.objects.filter(id=repair_id).first()
         repair_type = repair.type
@@ -567,7 +567,26 @@ def get_timeslot(request):
 
     return return_response(1001, '返回排班信息',return_data)
 
-    
+@csrf_exempt
+def save_library(request):
+    if request.method != 'POST':
+        return not_post_method()
+
+    repair_id = request.POST.get('repair_id')
+    title = request.POST.get('title')
+    description = request.POST.get('description')
+
+    repair = Repair.objects.filter(id=repair_id).first()
+
+    library = Library(title=title,description=description,staff_name=repair.staff.realname,
+                      staff_contact=repair.staff.contactNumber,solution=repair.staff.plan,type=repair.type)
+
+    library.save()
+
+    return_data=model_to_dict(library)
+    return_data['id'] = library.id
+
+    return return_response(1001, '成功录入知识库',return_data)
 
 
     

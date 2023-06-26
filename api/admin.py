@@ -25,6 +25,9 @@ class VisitConfig(admin.ModelAdmin):
     
 class TenantRentalConfig(admin.ModelAdmin):
     list_display = ('id', 'house', 'rental')
+        
+class LibraryConfig(admin.ModelAdmin):
+    list_display = ('id', 'title', 'description','staff_name','staff_contact','solution','type')
 
 class RentalInfoConfig(admin.ModelAdmin):
     list_display = ('id', 'tenant', 'contract_id','startTime', 'endTime','nextRentalDeadline','nextManagementFeeDeadline')
@@ -37,5 +40,6 @@ admin.site.register(Tenant, TenantConfig)
 admin.site.register(Repair, RepairConfig)
 admin.site.register(VisitRequest,VisitConfig)
 admin.site.register(TenantRental,TenantRentalConfig)
+admin.site.register(Library,LibraryConfig)
 admin.site.register(Timeslot,TimeslotConfig)
 admin.site.register(RentalInfo, RentalInfoConfig)

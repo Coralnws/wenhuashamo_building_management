@@ -61,6 +61,7 @@ urlpatterns = [
     path('repair/updateRequest', maintenanceApi.update_request),
     path('repair/delRequest', maintenanceApi.del_request),
     path('repair/timeslot', maintenanceApi.get_timeslot),
+    path('repair/save', maintenanceApi.save_library),
     
     #Visit
     path('visit/create', visitRequestApi.create_request),
