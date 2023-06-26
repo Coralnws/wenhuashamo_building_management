@@ -133,7 +133,7 @@ def update_staff(request):
             user.m_type = types
         if status:
             user.m_status = status
-        #user.save()
+        user.save()
     except Exception as e:
         return default_error(e)
     return return_response(1001,'修改信息成功')
