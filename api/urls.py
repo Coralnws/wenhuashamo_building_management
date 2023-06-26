@@ -81,4 +81,5 @@ urlpatterns = [
     #library
     path('library', libraryManage.get_library),
     path('resend_otp', sms.resend_otp),
+
 ]

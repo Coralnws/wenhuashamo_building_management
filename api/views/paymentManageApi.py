@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from api.models import *
 from ..utils import *
+from ..error_utils import *
 from django.forms.models import model_to_dict
 from django.db.models import Q
 import operator
@@ -35,8 +36,7 @@ def create_record(request):
 
         return return_response(1001, '成功添加物业费缴纳信息', data)
     else:
-        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
-
+        return not_post_method()
 
 @csrf_exempt
 def delete_record(request):
@@ -50,26 +50,18 @@ def delete_record(request):
     
         return UTF8JsonResponse({'errno':1001, 'msg': '成功删除物业费缴纳信息'})
     else:
-        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
+        return not_post_method()
 
 @csrf_exempt
 def update_record(request):
     if request.method == 'POST':
         info = request.POST.dict()
-        tenant_id = info.get('tenant_id')
-        period = info.get('year')
-        new_period = info.get('new_year')
+        payment_id = info.get('payment_id')
         is_paid = info.get('is_paid')
         payment_time = info.get('payment_time')
-        amount = info.get('money')
 
-        tenant = Tenant.objects.filter(id=tenant_id).first()
-        record = Payment.objects.filter(tenant=tenant,period=period).first()
+        record = Payment.objects.filter(id=payment_id).first()
 
-        if new_period:
-            record.period = new_period
-        if amount:
-            record.amount = amount
         if is_paid:
             if is_paid == '未缴费' or is_paid == '0': 
                 is_paid = False
@@ -82,9 +74,11 @@ def update_record(request):
         record.save()
         data = model_to_dict(record)
 
-        return UTF8JsonResponse({'errno':1001, 'msg': '成功修改缴费信息','data': data})
+        return return_response(1001, '成功修改缴费信息', data)
     else:
-        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})    
+        return not_post_method()
+
+        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
 
 @csrf_exempt
 def update_payment_status(request):
@@ -130,7 +124,6 @@ def update_payment_status(request):
         return UTF8JsonResponse({'errno':1001, 'msg': '成功修改缴费信息','data': data})
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})   
-
 
 @csrf_exempt
 def get_payment_detail(request):

@@ -233,15 +233,16 @@ def view_tenant(request):
 
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
 
-        payment_infos = Payment.objects.filter(tenant=tenant)
+        payment_infos = Payment.objects.filter(tenant=tenant).order_by('rentalInfo__contract_id', 'start_time')
         property_fees_list = []
         for pay in payment_infos:
             pay_data = {}
+            pay_data['contract_id'] = pay.rentalInfo.contract_id
+            pay_data['payment_id'] = pay.rentalInfo.id
             pay_data['year'] = pay.period
             pay_data['is_paid'] = pay.is_paid
             if pay.paymentTime:
                 pay_data['date_pay'] = pay.paymentTime.strftime("%Y-%m-%d")
-            pay_data['money'] = pay.amount
             property_fees_list.append(pay_data)
         user_level_rental_detail['property_fees_data'] = property_fees_list
 

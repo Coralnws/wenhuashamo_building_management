@@ -95,15 +95,29 @@ def rent_create(request):
         rent = TenantRental(house=house,rental=rental_info)
         rent.save()
 
-    # # populate contract duration and create
-    # i = 0
-    # curr_date = date_begin
-    # while True:
-    #     curr_date.year += 1
-    #     # when the date is valid
-    #     if curr_date <= date_end:
-    #         payment = Payment()
-    #         payment.
+    # populate contract duration and create payment records
+    payments = []
+    curr_start = date_begin_str
+    while curr_start < date_end_str:
+        curr_end = curr_start.replace(year=curr_start.year + 1)
+        payment = Payment()
+        payment.start_time = curr_start
+        payment.end_time = curr_end
+        payment.period = curr_start.strftime("%Y.%m") + "-" + curr_end.strftime("%Y.%m")
+        payment.is_paid = False
+        payment.amount = 0
+        payment.rentalInfo = rental_info
+        payment.tenant = tenant_exist
+        payment.save()
+
+        payment_item = {}
+        payment_item['payment_id'] = payment.id
+        payment_item[REQUEST_CONTRACT_ID] = payment.rentalInfo.contract_id
+        payment_item['period'] = payment.period
+        payment_item['paymentTime'] = payment.paymentTime
+        payments.append(payment_item)
+
+        curr_start = curr_end   # reassign the start year with end year
 
     data=model_to_dict(rental_info)
     data['id'] = rental_info.id
@@ -112,6 +126,7 @@ def rent_create(request):
     for room in room_list:
         room_data.append(room.house.roomNumber)
     data['room_data'] = room_data
+    data['property_fees_data'] = payments
 
     return UTF8JsonResponse({'errno':1001, 'msg': '租赁信息新建成功', 'data':data})
 
