@@ -29,6 +29,16 @@ REQUEST_DATE_PAID_MANAGEMENT = 'date_paid_management'
 REQUEST_IS_PAID_RENTAL = 'is_paid_rental'
 REQUEST_DATE_PAID_RENTAL = 'date_paid_rental'
 
+def check_name_repeat(real_name):
+    realname_exist = CustomUser.objects.filter(realname=real_name).count()
+    username_exist = CustomUser.objects.filter(username=real_name).count()
+    username = real_name
+    if realname_exist > 0 or username_exist:
+        if realname_exist == username_exist:
+            username  = username+"_"+str(realname_exist)
+        if username_exist < realname_exist and username_exist != 0:
+            username  = username+"_" + str(realname_exist)
+    return username
 
 @csrf_exempt
 def add_tenant(request):
@@ -49,14 +59,7 @@ def add_tenant(request):
         except Exception as e:
             return UTF8JsonResponse({'errno': 2001, 'msg': '请重新检查所填信息'})
 
-        realname_exist = CustomUser.objects.filter(realname=real_name).count()
-        username_exist = CustomUser.objects.filter(username=real_name).count()
-        username = real_name
-        if realname_exist > 0 or username_exist:
-            if realname_exist == username_exist:
-                username  = username+"_"+str(realname_exist)
-            if username_exist < realname_exist and username_exist != 0:
-                username  = username+"_" + str(realname_exist)
+        username = check_name_repeat(real_name)
 
         new_user = CustomUser(tenant=tenant,username=username,realname=real_name,position='1',contactNumber=contact_number)
         new_user.set_password(DEFAULTPASS)
@@ -106,17 +109,35 @@ def update_tenant(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         tenant = Tenant.objects.filter(id=user_id).first()
+        user = CustomUser.objects.filter(tenant=tenant).first()
         # 更新客户信息
-        tenant.real_name = request.POST.get('real_name')
+        
+        real_name = request.POST.get('real_name')
+        if real_name != tenant.real_name:
+            tenant.real_name = real_name
+            username = check_name_repeat(real_name)
+            user.username = username
+        
+
         tenant.company = request.POST.get('company')
-        tenant.contactName = request.POST.get('contactName')
-        tenant.contactNumber = request.POST.get('contactNumber')
-        tenant.email = request.POST.get('email')
-        # 保存客户对象到数据库中
         try:
             tenant.save()
         except Exception as e:
-            return UTF8JsonResponse({'errno': 2001, 'msg': '请重新检查所填信息'})
+            return UTF8JsonResponse({'errno': 2001, 'msg': '公司名已存在，请重新填写'})
+
+        tenant.contactName = request.POST.get('contactName')
+        tenant.email = request.POST.get('email')
+
+        contact_number = request.POST.get('contactNumber')
+        user.contactNumber = contact_number
+        tenant.contactNumber = request.POST.get('contactNumber')
+        try:
+            tenant.save()
+        except Exception as e:
+            return UTF8JsonResponse({'errno': 2001, 'msg': '联系人电话已被使用，请重新填写'})
+        # 保存客户对象到数据库中
+
+        user.save()
 
         # 返回成功信息
         return UTF8JsonResponse({'errno': 1001, 'msg': 'Tenant updated successfully!'})
