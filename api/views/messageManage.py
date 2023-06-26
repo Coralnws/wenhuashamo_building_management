@@ -238,7 +238,7 @@ def view_tenant(request):
         for pay in payment_infos:
             pay_data = {}
             pay_data['contract_id'] = pay.rentalInfo.contract_id
-            pay_data['payment_id'] = pay.rentalInfo.id
+            pay_data['payment_id'] = pay.id
             pay_data['year'] = pay.period
             pay_data['is_paid'] = pay.is_paid
             if pay.paymentTime:
