@@ -55,9 +55,8 @@ def add_tenant(request):
         if realname_exist > 0 or username_exist:
             if realname_exist == username_exist:
                 username  = username+"_"+str(realname_exist)
-            if username_exist < realname_exist:
-                if username_exist != 0:
-                    username  = username+"_" + str(realname_exist)
+            if username_exist < realname_exist and username_exist != 0:
+                username  = username+"_" + str(realname_exist)
 
         new_user = CustomUser(tenant=tenant,username=username,realname=real_name,position='1',contactNumber=contact_number)
         new_user.set_password(DEFAULTPASS)
@@ -179,23 +178,9 @@ def search_tenant(request):
 
 @csrf_exempt
 def view_tenant(request):
-    # if request.method == 'POST':
-    #     company = request.GET.get('company')
-    #     tenant = Tenant.objects.get(company=company)
-    #     # tenantRental = Payment.objects.all().filter(tenant)
-    #     res = model_to_dict(tenant)
-    #     return UTF8JsonResponse({'errno': 1001, 'msg': '返回员工列表成功', 'data': res})
-    # else:
-    #     return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
     if request.method != 'POST':
         return UTF8JsonResponse({'errno': 100001, 'msg': '请求格式有误'})
 
-    # user_ID = request.GET.get('user_id')
-    #
-    # tenant_exist = Tenant.objects.filter(id=user_ID).first()
-    #
-    # if tenant_exist is None:
-    #     return UTF8JsonResponse(99999, '客户不存在')
     page = request.POST.get('page')
     num = request.POST.get('num')
     page = int(page)

@@ -15,8 +15,6 @@ from api.error_utils import *
 from api.keywords import water_keywords,electric_keyword,mechanical_keyword,stopwords,water_main_keywords,electric_main_keyword,mechanical_main_keyword
 
 def auto_assign(text):
-    #tokens = jieba.cut(text)  # 使用jieba分词器对文本进行分词
-    #filtered_tokens = [token for token in tokens if token not in stopwords]
 
     data={}
     data['0'] = 0
@@ -112,10 +110,8 @@ def update_request(request):
         company = info.get('company')
         contact_name = info.get('submitterName')
         contact_number = info.get('submitterContact')
-        #staff_id = info.get('assignStaffId')
         staff_contact = info.get('staffContact')
         manager_id = info.get('managerIncharge')
-        #repairing_time = info.get('estimateRepairTimeSlot')
         status = info.get('status')
         plan = info.get('plan')
         complete_time = info.get('complete_time')
@@ -419,12 +415,11 @@ def get_timeslot(request):
             data[str_date] = '0'
 
         #这边把推荐的时间段设成2
-        if repair_type != '0':
-            if staff in target_staff:
-                index = target_staff.index(staff)
-                interval = datetime.datetime.strptime(target_date[index], "%Y-%m-%d") - datetime.datetime.strptime(start_date, "%Y-%m-%d")
-                str_date = "time" + str(3 * int(interval.days) + int(target_slot[index]))
-                data[str_date] = '2'
+        if repair_type != '0' and staff in target_staff:
+            index = target_staff.index(staff)
+            interval = datetime.datetime.strptime(target_date[index], "%Y-%m-%d") - datetime.datetime.strptime(start_date, "%Y-%m-%d")
+            str_date = "time" + str(3 * int(interval.days) + int(target_slot[index]))
+            data[str_date] = '2'
             
         for j in range(int(period)):
             search_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=j)
@@ -433,9 +428,7 @@ def get_timeslot(request):
 
             for timeslot in timeslot_list_accurate:
                 if timeslot.staff == staff:
-                
                     str_date = "time" + str(3 * int(j) + int(timeslot.slot))
-                    #print(timeslot.staff.realname + " - str_date:" + str_date)
                     data[str_date] = timeslot.type
 
         return_data.append(data)
@@ -466,6 +459,4 @@ def save_library(request):
 
     return return_response(1001, '成功录入知识库',return_data)
 
-
-    
 

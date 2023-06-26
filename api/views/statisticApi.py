@@ -64,18 +64,6 @@ def repair_statistic(request):
         else:
             time_prefix = search_prefix + "-" + str(i)
 
-        # 之后替换这部分
-        """
-        record_list = Repair.objects.filter(createdTime__startswith=time_prefix)
-        for record in record_list:
-            if record.staff and record.staff.m_type[0] == '1':
-                data['water'] += 1;
-            if record.staff and record.staff.m_type[1] == '1':
-                data['electric'] += 1;
-            if record.staff and record.staff.m_type[2] == '1':
-                data['mechanic'] += 1;
-        """
-
         data['other'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=0).count()
         data['water'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=1).count()
         data['electric'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=2).count()
@@ -105,24 +93,12 @@ def repair_statistic_year(request):
     for year in range(int(start_year),int(end_year)+1):
         data={}
         data['year'] = year
-        #year = str(int(year)+1)
         data['water'] = 0
         data['electric'] = 0
         data['mechanic'] = 0
         data['other'] = 0
 
         time_prefix = str(year)
-
-        '''
-        record_list = Repair.objects.filter(createdTime__startswith=time_prefix)
-        for record in record_list:
-            if record.staff and record.staff.m_type[0] == '1':
-                data['water'] += 1;
-            if record.staff and record.staff.m_type[1] == '1':
-                data['electric'] += 1;
-            if record.staff and record.staff.m_type[2] == '1':
-                data['mechanic'] += 1;
-        '''
 
         data['other'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=0).count()
         data['water'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=1).count()
@@ -168,50 +144,12 @@ def visit_statistic_month(request):
     
     year = request.GET.get('year','')
     month = request.GET.get('month','') or None
-    return_data = {} 
-    day_data = [] 
     data = {}
     data['company_data'] = []
     data['company_count'] = []
     data['day_data'] = []
-    # company_data = []
-    # company_count = []
 
     tmp_company_data = {}
-
-
-    # 一年里每个月的访客数量
-    """
-    if month is None:
-        #先筛选出某一年
-        year_data_list = VisitRequest.objects.filter(visit_time__startswith=year)
-
-        #对那一年的每一个月去统计公司的数量
-        for i in range(1,13):
-
-            time_prefix = None
-            if i < 10:
-                time_prefix = year + "-0" + str(i)
-            else:
-                time_prefix = year + "-" + str(i)
-            
-            #这年的其中一月的数据
-            month_data_list = year_data_list.filter(visit_time__startswith=time_prefix)
-
-            #统计各个公司的数据
-            for month_data in month_data_list:
-                if company_data.get(month_data.company) is None:
-                    company_data[month_data.company] = 0
-                company_data[month_data.company] += 1
-
-            #直接统计数量
-            data[str(i)] = len(month_data_list)
-
-        return_data['company_data'] = company_data
-        return_data['month_data'] = data
-
-        return UTF8JsonResponse({'errno':1001, 'msg': '成功获取访客数量统计数据','data':return_data})
-    """
 
     #计算某月的每一天数据
     time_prefix = None
@@ -225,9 +163,7 @@ def visit_statistic_month(request):
 
     begin = datetime.date(int(year),int(month),1)
     end = datetime.date(int(year),int(month),month_day(int(year),int(month)))
-    # print("day="+str(end))
 
-    #data['day_data'] = []
     for i in range((end - begin).days+1):
         day = begin + datetime.timedelta(days=i)
         num = month_data_list.filter(visit_time__startswith=day).count()
@@ -238,21 +174,14 @@ def visit_statistic_month(request):
     
     #对这个月的数据，去看有哪一天的数据，有哪间公司的数据
     for month_data in month_data_list:
-        # if data.get(str(month_data.visit_time.strftime("%Y-%m-%d"))) is None:
-        #     data[str(month_data.visit_time.strftime("%Y-%m-%d"))] = 0
         if tmp_company_data.get(month_data.company) is None:
            tmp_company_data[month_data.company] = 0
         tmp_company_data[month_data.company] += 1
-        # data[str(month_data.visit_time.strftime("%Y-%m-%d"))] += 1
 
     for key, value in tmp_company_data.items():
         data['company_data'].append(key)
         data['company_count'].append(value)
-        
 
-    # return_data['company_data'] = company_data
-    # return_data['day_data'] = data
-    
     return UTF8JsonResponse({'errno':1001, 'msg': '成功获取访客数量统计数据','data':data})
 
 

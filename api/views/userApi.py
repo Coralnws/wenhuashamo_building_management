@@ -88,11 +88,6 @@ def change_password(request):
     if request.method != 'POST':
         return not_post_method()
 
-    # session_id = request.POST.get('session_id')
-    # user = get_user_from_redis(session_id)
-    # if user is None:
-    #     return no_user()
-
     try:
         info = request.POST.dict()
         user_id = info.get('user_id')
