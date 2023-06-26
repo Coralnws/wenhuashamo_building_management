@@ -10,8 +10,8 @@ def schedule_otp_sms():
     print("target_otp_time", target_time)
 
     visit_requests = VisitRequest.objects.filter(Q(otp_sent=0) & Q(visit_time__lte=target_time) & Q(visit_time__gte=timezone.now()))
-
     for v in visit_requests:
+        print("visit_request_id exists:::", v.id)
         code = sms.get_random_codes()
         res = sms.phone_send(v.contact_number, code)
         # check if res successfull, then update the otp_sent and code, otherwise fail silently
