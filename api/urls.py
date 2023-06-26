@@ -57,7 +57,7 @@ urlpatterns = [
     path('repair/getRequest', maintenanceApi.get_request),
     path('repair/assignTask', maintenanceApi.assign_task),
     path('repair/closeTask', maintenanceApi.close_task),
-    path('repair/updateRequest', maintenanceApi.update_request),
+    #path('repair/updateRequest', maintenanceApi.update_request),
     path('repair/delRequest', maintenanceApi.del_request),
     path('repair/timeslot', maintenanceApi.get_timeslot),
     path('repair/save', maintenanceApi.save_library),

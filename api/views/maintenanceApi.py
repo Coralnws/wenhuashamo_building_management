@@ -108,100 +108,6 @@ def del_request(request):
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})  
 
 
-def update_request_support(
-    record,
-    title,
-    description,
-    created_time,
-    room,
-    company,
-    contact_name,
-    contact_number,
-    staff_contact,
-    manager_id,
-    status ):
-    if title:
-        record.title = title
-    if description:
-        record.description = description
-    if created_time:    
-        record.createdTime = created_time
-    if room:
-        house = House.objects.filter(roomNumber=room).first()
-        record.house=house
-    if company:
-        record.company = company
-    if contact_name:
-        record.contactName = contact_name
-    if contact_number:
-        record.contactNumber = contact_number
-    if staff_contact:
-        record.staffContact = staff_contact
-    if manager_id:
-        manager = CustomUser.objects.filter(id=manager_id).first()
-        record.manager = manager
-    if status:
-        record.status = status
-
-
-@csrf_exempt
-def update_request(request):
-    if request.method == 'POST':
-        info = request.POST.dict()
-        request_id = info.get('request_id')
-        title = info.get('title')
-        description = info.get('description')
-        created_time = info.get('submitTime')
-        room = info.get('room')
-        company = info.get('company')
-        contact_name = info.get('submitterName')
-        contact_number = info.get('submitterContact')
-        staff_contact = info.get('staffContact')
-        manager_id = info.get('managerIncharge')
-        status = info.get('status')
-        plan = info.get('plan')
-        complete_time = info.get('complete_time')
-        solver_id = info.get('solverStaffId')
-        expect_date = info.get('expect_date')
-        expect_timeslot = info.get('expect_timeslot')  
-        type = info.get('type','') 
-
-        record = Repair.objects.filter(id=request_id).first()
-        update_request_support(
-            record,
-            title,
-            description,
-            created_time,
-            room,
-            company,
-            contact_name,
-            contact_number,
-            staff_contact,
-            manager_id,
-            status )
-
-        if plan:
-            record.plan = plan
-        if complete_time:
-            record.complete_time = complete_time
-        if solver_id:
-            solver = CustomUser.objects.filter(id= solver_id).first()
-            record.solver = solver
-        if expect_date:
-            record.expect_date = expect_date
-        if expect_timeslot:
-            record.expect_time_slot = expect_timeslot
-        if type:
-            record.type = type
-
-        record.save()
-
-        data = model_to_dict(record)
-
-        return UTF8JsonResponse({'errno':1001, 'msg': '成功修改报修记录','data':data})
-    else:
-        return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})
-
 @csrf_exempt
 def get_request(request):
     if request.method == 'GET':
@@ -348,7 +254,7 @@ def get_timeslot(request):
         if repair_type == '1':
             staff_list = CustomUser.objects.filter(position='2',m_type__startswith='1').order_by('?')
         elif repair_type == '2':
-            staff_list = CustomUser.objects.filter(position=2,m_type__regex=r'\w1\w').order_by('?')
+            staff_list = CustomUser.objects.filter(position='2',m_type__regex=r'\w1\w').order_by('?')
         elif repair_type == '3':
             staff_list = CustomUser.objects.filter(position='2',m_type__endswith='1').order_by('?')
         
