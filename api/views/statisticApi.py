@@ -65,6 +65,7 @@ def repair_statistic(request):
             time_prefix = search_prefix + "-" + str(i)
 
         # 之后替换这部分
+        """
         record_list = Repair.objects.filter(createdTime__startswith=time_prefix)
         for record in record_list:
             if record.staff and record.staff.m_type[0] == '1':
@@ -73,19 +74,19 @@ def repair_statistic(request):
                 data['electric'] += 1;
             if record.staff and record.staff.m_type[2] == '1':
                 data['mechanic'] += 1;
-        
-        """  维修工单增加类型属性后 
+        """
+
         data['other'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=0).count()
         data['water'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=1).count()
         data['electric'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=2).count()
         data['mechanic'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=3).count()
-        """
+
 
         return_data['water'] += data['water']
         return_data['electric'] += data['electric']
         return_data['mechanic'] += data['mechanic']
             
-        return_data['month'].append(data)  #统计完一个月的数据后把这个月append进整体的datas
+        return_data['month'].append(data)  #统计完一个月的数据后把这个月append进整体的data
 
     return UTF8JsonResponse({'errno':1001, 'msg': '成功获取报修工作统计数据','data':return_data})
 
@@ -112,6 +113,7 @@ def repair_statistic_year(request):
 
         time_prefix = str(year)
 
+        '''
         record_list = Repair.objects.filter(createdTime__startswith=time_prefix)
         for record in record_list:
             if record.staff and record.staff.m_type[0] == '1':
@@ -120,13 +122,13 @@ def repair_statistic_year(request):
                 data['electric'] += 1;
             if record.staff and record.staff.m_type[2] == '1':
                 data['mechanic'] += 1;
+        '''
 
-        """  维修工单增加类型属性后 
         data['other'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=0).count()
         data['water'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=1).count()
         data['electric'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=2).count()
         data['mechanic'] = Repair.objects.filter(createdTime__startswith=time_prefix,type=3).count()
-        """
+
 
         return_data.append(data)
 
@@ -223,7 +225,7 @@ def visit_statistic_month(request):
 
     begin = datetime.date(int(year),int(month),1)
     end = datetime.date(int(year),int(month),month_day(int(year),int(month)))
-    print("day="+str(end))
+    # print("day="+str(end))
 
     #data['day_data'] = []
     for i in range((end - begin).days+1):
