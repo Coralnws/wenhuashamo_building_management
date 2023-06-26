@@ -28,7 +28,7 @@ def start():
     scheduler.add_job(
         schedule_otp_sms,
         "interval",
-        seconds= 60,
+        seconds= 5,
         id= "schedule_otp_sms",
         replace_existing= True
     )
