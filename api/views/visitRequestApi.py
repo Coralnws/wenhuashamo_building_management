@@ -134,7 +134,7 @@ def get_request(request):
         visit_data['visitor_time'] = visit.visit_time
         visit_data['contact_number']=visit.contact_number
         visit_data['company'] = visit.company
-        visit_data['room'] = visit.house.roomNumber or None
+        visit_data['room'] = str(visit.house.roomNumber) or None
         visit_data['inviter_name']=visit.inviter.realname
 
         if position == '3' or position == '4':

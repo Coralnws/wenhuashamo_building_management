@@ -1,4 +1,5 @@
 
+import calendar
 from datetime import timedelta
 from datetime import datetime,timedelta
 import time
@@ -26,11 +27,9 @@ separate by year -> category by month -> recognize different type in each month
 month_day_list = {'1': 31, '2': 28,'3':31,'4':30,'5':31,'6':30,
             '7':31,'8':31,'9':30,'10':31,'11':30,'12':31}
 
-def month_day(year,month):
-    if month == '2' and year % 4 == 0:
-        return 29
-    
-    return month_day_list[month]
+
+def month_day(year, month):
+    return calendar.monthrange(year, month)[1]
 
 
 @csrf_exempt
@@ -167,14 +166,20 @@ def visit_statistic_month(request):
     
     year = request.GET.get('year','')
     month = request.GET.get('month','') or None
-    return_data={} 
-    data = {} 
-    company_data = {}
+    return_data = {} 
+    day_data = [] 
+    data = {}
+    data['company_data'] = []
+    data['company_count'] = []
+    data['day_data'] = []
+    # company_data = []
+    # company_count = []
 
-    # begin = datetime.date(int(year),int(month),1)
-    # end = datetime.date(int(year),int(month),month_day(2023,month))
+    tmp_company_data = {}
+
 
     # 一年里每个月的访客数量
+    """
     if month is None:
         #先筛选出某一年
         year_data_list = VisitRequest.objects.filter(visit_time__startswith=year)
@@ -204,6 +209,7 @@ def visit_statistic_month(request):
         return_data['month_data'] = data
 
         return UTF8JsonResponse({'errno':1001, 'msg': '成功获取访客数量统计数据','data':return_data})
+    """
 
     #计算某月的每一天数据
     time_prefix = None
@@ -214,25 +220,38 @@ def visit_statistic_month(request):
 
     #筛出这个月的数据
     month_data_list = VisitRequest.objects.filter(visit_time__startswith=time_prefix).order_by('visit_time')
-    """
+
+    begin = datetime.date(int(year),int(month),1)
+    end = datetime.date(int(year),int(month),month_day(int(year),int(month)))
+    print("day="+str(end))
+
+    #data['day_data'] = []
     for i in range((end - begin).days+1):
         day = begin + datetime.timedelta(days=i)
-        #num = month_data_list.filter(visit_time__startswith=day).count()
-        data[str(day)] = 0
-    """
+        num = month_data_list.filter(visit_time__startswith=day).count()
+        if num != 0 :
+            data['day_data'].append(num)
+        else:
+            data['day_data'].append(0)
+    
     #对这个月的数据，去看有哪一天的数据，有哪间公司的数据
     for month_data in month_data_list:
-        if data.get(str(month_data.visit_time.strftime("%Y-%m-%d"))) is None:
-            data[str(month_data.visit_time.strftime("%Y-%m-%d"))] = 0
-        if company_data.get(month_data.company) is None:
-            company_data[month_data.company] = 0
-        company_data[month_data.company] += 1
-        data[str(month_data.visit_time.strftime("%Y-%m-%d"))] += 1
+        # if data.get(str(month_data.visit_time.strftime("%Y-%m-%d"))) is None:
+        #     data[str(month_data.visit_time.strftime("%Y-%m-%d"))] = 0
+        if tmp_company_data.get(month_data.company) is None:
+           tmp_company_data[month_data.company] = 0
+        tmp_company_data[month_data.company] += 1
+        # data[str(month_data.visit_time.strftime("%Y-%m-%d"))] += 1
 
-    return_data['company_data'] = company_data
-    return_data['day_data'] = data
+    for key, value in tmp_company_data.items():
+        data['company_data'].append(key)
+        data['company_count'].append(value)
+        
+
+    # return_data['company_data'] = company_data
+    # return_data['day_data'] = data
     
-    return UTF8JsonResponse({'errno':1001, 'msg': '成功获取访客数量统计数据','data':return_data})
+    return UTF8JsonResponse({'errno':1001, 'msg': '成功获取访客数量统计数据','data':data})
 
 
 
