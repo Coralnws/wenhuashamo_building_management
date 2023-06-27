@@ -150,11 +150,38 @@ def update_tenant(request):
     else:
         return UTF8JsonResponse({'errno': 4001, 'msg': 'Request Method Error'})
 
+def get_search_tenant(rental_infos):
+    rent_data_list = []
+    for rent in rental_infos:
+        rent_data = {}
+        rent_data[REQUEST_RENTAL_ID] = rent.id
+        rent_data[REQUEST_CONTRACT_ID] = rent.contract_id
+        room_list = TenantRental.objects.filter(rental = rent)
+        room_data = []
+        for room in room_list:
+            room_data.append(room.house.roomNumber)
+        room_data.sort()
+        rent_data['room_data'] = room_data
+        if rent.startTime:
+            rent_data[REQUEST_DATE_BEGIN] = rent.startTime.strftime("%Y-%m-%d %H:%M:%S")
+        if rent.endTime:
+            rent_data[REQUEST_DATE_END] = rent.endTime.strftime("%Y-%m-%d %H:%M:%S")
+        if rent.createdTime:
+            rent_data[REQUEST_DATE_SIGN] = rent.createdTime.strftime("%Y-%m-%d %H:%M:%S")
+        rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
+        if rent.paidManagementDate:
+            rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate.strftime("%Y-%m-%d")
+        rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
+        if rent.paidRentalDate:
+            rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
+        rent_data_list.append(rent_data)
+    return rent_data_list
 
 @csrf_exempt
 def search_tenant(request):
     if request.method == 'POST':
         search_word = request.POST.get('search_word')
+
         try:
             tenant = Tenant.objects.filter(
                 Q(real_name__icontains=search_word) |
@@ -179,35 +206,45 @@ def search_tenant(request):
 
         rental_infos = RentalInfo.objects.filter(tenant=tenant)
 
+        
+
         rent_data_list = []
         if rental_infos:
-            for rent in rental_infos:
-                rent_data = {}
-                rent_data[REQUEST_RENTAL_ID] = rent.id
-                rent_data[REQUEST_CONTRACT_ID] = rent.contract_id
-                room_list = TenantRental.objects.filter(rental = rent)
-                room_data = []
-                for room in room_list:
-                    room_data.append(room.house.roomNumber)
-                room_data.sort()
-                rent_data['room_data'] = room_data
-                if rent.startTime:
-                    rent_data[REQUEST_DATE_BEGIN] = rent.startTime.strftime("%Y-%m-%d %H:%M:%S")
-                if rent.endTime:
-                    rent_data[REQUEST_DATE_END] = rent.endTime.strftime("%Y-%m-%d %H:%M:%S")
-                if rent.createdTime:
-                    rent_data[REQUEST_DATE_SIGN] = rent.createdTime.strftime("%Y-%m-%d %H:%M:%S")
-                rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
-                if rent.paidManagementDate:
-                    rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate.strftime("%Y-%m-%d")
-                rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
-                if rent.paidRentalDate:
-                    rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
-                rent_data_list.append(rent_data)
+            rent_data_list = get_search_tenant(rental_infos)
 
+    
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
         tenant_detail.append(user_level_rental_detail)
         return UTF8JsonResponse({'errno': 1001, 'msg': '查询客户成功', 'data': tenant_detail})
+
+def get_view_tenant(rental_infos):
+    rent_data_list = []
+    for rent in rental_infos:
+        rent_data = {}
+        rent_data[REQUEST_RENTAL_ID] = rent.id
+        rent_data[REQUEST_CONTRACT_ID] = rent.contract_id
+        room_list = TenantRental.objects.filter(rental = rent)
+        room_data = []
+        for room in room_list:
+            room_data.append(room.house.roomNumber)
+        room_data.sort()
+        rent_data['room_data'] = room_data
+        if rent.startTime:
+            rent_data[REQUEST_DATE_BEGIN] = rent.startTime.strftime("%Y-%m-%d")
+        if rent.endTime:
+            rent_data[REQUEST_DATE_END] = rent.endTime.strftime("%Y-%m-%d")
+        if rent.createdTime:
+            rent_data[REQUEST_DATE_SIGN] = rent.createdTime.strftime("%Y-%m-%d")
+        rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
+        if rent.paidManagementDate:
+            rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate.strftime("%Y-%m-%d")
+        rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
+        if rent.paidRentalDate:
+            rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
+        rent_data_list.append(rent_data)
+
+    return rent_data_list
+
 
 @csrf_exempt
 def view_tenant(request):
@@ -234,32 +271,10 @@ def view_tenant(request):
         user_level_rental_detail['email'] = tenant.email
 
         rental_infos = RentalInfo.objects.filter(tenant=tenant).order_by('contract_id')
-        rent_data_list = []
-        for rent in rental_infos:
-            rent_data = {}
-            rent_data[REQUEST_RENTAL_ID] = rent.id
-            rent_data[REQUEST_CONTRACT_ID] = rent.contract_id
-            room_list = TenantRental.objects.filter(rental = rent)
-            room_data = []
-            for room in room_list:
-                room_data.append(room.house.roomNumber)
-            room_data.sort()
-            rent_data['room_data'] = room_data
-            if rent.startTime:
-                rent_data[REQUEST_DATE_BEGIN] = rent.startTime.strftime("%Y-%m-%d")
-            if rent.endTime:
-                rent_data[REQUEST_DATE_END] = rent.endTime.strftime("%Y-%m-%d")
-            if rent.createdTime:
-                rent_data[REQUEST_DATE_SIGN] = rent.createdTime.strftime("%Y-%m-%d")
-            rent_data[REQUEST_IS_PAID_MANAGEMENT] = rent.ispaid_management
-            if rent.paidManagementDate:
-                rent_data[REQUEST_DATE_PAID_MANAGEMENT] = rent.paidManagementDate.strftime("%Y-%m-%d")
-            rent_data[REQUEST_IS_PAID_RENTAL] = rent.ispaid_rental
-            if rent.paidRentalDate:
-                rent_data[REQUEST_DATE_PAID_RENTAL] = rent.paidRentalDate.strftime("%Y-%m-%d")
-            rent_data_list.append(rent_data)
-
+        rent_data_list = get_view_tenant(rental_infos)
+        
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
+
 
         payment_infos = Payment.objects.filter(tenant=tenant).order_by('rentalInfo__contract_id', 'start_time')
         property_fees_list = []
