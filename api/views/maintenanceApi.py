@@ -164,8 +164,7 @@ def get_request(request):
             filter &= Q(status=status)
         if user_id:
             user = CustomUser.objects.filter(id=user_id).first()
-
-            filter = get_filter(user)
+            filter &= get_filter(user)
 
         request_list = Repair.objects.filter(filter).order_by('createdTime')
     

@@ -198,6 +198,7 @@ def search_tenant(request):
         tenant_detail = []
 
         user_level_rental_detail = {}
+        user_level_rental_detail['user_id'] = tenant.id
         user_level_rental_detail[REQUEST_USERNAME] = tenant.contactName
         user_level_rental_detail[REQUEST_LEGAL_NAME] = tenant.real_name
         user_level_rental_detail[REQUEST_COM_NAME] = tenant.company
@@ -205,8 +206,6 @@ def search_tenant(request):
         user_level_rental_detail['email'] = tenant.email
 
         rental_infos = RentalInfo.objects.filter(tenant=tenant)
-
-        
 
         rent_data_list = []
         if rental_infos:
