@@ -159,6 +159,31 @@ def delete_staff(request):
 
     return return_response(1001, '删除人员成功')
 
+def get_staff_request(staff_list):
+    staff_list_data=[]
+    for staff in staff_list:
+        staff_data={}
+        staff_data['id']=staff.id
+        staff_data['name']=staff.realname
+        staff_data['contact'] = staff.contactNumber
+        staff_data['position']=staff.position
+        if staff.position != '2':
+            staff_data['type'] = '-'
+            staff_data['status'] = '-'
+        else:
+            staff_data['type'] = staff.m_type
+            working = False
+            timeslot_list = Timeslot.objects.filter(staff=staff)
+            for time_slot in timeslot_list:
+                if time_slot.date.strftime("%Y-%m-%d") == timezone.now().strftime("%Y-%m-%d"):
+                    working = True
+            if working:
+                staff_data['status'] = '0'
+            else:
+                staff_data['status'] = '1'
+
+        staff_list_data.append(staff_data)
+    return staff_list_data
 
 @csrf_exempt
 def get_staff(request):
@@ -188,35 +213,14 @@ def get_staff(request):
     filters = get_staff_filters(position, status, types, search)
 
     staff_list = CustomUser.objects.filter(filters).order_by('-position')
+
     
     if len(position) == 0 and len(types) == 0 and len(search) == 0 and len(status) == 0:
         staff_list = CustomUser.objects.filter(Q(position='2') | Q(position='3') | Q(position='4')).order_by('-position')
     else:
         staff_list = CustomUser.objects.filter(filters).order_by('-position')
     
-    staff_list_data=[]
-    for staff in staff_list:
-        staff_data={}
-        staff_data['id']=staff.id
-        staff_data['name']=staff.realname
-        staff_data['contact'] = staff.contactNumber
-        staff_data['position']=staff.position
-        if staff.position != '2':
-            staff_data['type'] = '-'
-            staff_data['status'] = '-'
-        else:
-            staff_data['type'] = staff.m_type
-            working = False
-            timeslot_list = Timeslot.objects.filter(staff=staff)
-            for time_slot in timeslot_list:
-                if time_slot.date.strftime("%Y-%m-%d") == timezone.now().strftime("%Y-%m-%d"):
-                    working = True
-            if working:
-                staff_data['status'] = '0'
-            else:
-                staff_data['status'] = '1'
-
-        staff_list_data.append(staff_data)
+    staff_list_data=get_staff_request(staff_list)
 
     return return_response(1001, '返回员工列表成功', staff_list_data)
 

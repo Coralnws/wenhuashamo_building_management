@@ -275,7 +275,6 @@ def view_tenant(request):
         
         user_level_rental_detail[REQUEST_RENT_DATA] = rent_data_list
 
-
         payment_infos = Payment.objects.filter(tenant=tenant).order_by('rentalInfo__contract_id', 'start_time')
         property_fees_list = []
         for pay in payment_infos:
