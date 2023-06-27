@@ -55,6 +55,7 @@ def auto_assign(text):
 
     type_list = sorted(data.items(), key=lambda x: (-x[1], -ord(x[0][0])))
 
+
     return type_list[0][0]
 
 
@@ -109,6 +110,45 @@ def del_request(request):
     else:
         return UTF8JsonResponse({'errno':4001, 'msg': 'Request Method Error'})  
 
+def get_return_data(request_data,request_list):
+    for record in request_list:
+        data=model_to_dict(record)
+        data['house'] = record.house.roomNumber
+        if record.manager:
+            data['manager'] = record.manager.realname
+        if record.staff:
+            data['repair_staff'] = record.staff.realname
+            data['staff_contact'] = record.staff.contactNumber
+        if record.solver:
+            data['solver'] = record.solver.realname
+        data['createdTime'] = record.createdTime.strftime("%Y-%m-%d %H:%M:%S")
+        if record.time_slot:
+            data['repairing_date'] = record.time_slot.date.strftime("%Y-%m-%d")
+            data['repairing_slot'] = record.time_slot.slot
+        if record.completeTime:
+            data['completeTime'] = record.completeTime.strftime("%Y-%m-%d %H:%M:%S")
+        if record.expect_date:
+            data['expect_date'] = record.expect_date.strftime("%Y-%m-%d")
+        data['expect_timeslot'] = record.expect_time_slot
+
+        request_data.append(data)
+
+    return request_data
+
+
+def get_filter(user):
+
+    filter = Q()
+    if user.position == '2':
+        filter &= Q(staff=user)
+    elif user.position == '1':
+        filter &= Q(submitter=user)
+        if user.tenant:
+            company = user.tenant.company
+            filter &= Q(company=company)
+    
+    return filter
+
 
 @csrf_exempt
 def get_request(request):
@@ -124,40 +164,22 @@ def get_request(request):
             filter &= Q(status=status)
         if user_id:
             user = CustomUser.objects.filter(id=user_id).first()
-            
-            if user.position == '2':
-                filter &= Q(staff=user)
-            elif user.position == '1':
-                filter &= Q(submitter=user)
-                if user.tenant:
-                    company = user.tenant.company
-                    filter &= Q(company=company)        
+
+            filter = get_filter(user)
+        
+            # if user.position == '2':
+            #     filter &= Q(staff=user)
+            # elif user.position == '1':
+            #     filter &= Q(submitter=user)
+            #     if user.tenant:
+            #         company = user.tenant.company
+            #         filter &= Q(company=company)        
 
         request_list = Repair.objects.filter(filter).order_by('createdTime')
     
         request_data=[]
 
-        for record in request_list:
-            data=model_to_dict(record)
-            data['house'] = record.house.roomNumber
-            if record.manager:
-                data['manager'] = record.manager.realname
-            if record.staff:
-                data['repair_staff'] = record.staff.realname
-                data['staff_contact'] = record.staff.contactNumber
-            if record.solver:
-                data['solver'] = record.solver.realname
-            data['createdTime'] = record.createdTime.strftime("%Y-%m-%d %H:%M:%S")
-            if record.time_slot:
-                data['repairing_date'] = record.time_slot.date.strftime("%Y-%m-%d")
-                data['repairing_slot'] = record.time_slot.slot
-            if record.completeTime:
-                data['completeTime'] = record.completeTime.strftime("%Y-%m-%d %H:%M:%S")
-            if record.expect_date:
-                data['expect_date'] = record.expect_date.strftime("%Y-%m-%d")
-            data['expect_timeslot'] = record.expect_time_slot
-
-            request_data.append(data)
+        request_data = get_return_data(request_data,request_list)
         
         return UTF8JsonResponse({'errno':1001, 'msg': '成功获取报修列表','data':request_data})
     else:

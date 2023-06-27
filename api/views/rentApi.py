@@ -52,7 +52,7 @@ def rent_create(request):
         return return_response(4001, '合约编号已存在')
 
     if tenant_exist is None:
-            return return_response(9999, '客户不存在')
+        return return_response(9999, '客户不存在')
     
     #添加合约
     rental_info = RentalInfo()
