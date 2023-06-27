@@ -49,9 +49,11 @@ def auto_assign(text):
         if item in text:
             data['3'] += 1
             print("机械关键词出现")
+    
+    if data['1'] == data['2'] ==data['3']==data['0'] == 0:
+        return '0'
 
     type_list = sorted(data.items(), key=lambda x: (-x[1], -ord(x[0][0])))
-    print(type_list)
 
     return type_list[0][0]
 
