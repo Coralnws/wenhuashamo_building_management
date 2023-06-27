@@ -166,14 +166,6 @@ def get_request(request):
             user = CustomUser.objects.filter(id=user_id).first()
 
             filter = get_filter(user)
-        
-            # if user.position == '2':
-            #     filter &= Q(staff=user)
-            # elif user.position == '1':
-            #     filter &= Q(submitter=user)
-            #     if user.tenant:
-            #         company = user.tenant.company
-            #         filter &= Q(company=company)        
 
         request_list = Repair.objects.filter(filter).order_by('createdTime')
     
@@ -336,7 +328,6 @@ def get_timeslot(request):
                         target_date.append(search_date)
                         target_slot.append(search_slot)
                         target_staff.append(staff)
-                        # assign_timeslot = Timeslot(date=search_date,slot=search_slot,staff=staff,type=2) #智能推荐
                         print("找到时间 - " + staff.realname)
                         assign += 1
                         if assign < 2:

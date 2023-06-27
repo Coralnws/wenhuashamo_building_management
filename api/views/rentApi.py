@@ -141,9 +141,9 @@ def rent_detail_read(request):
     if request.method != GETMETHOD:
         return return_response(100001, '请求格式有误，不是GET')
 
-    rental_ID = request.GET.get(REQUEST_RENTAL_ID, '')
+    rental_id = request.GET.get(REQUEST_RENTAL_ID, '')
 
-    rental_info = RentalInfo.objects.filter(id=rental_ID).first()
+    rental_info = RentalInfo.objects.filter(id=rental_id).first()
 
     if rental_info is None:
         return return_response(99999, '租赁信息不存在')

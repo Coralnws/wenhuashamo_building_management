@@ -48,31 +48,3 @@ stopwords = ["啊","哎","唉","俺","按","吧","把","甭","别","嘿","很","
 non_type_keywords = [
     "虫","蟑螂","白蚁","蚊子"
 ]
-# def auto_assign(text):
-#     tokens = jieba.cut(text)  # 使用jieba分词器对文本进行分词
-#     #filtered_tokens = [token for token in tokens if token not in stopwords]
-
-#     data={}
-#     data['0'] = 0
-#     data['1'] = 0
-#     data['2'] = 0
-#     data['3'] = 0
-
-#     for word in tokens:
-#         if word not in stopwords:
-#             if any(item in word for item in water_keywords):
-#                 data['1'] += 1
-#                 print("水关键词出现")
-#             if any(item in word for item in electric_keyword):
-#                 data['2'] += 1
-#                 print("电关键词出现")
-#             if any(item in word for item in mechanical_keyword):
-#                 data['3'] += 1
-#                 print("机械关键词出现")
-
-#     type_list = sorted(data.items(), key=lambda x: (-x[1], x[0]))
-#     print(type_list)
-
-#     return type_list[0][0]
-    
-# print(auto_assign("房间有异味,马桶抽不了水"))
