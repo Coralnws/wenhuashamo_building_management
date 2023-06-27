@@ -149,7 +149,7 @@ def delete_staff(request):
 
     if staff.position == '2':
         repair_list = Repair.objects.filter(staff=staff,status='In Progress').count()
-        if repair_list is not None:
+        if repair_list > 0:
             return UTF8JsonResponse({'errno':3001, 'msg': '维修人员尚有未完成的维修单子，无法删除'})
 
     # only superadmin able to delete normal user info
