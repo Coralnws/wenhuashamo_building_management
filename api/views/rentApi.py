@@ -28,6 +28,17 @@ REQUEST_IS_PAID_RENTAL = 'is_paid_rental'
 REQUEST_DATE_PAID_RENTAL = 'date_paid_rental'
 
 
+
+def rent_create_get_status(date_begin_str, date_end_str):
+    if date_begin_str <= timezone.now() and date_end_str >= timezone.now():
+        return True
+    return False
+
+def rent_create_room_overlap_check(record, date_begin_str, date_end_str):
+    if (record.rental.startTime >= date_begin_str and record.rental.startTime <= date_end_str) or (record.rental.endTime >= date_begin_str and record.rental.endTime <= date_end_str) or (record.rental.startTime <= date_begin_str and record.rental.endTime >= date_end_str) or(date_begin_str <= record.rental.startTime and record.rental.endTime <= date_end_str):
+        return True
+    return False
+
 @csrf_exempt
 def rent_create(request):
     if request.method != POSTMETHOD:
@@ -65,13 +76,8 @@ def rent_create(request):
 
     date_end_str = datetime.datetime.strptime(date_end, '%Y-%m-%d')
     date_begin_str = datetime.datetime.strptime(date_begin, '%Y-%m-%d')
-    status = None
+    status = rent_create_get_status(date_begin_str, date_end_str)
 
-    if date_begin_str <= timezone.now() and date_end_str >= timezone.now():
-        status=True
-    else:
-        status=False
-        
     #为每个房间建立TenantRental关系 - house + rental
     for room in room_list:
         house = House.objects.filter(roomNumber = room).first()
@@ -83,7 +89,7 @@ def rent_create(request):
         rent_room_list = TenantRental.objects.filter(house=house)
         #检查这些租赁信息里面有没有重叠的
         for record in rent_room_list:
-            if (record.rental.startTime >= date_begin_str and record.rental.startTime <= date_end_str) or (record.rental.endTime >= date_begin_str and record.rental.endTime <= date_end_str) or     (record.rental.startTime <= date_begin_str and record.rental.endTime >= date_end_str) or(date_begin_str <= record.rental.startTime and record.rental.endTime <= date_end_str):
+            if (rent_create_room_overlap_check(record, date_begin_str, date_end_str)):
                 rental_info.delete()
                 return return_response(2001, '该时间段房间已出租',room)
 
