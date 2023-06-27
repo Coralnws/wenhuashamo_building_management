@@ -25,7 +25,6 @@ urlpatterns = [
 
     path('rent/create', rentApi.rent_create),
     path('rent/detailRead', rentApi.rent_detail_read),
-    path('rent/update', rentApi.rent_update),
     path('rent/delete', rentApi.rent_delete),
     path('rent/user/detail', rentApi.rent_user_detail_read),
 
